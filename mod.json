@@ -1,0 +1,38 @@
+{
+	"geode": "3.0.0-alpha.2",
+	"gd": {
+		"win": "2.206"
+	},
+	"version": "v0.0.1",
+	"id": "sabe.platformersaves",
+	"name": "PlatformerSaves",
+	"developer": "Sabe",
+	"description": "",
+	"dependencies": [
+		{
+			"id": "geode.custom-keybinds",
+			"version": ">=v1.6.0-beta.1",
+			"importance": "required",
+			"platforms": [
+				"windows"
+			]
+		},
+		{
+			"id": "geode.node-ids",
+			"version": ">=v1.12.0-beta.4",
+			"importance": "required"
+		},
+		{
+			"id": "sabe.persistencyutils",
+			"version": "v0.0.1",
+			"importance": "required"
+		}
+	],
+	"incompatibilities": [
+        {
+            "id": "thesillydoggo.moretags",
+            "importance": "breaking",
+            "version": "*"
+        }
+    ]
+}
