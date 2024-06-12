@@ -498,15 +498,16 @@ struct PlayerCheckpoint {
     float m_speed;
     bool m_isHidden;
     bool m_isGoingLeft;
-    u8 m_unkBytes2[27];
-    u64 m_maybeAPointer;
+    u8 m_unkBytes2[34];
+    bool m_hideAttemptCount;
+    u8 m_unkBytes3[7];
     bool m_unkBool;
     float m_unkFloat1;
     s32 m_possiblyFlags;
     s32 m_timeOrPercentRelated;
-    u8 m_unkBytes3[4];
+    u8 m_unkBytes4[4];
     vector<float> m_yPositionVector;
-    u8 m_unkBytes4[8];
+    u8 m_unkBytes5[8];
 };
 
 struct DynamicSaveObject {
