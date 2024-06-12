@@ -9,7 +9,7 @@ using namespace geode::prelude;
 using namespace persistencyUtils;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.2";
+char s_psfMagicAndVer[] = "PSF v0.0.3";
 
 // overrides
 
