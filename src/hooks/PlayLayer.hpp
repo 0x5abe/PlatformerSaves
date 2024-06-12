@@ -1,6 +1,7 @@
 #pragma once
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <domain/CheckpointGameObjectReference.hpp>
 #include <hooks/CheckpointObject.hpp>
 #include <sabe.persistencyutils/include/PersistencyUtils.hpp>
 
@@ -25,6 +26,7 @@ enum class LoadingState {
 	HandleIncorrectHash,
 	ReadCheckpointCount,
 	ReadCheckpoint,
+	ReadTriggeredCheckpointGameObjects,
 	WaitingForPopup,
 	CancelLevelLoad
 };
@@ -32,7 +34,8 @@ enum class LoadingState {
 enum class SavingState {
 	Ready,
 	Setup,
-	Started
+	SaveCheckpoint,
+	SaveTriggeredCheckpointGameObjects
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
@@ -58,6 +61,7 @@ public:
 		bool m_cancelLevelLoad = false;
 		geode::Ref<cocos2d::CCSprite> m_savingIcon = nullptr;
 		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
+		std::vector<CheckpointGameObjectReference> m_triggeredCheckpointGameObjects;
 		bool m_triedPlacingCheckpoint = false;
 		bool m_inPostUpdate = false;
 	};
@@ -97,6 +101,8 @@ public:
 	void loadGame();
 
 	void loadCheckpointFromStream();
+
+	void loadTriggeredCheckpointGameObjectsFromStream();
 
 	void updateAsyncProcessCreateObjectsFromSetup();
 

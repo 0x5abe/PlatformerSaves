@@ -1,4 +1,5 @@
 #include "PlayLayer.hpp"
+#include "domain/CheckpointGameObjectReference.hpp"
 #include <filesystem>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <util/algorithm.hpp>
@@ -8,7 +9,7 @@ using namespace geode::prelude;
 using namespace persistencyUtils;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.1";
+char s_psfMagicAndVer[] = "PSF v0.0.2";
 
 // overrides
 
@@ -95,6 +96,49 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 	m_fields->m_triedPlacingCheckpoint = false;
 
 	log::info("m_checkpointArray count: {}", m_checkpointArray->count());
+	// log::info("m_gameState->m_dynamicObjActions1 size: {}", m_gameState.m_dynamicObjActions1.size());
+	// for (int i = 0; i < m_gameState.m_dynamicObjActions1.size(); i++) {
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject1: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject1));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject2: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject2));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject3: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject3));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject4: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject4));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject5: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject5));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject6: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject6));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject7: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject7));
+	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject8: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject8));
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject1 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject1->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject1->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject2 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject2->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject2->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject3 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject3->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject3->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject4 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject4->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject4->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject5 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject5->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject5->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject6 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject6->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject6->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject7 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject7->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject7->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject8 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject8->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject8->m_uniqueID);
+		
+	// }
+	// log::info("m_gameState->m_dynamicObjActions2 size: {}", m_gameState.m_dynamicObjActions2.size());
+	// for (int i = 0; i < m_gameState.m_dynamicObjActions2.size(); i++) {
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject1: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject1));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject2: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject2));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject3: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject3));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject4: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject4));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject5: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject5));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject6: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject6));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject7: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject7));
+	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject8: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject8));
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject1 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject1->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject1->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject2 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject2->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject2->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject3 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject3->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject3->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject4 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject4->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject4->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject5 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject5->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject5->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject6 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject6->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject6->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject7 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject7->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject7->m_uniqueID);
+	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject8 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject8->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject8->m_uniqueID);
+	// }
+	// log::info("m_player1: {}", reinterpret_cast<uint64_t>(m_player1));
+	// log::info("m_player1->m_uniqueID: {}", m_player1->m_uniqueID);
+	// log::info("m_player2: {}", reinterpret_cast<uint64_t>(m_player2));
+	// log::info("m_player2->m_uniqueID: {}", m_player2->m_uniqueID);
 }
 
 CheckpointObject* PSPlayLayer::markCheckpoint() {
@@ -105,6 +149,7 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_triggeredCheckpointGameObject != nullptr) {
 			m_fields->m_normalModeCheckpoints->addObject(l_checkpointObject);
+			m_fields->m_triggeredCheckpointGameObjects.push_back(CheckpointGameObjectReference(m_triggeredCheckpointGameObject));
 		}
 	}
 

@@ -128,8 +128,13 @@ void PSPlayLayer::loadGame() {
 				m_fields->m_remainingCheckpointLoadCount--;
 			}
 			if (m_fields->m_remainingCheckpointLoadCount == 0) {
-				m_fields->m_loadingState = LoadingState::Ready;
+				m_fields->m_loadingState = LoadingState::ReadTriggeredCheckpointGameObjects;
 			}
+			break;
+		}
+		case LoadingState::ReadTriggeredCheckpointGameObjects: {
+			loadTriggeredCheckpointGameObjectsFromStream();
+			m_fields->m_loadingState = LoadingState::Ready;
 			break;
 		}
 		case LoadingState::HandleFileError: {
@@ -229,6 +234,18 @@ void PSPlayLayer::loadGame() {
 	}
 }
 
+void PSPlayLayer::loadTriggeredCheckpointGameObjectsFromStream() {
+	unsigned int l_size;
+	m_fields->m_inputStream.read(reinterpret_cast<char*>(&l_size), 4);
+	if (l_size != 0) {
+		m_fields->m_triggeredCheckpointGameObjects.resize(l_size);
+		for (int i = 0; i < l_size; i++) {
+			m_fields->m_triggeredCheckpointGameObjects[i].load(m_fields->m_inputStream);
+			if (m_fields->m_triggeredCheckpointGameObjects[i].m_reference != nullptr) m_fields->m_triggeredCheckpointGameObjects[i].m_reference->triggerActivated(0.0f);
+		}
+	}
+}
+
 void PSPlayLayer::loadCheckpointFromStream() {
 	PSCheckpointObject* l_checkpoint = reinterpret_cast<PSCheckpointObject*>(CheckpointObject::create());
 	l_checkpoint->load(m_fields->m_inputStream); 
@@ -238,6 +255,12 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_objectID = 0x2c;
 	l_newPhysicalCPO->m_objectType = GameObjectType::Decoration;
 	l_newPhysicalCPO->m_glowSprite = nullptr;
+	log::info("offset of GameObject m_unk292: {}", offsetof(GameObject,m_unk292));
+	l_newPhysicalCPO->m_unk292 = true; // who knows
+	log::info("offset of GameObject m_unk3ef: {}", offsetof(GameObject,m_unk3ef));
+	l_newPhysicalCPO->m_unk3ef = true; // who knows
+	l_newPhysicalCPO->setOpacity(0);
+
 	// TODO FIX THIS OFFSET 0X3D4
 	int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
 	*l_unkField1 = 3;

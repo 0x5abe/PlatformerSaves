@@ -24,8 +24,11 @@
 		},
 		{
 			"id": "sabe.persistencyutils",
-			"version": "v0.0.1",
-			"importance": "required"
+			"version": ">=v0.0.1",
+			"importance": "required",
+			"platforms": [
+				"windows"
+			]
 		}
 	],
 	"incompatibilities": [
