@@ -1,5 +1,5 @@
 #pragma once
-#include <sabe.persistencyutils/include/PersistencyUtils.hpp>
+#include <sabe.persistenceutils/include/PersistenceUtils.hpp>
 
 class CheckpointGameObjectReference {
 public:
@@ -12,6 +12,6 @@ public:
 		m_reference = i_reference;
 	}
 
-	void load(persistencyUtils::InputStream& i_stream);
-	void save(persistencyUtils::OutputStream& o_stream);
+	void load(persistenceUtils::InputStream& i_stream);
+	void save(persistenceUtils::OutputStream& o_stream);
 };

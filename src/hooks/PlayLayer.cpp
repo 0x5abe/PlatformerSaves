@@ -1,4 +1,6 @@
 #include "PlayLayer.hpp"
+#include "CheckpointObject.hpp"
+#include "Geode/binding/PlayLayer.hpp"
 #include "domain/CheckpointGameObjectReference.hpp"
 #include <filesystem>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
@@ -6,10 +8,10 @@
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistencyUtils;
+using namespace persistenceUtils;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.3";
+char s_psfMagicAndVer[] = "PSF v0.0.6";
 
 // overrides
 
@@ -46,7 +48,7 @@ void PSPlayLayer::setupHasCompleted() {
 		m_fields->m_loadingState = LoadingState::Ready;
 	}
 	if (m_fields->m_loadingState != LoadingState::Ready) {
-		log::info("[setupHasCompleted] hasnt finished loading checkpoints");
+		//log::info("[setupHasCompleted] hasnt finished loading checkpoints");
 
 		loadGame();
 		
@@ -70,7 +72,9 @@ void PSPlayLayer::setupHasCompleted() {
 		// now reset the order of arrival that we're actually going into the level
 		CCNode::resetGlobalOrderOfArrival();
 
+		m_fields->m_inSetupHasCompleted = true;
 		PlayLayer::setupHasCompleted();
+		m_fields->m_inSetupHasCompleted = false;
 
 		m_fields->m_loadingProgress = 0.0f;
 		m_fields->m_bytesToRead = 0;
@@ -95,7 +99,7 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 	m_fields->m_inPostUpdate = false;
 	m_fields->m_triedPlacingCheckpoint = false;
 
-	log::info("m_checkpointArray count: {}", m_checkpointArray->count());
+	//log::info("m_checkpointArray count: {}", m_checkpointArray->count());
 	// log::info("m_gameState->m_dynamicObjActions1 size: {}", m_gameState.m_dynamicObjActions1.size());
 	// for (int i = 0; i < m_gameState.m_dynamicObjActions1.size(); i++) {
 	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject1: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject1));
@@ -138,16 +142,17 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 	// log::info("m_player1: {}", reinterpret_cast<uint64_t>(m_player1));
 	// log::info("m_player1->m_uniqueID: {}", m_player1->m_uniqueID);
 	// log::info("m_player2: {}", reinterpret_cast<uint64_t>(m_player2));
-	// log::info("m_player2->m_uniqueID: {}", m_player2->m_uniqueID);
+	 log::info("m_timePlayed: {}", m_timePlayed);
 }
 
 CheckpointObject* PSPlayLayer::markCheckpoint() {
 	CheckpointObject* l_checkpointObject = PlayLayer::markCheckpoint();
-
+	
 	if (m_fields->m_inPostUpdate) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_triggeredCheckpointGameObject != nullptr) {
+			static_cast<PSCheckpointObject*>(l_checkpointObject)->m_fields->m_timePlayed = m_timePlayed;
 			m_fields->m_normalModeCheckpoints->addObject(l_checkpointObject);
 			m_fields->m_triggeredCheckpointGameObjects.push_back(CheckpointGameObjectReference(m_triggeredCheckpointGameObject));
 		}
@@ -156,7 +161,60 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 	return l_checkpointObject;
 }
 
+void PSPlayLayer::resetLevel() {
+	m_fields->m_inResetLevel = true;
+	PlayLayer::resetLevel();
+	if (m_isPlatformer) {
+		toggleMGVisibility(true); // it's actually toggleHideAttempts but virtuals are off for some reason IF IT BREAKS CHANGE IT BACK
+	}
+	m_fields->m_inResetLevel = false;
+}
+
+void PSPlayLayer::prepareMusic(bool i_unkBool) {
+	if (m_fields->m_inSetupHasCompleted && m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0 && !m_fields->m_inResetLevel) {
+		return;
+	}
+	PlayLayer::prepareMusic(i_unkBool);
+}
+
+void PSPlayLayer::startMusic() {
+	if (m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0) {
+		return;
+	}
+	PlayLayer::startMusic();
+}
+
+void PSPlayLayer::togglePracticeMode(bool i_value) {
+	m_fields->m_inTogglePracticeMode = true;
+	PlayLayer::togglePracticeMode(i_value);
+	m_fields->m_inTogglePracticeMode = false;
+}
+
+void PSPlayLayer::resetLevelFromStart() {
+	if (m_fields->m_inTogglePracticeMode && m_isPlatformer && !m_isPracticeMode && m_fields->m_normalModeCheckpoints->count() > 0) {
+		PlayLayer::removeAllCheckpoints();
+		registerCheckpointsAndTriggeredCheckpointGameObjects();
+		PlayLayer::resetLevel();
+		return;
+	}
+	PlayLayer::resetLevelFromStart();
+}
+
 // custom methods
+
+void PSPlayLayer::registerCheckpointsAndTriggeredCheckpointGameObjects() {
+	PSCheckpointObject* l_checkpoint;
+	for (int i = 0; i < m_fields->m_normalModeCheckpoints->count(); i++) {
+		l_checkpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i));
+		m_checkpointArray->addObject(l_checkpoint);
+		PlayLayer::addToSection(l_checkpoint->m_physicalCheckpointObject);
+		l_checkpoint->m_physicalCheckpointObject->activateObject();
+		m_timePlayed = l_checkpoint->m_fields->m_timePlayed;
+	}
+	for (int i = 0; i < m_fields->m_triggeredCheckpointGameObjects.size(); i++) {
+		if (m_fields->m_triggeredCheckpointGameObjects[i].m_reference != nullptr) m_fields->m_triggeredCheckpointGameObjects[i].m_reference->triggerActivated(0.0f);
+	}
+}
 
 std::string PSPlayLayer::getSaveFilePath(bool i_checkExists) {
 	if (m_fields->m_saveSlot == -1) {
@@ -190,7 +248,6 @@ void PSPlayLayer::setupKeybinds() {
 	addEventListener<keybinds::InvokeBindFilter>(
 		[this](keybinds::InvokeBindEvent* event) {
 			if (event->isDown()) {
-				log::info("m_isPlatformer: {}", m_isPlatformer);
 				if (m_fields->m_savingState != SavingState::Ready) return ListenerResult::Propagate;
 				m_fields->m_savingState = SavingState::Setup;
 				CCScene* l_currentScene = CCScene::get();

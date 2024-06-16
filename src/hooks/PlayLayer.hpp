@@ -1,9 +1,10 @@
 #pragma once
+#include "Geode/modify/Modify.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <domain/CheckpointGameObjectReference.hpp>
 #include <hooks/CheckpointObject.hpp>
-#include <sabe.persistencyutils/include/PersistencyUtils.hpp>
+#include <sabe.persistenceutils/include/PersistenceUtils.hpp>
 
 class PSPlayLayer;
 
@@ -27,6 +28,7 @@ enum class LoadingState {
 	ReadCheckpointCount,
 	ReadCheckpoint,
 	ReadTriggeredCheckpointGameObjects,
+	ReadTimePlayed,
 	WaitingForPopup,
 	CancelLevelLoad
 };
@@ -35,7 +37,8 @@ enum class SavingState {
 	Ready,
 	Setup,
 	SaveCheckpoint,
-	SaveTriggeredCheckpointGameObjects
+	SaveTriggeredCheckpointGameObjects,
+	SaveTimePlayed
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
@@ -44,8 +47,8 @@ protected:
 
 public:
 	struct Fields {
-		persistencyUtils::InputStream m_inputStream;
-		persistencyUtils::OutputStream m_outputStream;
+		persistenceUtils::InputStream m_inputStream;
+		persistenceUtils::OutputStream m_outputStream;
 		int m_saveSlot = -1;
 		int m_uniqueIdBase = 12;
 		bool m_onQuitCalled = false;
@@ -64,6 +67,9 @@ public:
 		std::vector<CheckpointGameObjectReference> m_triggeredCheckpointGameObjects;
 		bool m_triedPlacingCheckpoint = false;
 		bool m_inPostUpdate = false;
+		bool m_inSetupHasCompleted = false;
+		bool m_inResetLevel = false;
+		bool m_inTogglePracticeMode = false;
 	};
 
 	// overrides
@@ -86,9 +92,24 @@ public:
 	$override
 	CheckpointObject* markCheckpoint();
 	
+	$override
+	void resetLevel();
+
+	$override
+	void prepareMusic(bool i_unkBool);
+
+	$override
+	void startMusic();
+
+	$override
+	void togglePracticeMode(bool i_value);
+
+	$override
+	void resetLevelFromStart();
+	
 	// custom methods
 
-	void createAndSetCheckpoint();
+	void registerCheckpointsAndTriggeredCheckpointGameObjects();
 
 	bool readPsfLevelStringHash();
 

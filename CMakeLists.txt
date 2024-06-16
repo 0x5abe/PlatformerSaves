@@ -45,6 +45,7 @@ else()
 endif()
 
 target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-microsoft-include")
+target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-invalid-offsetof")
 
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 

@@ -1,9 +1,9 @@
 #include <Geode/Geode.hpp>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
-#include <sabe.persistencyutils/include/PersistencyUtils.hpp>
+#include <sabe.persistenceutils/include/PersistenceUtils.hpp>
 
 using namespace geode::prelude;
-using namespace persistencyUtils;
+using namespace persistenceUtils;
 
 void setupKeybinds();
 

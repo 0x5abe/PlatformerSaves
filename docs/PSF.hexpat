@@ -228,21 +228,20 @@ struct SongTriggerGameObjectPtr {
 };
 
 struct SongChannelState {
-    u8 m_unk[4];
     SongTriggerGameObjectPtr m_songTriggerGameObject1;
-    u8 m_unk2[12];
+    u8 m_unk2[8];
     SongTriggerGameObjectPtr m_songTriggerGameObject2;
-    u8 m_unk3[12];
+    u8 m_unk3[8];
 };
 
 struct SongTriggerState {
     SongTriggerGameObjectPtr m_songTriggerGameObject;    
-    u8 m_unk[12];
+    u8 m_unk[8];
 };
 
 struct SFXTriggerState {
     SFXTriggerGameObjectPtr m_sfxTriggerGameObject;
-    u8 m_unk[156];
+    u8 m_unk[160];
 };
 
 struct CCNode {
@@ -616,13 +615,13 @@ struct KeyframeObject {
     vector<double> m_unkVecDouble3;
     vector<double> m_unkVecDouble4;
     vector<double> m_unkVecDouble5;
-    u8 m_unk2[52];
+    u8 m_unk2[41];
     vector<double> m_unkVecDouble6;
     vector<double> m_unkVecDouble7;
     vector<double> m_unkVecDouble8;
     vector<double> m_unkVecDouble9;
     vector<double> m_unkVecDouble10;
-    u8 m_unk3[132];
+    u8 m_unk3[128];
 };
 
 struct GroupCommandObject2 {
@@ -702,6 +701,7 @@ struct CheckpointObject {
     bool m_unkBool1;
     unordered_map<s32,SequenceTriggerState> m_sequenceTriggerStateUnorderedMap;
     s64 m_unkGetsCopiedFromGameState;
+    double timePlayed;
 };
 
 struct CheckpointGameObjectPtr {

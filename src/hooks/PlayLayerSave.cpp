@@ -4,7 +4,7 @@
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistencyUtils;
+using namespace persistenceUtils;
 
 void PSPlayLayer::writePsfHeader() {
 	m_fields->m_outputStream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
@@ -79,6 +79,11 @@ void PSPlayLayer::saveGame() {
 			for (int i = 0; i < m_fields->m_triggeredCheckpointGameObjects.size(); i++) {
 				m_fields->m_triggeredCheckpointGameObjects[i].save(m_fields->m_outputStream);
 			}
+			m_fields->m_savingState = SavingState::SaveTimePlayed;
+			// falls through
+		}
+		case SavingState::SaveTimePlayed: {
+			m_fields->m_outputStream << m_timePlayed;
 			m_fields->m_savingState = SavingState::Ready;
 			// falls through
 		}

@@ -11,7 +11,7 @@
 #include <util/debug.hpp>
 
 using namespace geode::prelude;
-using namespace persistencyUtils;
+using namespace persistenceUtils;
 
 void PSCheckpointObject::load(InputStream& i_stream) {
 	reinterpret_cast<PUCCNode*>(this)->load(i_stream);
@@ -64,8 +64,8 @@ inline void operator>>(InputStream& i_stream, PSCheckpointObject& o_value) {
 	
 	// void* m_maybeAPointer1;
 	i_stream >> *reinterpret_cast<double*>(&o_value.m_maybeAPointer1);
-	log::info("maybe a pointer 1 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer1));
-	log::info("maybe a pointer 1 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer1));
+	//log::info("maybe a pointer 1 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer1));
+	//log::info("maybe a pointer 1 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer1));
 	//log::info("o_value.m_maybeAPointer1 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer1));
 	SEPARATOR_I
 
@@ -81,8 +81,8 @@ inline void operator>>(InputStream& i_stream, PSCheckpointObject& o_value) {
 
 	// void* m_maybeAPointer2;
 	i_stream >> *reinterpret_cast<double*>(&o_value.m_maybeAPointer2);
-	log::info("maybe a pointer 2 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer2));
-	log::info("maybe a pointer 2 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer2));
+	//log::info("maybe a pointer 2 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer2));
+	//log::info("maybe a pointer 2 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer2));
 	//log::info("o_value.m_maybeAPointer2 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer2));
 	VEC_SEPARATOR_I
 
@@ -121,13 +121,15 @@ inline void operator>>(InputStream& i_stream, PSCheckpointObject& o_value) {
 
 	// void* m_maybeAPointer3;
 	i_stream >> *reinterpret_cast<double*>(&o_value.m_maybeAPointer3);
-	log::info("maybe a pointer 3 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer3));
-	log::info("maybe a pointer 3 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer3));
+	//log::info("maybe a pointer 3 as int: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer3));
+	//log::info("maybe a pointer 3 as double: {}", *reinterpret_cast<double*>(&o_value.m_maybeAPointer3));
 	//log::info("o_value.m_maybeAPointer3 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer3));
 	SEPARATOR_I
 
 	// custom members
 
+	i_stream >> o_value.m_fields->m_timePlayed;
+	
 	o_value.m_fields->m_wasLoaded = true;
 }
 
@@ -171,8 +173,8 @@ inline void operator<<(OutputStream& o_stream, PSCheckpointObject& i_value) {
 	
 	// void* m_maybeAPointer1;
 	//log::info("o_value.m_maybeAPointer1 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer1));
-	log::info("maybe a pointer 1 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer1));
-	log::info("maybe a pointer 1 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer1));
+	//log::info("maybe a pointer 1 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer1));
+	//log::info("maybe a pointer 1 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer1));
 	o_stream << *reinterpret_cast<double*>(&i_value.m_maybeAPointer1);
 	SEPARATOR_O
 
@@ -188,8 +190,8 @@ inline void operator<<(OutputStream& o_stream, PSCheckpointObject& i_value) {
 
 	// void* m_maybeAPointer2;
 	//log::info("o_value.m_maybeAPointer2 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer2));
-	log::info("maybe a pointer 2 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer2));
-	log::info("maybe a pointer 2 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer2));
+	//log::info("maybe a pointer 2 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer2));
+	//log::info("maybe a pointer 2 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer2));
 	o_stream << *reinterpret_cast<double*>(&i_value.m_maybeAPointer2);
 	VEC_SEPARATOR_O
 
@@ -233,12 +235,14 @@ inline void operator<<(OutputStream& o_stream, PSCheckpointObject& i_value) {
 
 	// void* m_maybeAPointer3;
 	//log::info("o_value.m_maybeAPointer3 in: {}", reinterpret_cast<int64_t>(o_value.m_maybeAPointer3));
-	log::info("maybe a pointer 3 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer3));
-	log::info("maybe a pointer 3 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer3));
+	//log::info("maybe a pointer 3 as int: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer3));
+	//log::info("maybe a pointer 3 as double: {}", *reinterpret_cast<double*>(&i_value.m_maybeAPointer3));
 	o_stream << *reinterpret_cast<double*>(&i_value.m_maybeAPointer3);
 	SEPARATOR_O
 
 	// custom members
+
+	o_stream << i_value.m_fields->m_timePlayed;
 }
 
 void PSCheckpointObject::clean() {
@@ -308,5 +312,6 @@ void PSCheckpointObject::describe() {
 		i++;
 	}
 	log::info("[PSCheckpointObject - describe] m_maybeAPointer3: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer3));
+	log::info("[PSCheckpointObject - describe] m_l: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer3));
 }
 #endif

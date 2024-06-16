@@ -5,7 +5,7 @@
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistencyUtils;
+using namespace persistenceUtils;
 
 bool PSPlayLayer::readPsfLevelStringHash() {
 	unsigned int l_savedLevelStringHash;
@@ -130,11 +130,21 @@ void PSPlayLayer::loadGame() {
 			if (m_fields->m_remainingCheckpointLoadCount == 0) {
 				m_fields->m_loadingState = LoadingState::ReadTriggeredCheckpointGameObjects;
 			}
-			break;
+			// falls through
 		}
 		case LoadingState::ReadTriggeredCheckpointGameObjects: {
 			loadTriggeredCheckpointGameObjectsFromStream();
+			m_fields->m_loadingState = LoadingState::ReadTimePlayed;
+			// falls through
+		}
+		case LoadingState::ReadTimePlayed: {
+			
 			m_fields->m_loadingState = LoadingState::Ready;
+			// falls through
+		}
+		case LoadingState::Ready: {
+			registerCheckpointsAndTriggeredCheckpointGameObjects();
+			//log::info("!!!!!!!!!!!!!!!! DO NOTHING");
 			break;
 		}
 		case LoadingState::HandleFileError: {
@@ -218,9 +228,7 @@ void PSPlayLayer::loadGame() {
 			);
 			break;
 		}
-		case LoadingState::WaitingForPopup:
-		case LoadingState::Ready: {
-			//log::info("!!!!!!!!!!!!!!!! DO NOTHING");
+		case LoadingState::WaitingForPopup: {
 			break;
 		}
 		case LoadingState::CancelLevelLoad: {
@@ -241,7 +249,6 @@ void PSPlayLayer::loadTriggeredCheckpointGameObjectsFromStream() {
 		m_fields->m_triggeredCheckpointGameObjects.resize(l_size);
 		for (int i = 0; i < l_size; i++) {
 			m_fields->m_triggeredCheckpointGameObjects[i].load(m_fields->m_inputStream);
-			if (m_fields->m_triggeredCheckpointGameObjects[i].m_reference != nullptr) m_fields->m_triggeredCheckpointGameObjects[i].m_reference->triggerActivated(0.0f);
 		}
 	}
 }
@@ -255,9 +262,7 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_objectID = 0x2c;
 	l_newPhysicalCPO->m_objectType = GameObjectType::Decoration;
 	l_newPhysicalCPO->m_glowSprite = nullptr;
-	log::info("offset of GameObject m_unk292: {}", offsetof(GameObject,m_unk292));
 	l_newPhysicalCPO->m_unk292 = true; // who knows
-	log::info("offset of GameObject m_unk3ef: {}", offsetof(GameObject,m_unk3ef));
 	l_newPhysicalCPO->m_unk3ef = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
 
@@ -269,12 +274,8 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_checkpoint->m_physicalCheckpointObject = l_newPhysicalCPO;
 	
 	l_checkpoint->m_physicalCheckpointObject->setStartPos(l_checkpoint->m_fields->m_position);
-	PSCheckpointObject* l_curCheckpoint;
 
 	m_fields->m_normalModeCheckpoints->addObject(l_checkpoint);
-	m_checkpointArray->addObject(l_checkpoint);
-	PlayLayer::addToSection(l_checkpoint->m_physicalCheckpointObject);
-	l_checkpoint->m_physicalCheckpointObject->activateObject();
 }
 
 void PSPlayLayer::updateAsyncProcessCreateObjectsFromSetup() {
