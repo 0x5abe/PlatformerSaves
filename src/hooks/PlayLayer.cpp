@@ -8,10 +8,10 @@
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistenceUtils;
+using namespace persistenceAPI;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.6";
+char s_psfMagicAndVer[] = "PSF v0.0.7";
 
 // overrides
 
@@ -86,6 +86,13 @@ void PSPlayLayer::onQuit() {
 	if (!m_fields->m_onQuitCalled) {
 		m_fields->m_onQuitCalled = true;
 	}
+	if (m_fields->m_normalModeCheckpoints->count() > 0) {
+		
+		PSCheckpointObject* l_lastCheckpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject());
+		log::info("m_fields->m_lastSavedCheckpointTimestamp: {}", m_fields->m_lastSavedCheckpointTimestamp);
+		log::info("l_lastCheckpoint->m_fields->m_timestamp: {}", l_lastCheckpoint->m_fields->m_timestamp);
+		log::info("Should ask for save: {}", l_lastCheckpoint->m_fields->m_timestamp > m_fields->m_lastSavedCheckpointTimestamp);
+	}
 	PlayLayer::onQuit();
 	s_currentPlayLayer = nullptr;
 }
@@ -146,15 +153,18 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 }
 
 CheckpointObject* PSPlayLayer::markCheckpoint() {
-	CheckpointObject* l_checkpointObject = PlayLayer::markCheckpoint();
+	PSCheckpointObject* l_checkpointObject = static_cast<PSCheckpointObject*>(PlayLayer::markCheckpoint());
 	
 	if (m_fields->m_inPostUpdate) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_triggeredCheckpointGameObject != nullptr) {
-			static_cast<PSCheckpointObject*>(l_checkpointObject)->m_fields->m_timePlayed = m_timePlayed;
+			l_checkpointObject->m_fields->m_timePlayed = m_timePlayed;
+			l_checkpointObject->m_fields->m_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			m_fields->m_normalModeCheckpoints->addObject(l_checkpointObject);
 			m_fields->m_triggeredCheckpointGameObjects.push_back(CheckpointGameObjectReference(m_triggeredCheckpointGameObject));
+			// autosave
+			if (Mod::get()->getSettingValue<bool>("auto-save")) startSaveGame();
 		}
 	}
 
@@ -248,21 +258,7 @@ void PSPlayLayer::setupKeybinds() {
 	addEventListener<keybinds::InvokeBindFilter>(
 		[this](keybinds::InvokeBindEvent* event) {
 			if (event->isDown()) {
-				if (m_fields->m_savingState != SavingState::Ready) return ListenerResult::Propagate;
-				m_fields->m_savingState = SavingState::Setup;
-				CCScene* l_currentScene = CCScene::get();
-				if (l_currentScene) {
-					l_currentScene->runAction(
-						CCSequence::create(
-							CCDelayTime::create(0.0f),
-							CCCallFunc::create(
-								this,
-								callfunc_selector(PSPlayLayer::saveGame)
-							),
-							nullptr
-						)
-					);
-				}
+				startSaveGame();
 			}
 			return ListenerResult::Propagate;
 		},

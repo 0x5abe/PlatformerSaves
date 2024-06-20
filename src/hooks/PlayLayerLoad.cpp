@@ -5,7 +5,7 @@
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistenceUtils;
+using namespace persistenceAPI;
 
 bool PSPlayLayer::readPsfLevelStringHash() {
 	unsigned int l_savedLevelStringHash;
@@ -138,11 +138,13 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::ReadTimePlayed: {
-			
 			m_fields->m_loadingState = LoadingState::Ready;
 			// falls through
 		}
 		case LoadingState::Ready: {
+			if (m_fields->m_normalModeCheckpoints->count() > 0) {
+				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
+			}
 			registerCheckpointsAndTriggeredCheckpointGameObjects();
 			//log::info("!!!!!!!!!!!!!!!! DO NOTHING");
 			break;

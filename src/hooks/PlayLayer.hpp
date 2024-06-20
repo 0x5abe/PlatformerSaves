@@ -4,7 +4,7 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include <domain/CheckpointGameObjectReference.hpp>
 #include <hooks/CheckpointObject.hpp>
-#include <sabe.persistenceutils/include/PersistenceUtils.hpp>
+#include <sabe.persistenceapi/include/PersistenceAPI.hpp>
 
 class PSPlayLayer;
 
@@ -47,8 +47,8 @@ protected:
 
 public:
 	struct Fields {
-		persistenceUtils::InputStream m_inputStream;
-		persistenceUtils::OutputStream m_outputStream;
+		persistenceAPI::InputStream m_inputStream;
+		persistenceAPI::OutputStream m_outputStream;
 		int m_saveSlot = -1;
 		int m_uniqueIdBase = 12;
 		bool m_onQuitCalled = false;
@@ -70,6 +70,7 @@ public:
 		bool m_inSetupHasCompleted = false;
 		bool m_inResetLevel = false;
 		bool m_inTogglePracticeMode = false;
+		long long m_lastSavedCheckpointTimestamp = 0;
 	};
 
 	// overrides
@@ -130,6 +131,8 @@ public:
 	void endAsyncProcessCreateObjectsFromSetup();
 
 	void writePsfHeader();
+
+	bool startSaveGame();
 
 	void saveGame();
 

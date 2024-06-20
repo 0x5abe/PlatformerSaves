@@ -1,10 +1,33 @@
 #include "PlayLayer.hpp"
+#include <chrono>
 #include <filesystem>
+#include <ratio>
+#include <ctime>
+#include <iostream>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
 
 using namespace geode::prelude;
-using namespace persistenceUtils;
+using namespace persistenceAPI;
+
+bool PSPlayLayer::startSaveGame() {
+	if (m_fields->m_savingState != SavingState::Ready) return false;
+	m_fields->m_savingState = SavingState::Setup;
+	CCScene* l_currentScene = CCScene::get();
+	if (l_currentScene) {
+		l_currentScene->runAction(
+			CCSequence::create(
+				CCDelayTime::create(0.0f),
+				CCCallFunc::create(
+					this,
+					callfunc_selector(PSPlayLayer::saveGame)
+				),
+				nullptr
+			)
+		);
+	}
+	return true;
+}
 
 void PSPlayLayer::writePsfHeader() {
 	m_fields->m_outputStream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
@@ -88,6 +111,9 @@ void PSPlayLayer::saveGame() {
 			// falls through
 		}
 		case SavingState::Ready: {
+			if (m_fields->m_normalModeCheckpoints->count() > 0) {
+				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
+			}
 			m_fields->m_outputStream.seek(sizeof(s_psfMagicAndVer));
 			bool o_finishedSaving = true;
 			m_fields->m_outputStream.write((char*)&o_finishedSaving,sizeof(bool));

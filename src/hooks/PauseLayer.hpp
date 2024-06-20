@@ -4,7 +4,7 @@
 #include "Geode/cocos/cocoa/CCObject.h"
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <sabe.persistenceutils/include/PersistenceUtils.hpp>
+#include <sabe.persistenceapi/include/PersistenceAPI.hpp>
 
 class $modify(PSPauseLayer, PauseLayer) {
 public:
