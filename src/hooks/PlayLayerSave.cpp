@@ -1,9 +1,5 @@
 #include "PlayLayer.hpp"
-#include <chrono>
 #include <filesystem>
-#include <ratio>
-#include <ctime>
-#include <iostream>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
 
@@ -106,7 +102,7 @@ void PSPlayLayer::saveGame() {
 			// falls through
 		}
 		case SavingState::SaveTimePlayed: {
-			m_fields->m_outputStream << m_timePlayed;
+			//m_fields->m_outputStream << m_timePlayed;
 			m_fields->m_savingState = SavingState::Ready;
 			// falls through
 		}
