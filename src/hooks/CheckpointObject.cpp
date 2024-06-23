@@ -263,10 +263,10 @@ void PSCheckpointObject::clean() {
 	gd::vector<ActiveSaveObject2>().swap(m_vectorActiveSaveObjects2);
 }
 
-#if defined(PU_DEBUG) && defined(PU_DESCRIBE)
+#if defined(PS_DEBUG) && defined(PS_DESCRIBE)
 void PSCheckpointObject::describe() {
 	log::info("[PSCheckpointObject - describe] start");
-	reinterpret_cast<PUCCObject*>(this)->describe();
+	reinterpret_cast<PACCObject*>(this)->describe();
 	reinterpret_cast<PACCNode*>(this)->describe();
 	reinterpret_cast<PAGJGameState*>(&m_gameState)->describe();
 	reinterpret_cast<PAGJShaderState*>(&m_shaderState)->describe();
@@ -284,19 +284,19 @@ void PSCheckpointObject::describe() {
 	log::info("[PAEffectManagerState - describe] m_vectorDynamicSaveObjects.size(): {}", l_size);
 	for (int i = 0; i < l_size; i++) {
 		log::info("[PAEffectManagerState - describe] m_vectorDynamicSaveObjects[{}]:", i);
-		reinterpret_cast<PUDynamicSaveObject*>(&m_vectorDynamicSaveObjects[i])->describe();
+		reinterpret_cast<PADynamicSaveObject*>(&m_vectorDynamicSaveObjects[i])->describe();
 	}
 	l_size = m_vectorActiveSaveObjects1.size();
 	log::info("[PAEffectManagerState - describe] m_vectorActiveSaveObjects1.size(): {}", l_size);
 	for (int i = 0; i < l_size; i++) {
 		log::info("[PAEffectManagerState - describe] m_vectorActiveSaveObjects1[{}]:", i);
-		reinterpret_cast<PUActiveSaveObject1*>(&m_vectorActiveSaveObjects1[i])->describe();
+		reinterpret_cast<PAActiveSaveObject1*>(&m_vectorActiveSaveObjects1[i])->describe();
 	}
 	l_size = m_vectorActiveSaveObjects2.size();
 	log::info("[PAEffectManagerState - describe] m_vectorActiveSaveObjects2.size(): {}", l_size);
 	for (int i = 0; i < l_size; i++) {
 		log::info("[PAEffectManagerState - describe] m_vectorActiveSaveObjects2[{}]:", i);
-		reinterpret_cast<PUActiveSaveObject2*>(&m_vectorActiveSaveObjects2[i])->describe();
+		reinterpret_cast<PAActiveSaveObject2*>(&m_vectorActiveSaveObjects2[i])->describe();
 	}
 	reinterpret_cast<PAEffectManagerState*>(&m_effectManagerState)->describe();
 	if (m_gradientTriggerObjectArray) {
@@ -309,7 +309,7 @@ void PSCheckpointObject::describe() {
 	for (std::pair<int, SequenceTriggerState> l_pair : m_sequenceTriggerStateUnorderedMap) {
 		log::info("[PAEffectManagerState - describe] m_sequenceTriggerStateUnorderedMap element {} key: {}", i, l_pair.first);
 		log::info("[PAEffectManagerState - describe] m_sequenceTriggerStateUnorderedMap element {} value:", i);
-		reinterpret_cast<PUSequenceTriggerState*>(&l_pair.second)->describe();
+		reinterpret_cast<PASequenceTriggerState*>(&l_pair.second)->describe();
 		i++;
 	}
 	log::info("[PSCheckpointObject - describe] m_maybeAPointer3: {}", reinterpret_cast<int64_t>(i_value.m_maybeAPointer3));
