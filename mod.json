@@ -1,5 +1,5 @@
 {
-	"geode": "3.0.0-beta.2",
+	"geode": "3.0.0",
 	"gd": {
 		"win": "2.206"
 	},
@@ -14,7 +14,7 @@
 			"version": ">=v1.6.0",
 			"importance": "required",
 			"platforms": [
-				"windows"
+				"win"
 			]
 		},
 		{
@@ -29,18 +29,18 @@
 		}
 	],
 	"settings": {
-        "auto-save": {
-            "default": true,
-            "name": "Autosave",
-            "description": "Automatically saves the game when reaching a new checkpoint.",
-            "type": "bool"
-        }
-    },
+		"auto-save": {
+			"default": true,
+			"name": "Autosave",
+			"description": "Automatically saves the game when reaching a new checkpoint.",
+			"type": "bool"
+		}
+	},
 	"incompatibilities": [
-        {
-            "id": "thesillydoggo.moretags",
-            "importance": "breaking",
-            "version": "*"
-        }
-    ]
+		{
+			"id": "thesillydoggo.moretags",
+			"importance": "breaking",
+			"version": "*"
+		}
+	]
 }

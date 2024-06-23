@@ -155,7 +155,7 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 CheckpointObject* PSPlayLayer::markCheckpoint() {
 	PSCheckpointObject* l_checkpointObject = static_cast<PSCheckpointObject*>(PlayLayer::markCheckpoint());
 	
-	if (m_fields->m_inPostUpdate) {
+	if (m_fields->m_inPostUpdate && !m_isPracticeMode) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_triggeredCheckpointGameObject != nullptr) {
@@ -226,26 +226,26 @@ void PSPlayLayer::registerCheckpointsAndTriggeredCheckpointGameObjects() {
 	}
 }
 
-std::string PSPlayLayer::getSaveFilePath(bool i_checkExists) {
-	if (m_fields->m_saveSlot == -1) {
-		return "";
+std::string PSPlayLayer::getSaveFilePath(bool i_checkExists, int i_slot) {
+	if (i_slot == -1) {
+		i_slot = m_fields->m_saveSlot;
 	}
-
 	std::string l_filePath = Mod::get()->getSaveDir().generic_string();
 	
 	switch(m_level->m_levelType) {
 		case GJLevelType::Local:
-			l_filePath.append(std::format("/saves/local/{}/slot{}{}", m_level->m_levelID.value(), m_fields->m_saveSlot, PSF_EXT));
+			l_filePath.append(std::format("/saves/local/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
 			break;
 		case GJLevelType::Editor:
-			l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", m_level->m_levelName.c_str(), m_level->m_levelRev, m_fields->m_saveSlot, PSF_EXT));
+			l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", m_level->m_levelName.c_str(), m_level->m_levelRev, i_slot, PSF_EXT));
 			break;
 		case GJLevelType::Saved:
 		default:
-			l_filePath.append(std::format("/saves/online/{}/slot{}{}", m_level->m_levelID.value(), m_fields->m_saveSlot, PSF_EXT));
+			l_filePath.append(std::format("/saves/online/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
 			break;
 	}
-	//log::info("Filepath: \"{}\"", l_filePath);
+	log::info("Filepath: \"{}\"", l_filePath);
+
 	if (i_checkExists && !std::filesystem::exists(l_filePath)) {
 		//log::info("File doesnt exist: {}", l_filePath);
 		return "";

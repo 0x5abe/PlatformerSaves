@@ -7,7 +7,7 @@ using namespace geode::prelude;
 using namespace persistenceAPI;
 
 bool PSPlayLayer::startSaveGame() {
-	if (m_fields->m_savingState != SavingState::Ready) return false;
+	if (m_fields->m_savingState != SavingState::Ready || m_isPracticeMode) return false;
 	m_fields->m_savingState = SavingState::Setup;
 	CCScene* l_currentScene = CCScene::get();
 	if (l_currentScene) {

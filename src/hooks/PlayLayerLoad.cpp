@@ -44,10 +44,6 @@ bool PSPlayLayer::readPsfFinishedSaving() {
 	return true;
 }
 
-void PSPlayLayer::showPlayLevelMenu() {
-
-}
-
 void PSPlayLayer::loadGame() {
 	switch (m_fields->m_loadingState) {
 		case LoadingState::Setup: {
@@ -58,11 +54,18 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::WaitingForPlayLevelMenuPopup: {
+			// Todo fix this so it's not ugly
 			if (m_fields->m_saveSlot == -1) {
 				break;
 			}
 			else if (m_fields->m_saveSlot == -2) {
+				m_fields->m_saveSlot = 0;
 				m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+				break;
+			}
+			else if (m_fields->m_saveSlot == -3) {
+				m_fields->m_saveSlot = 0;
+				m_fields->m_loadingState = LoadingState::Ready;
 				break;
 			}
 			else {
@@ -163,7 +166,7 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
-    			}
+				}
 			);
 			break;
 		}
@@ -182,7 +185,7 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::Ready;
 					}
 					CCEGLView::get()->showCursor(false);
-    			}
+				}
 			);
 			break;
 		}
@@ -208,7 +211,7 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
-    			}
+				}
 			);
 			break;
 		}
@@ -226,7 +229,7 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::Ready;
 					}
 					CCEGLView::get()->showCursor(false);
-    			}
+				}
 			);
 			break;
 		}

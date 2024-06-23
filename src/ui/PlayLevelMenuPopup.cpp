@@ -1,36 +1,126 @@
 #include "PlayLevelMenuPopup.hpp"
+#include "Geode/cocos/CCDirector.h"
+#include "Geode/cocos/base_nodes/Layout.hpp"
+#include "Geode/cocos/label_nodes/CCLabelBMFont.h"
 #include <hooks/PlayLayer.hpp>
 
 using namespace geode::prelude;
 
-bool PlayLevelMenuPopup::setup() {
-    auto winSize = CCDirector::sharedDirector()->getWinSize();
-    // convenience function provided by Popup 
-    // for adding/setting a title to the popup
-    this->setTitle("Hi mom!");
-    auto label = CCLabelBMFont::create("this a label", "bigFont.fnt");
-    label->setPosition(winSize / 2);
-    this->addChild(label);
-    return true;
-}
-
-void PlayLevelMenuPopup::onClose(cocos2d::CCObject* i_sender) {
-    Popup<>::onClose(i_sender);
-
-	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
-		//l_playLayer->m_fields->m_loadingState = LoadingState::ReadF;
-		l_playLayer->m_fields->m_saveSlot = 0;
-	}
-}
-
 
 PlayLevelMenuPopup* PlayLevelMenuPopup::create() {
-    auto ret = new PlayLevelMenuPopup();
-    if (ret && ret->init(240.f, 160.f)) {
-        ret->autorelease();
-        return ret;
-    }
-    CC_SAFE_DELETE(ret);
-    return nullptr;
+	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup();
+
+	if (i_this && i_this->init()) {
+		i_this->autorelease();
+	} else {
+		CC_SAFE_DELETE(i_this);
+	}
+
+	return i_this;
+}
+
+bool PlayLevelMenuPopup::init() {
+	if (!FLAlertLayer::init(150)) {
+		return false;
+	}
+
+	CCEGLView::get()->showCursor(true);
+	setup();
+
+	return true;
+}
+
+bool PlayLevelMenuPopup::validSaveExists(){
+	std::string l_filePath;
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	for (int i = 0; i < 4; i++) {
+		l_filePath = l_playLayer->getSaveFilePath(true, i);
+		if (l_filePath != "") {
+			return true;
+		}
+	}
+	return false;
+}
+
+void PlayLevelMenuPopup::setup() {
+	CCDirector* l_director = CCDirector::sharedDirector();
+	CCSize l_winSize = l_director->getWinSize();
+
+	CCSize l_size = CCSize(l_winSize/2);
+
+	m_background = CCScale9Sprite::create("GJ_square01.png");
+	m_background->setContentSize(l_size);
+	m_background->setPosition(l_winSize / 2.0f);
+	m_mainLayer->addChild(m_background, -2);
+
+	m_buttonMenu = CCMenu::create();
+	m_buttonMenu->ignoreAnchorPointForPosition(false);
+	m_buttonMenu->setContentSize(l_size/2);
+	m_buttonMenu->setPosition(l_winSize/2);
+	m_buttonMenu->setLayout(ColumnLayout::create());
+	m_mainLayer->addChild(m_buttonMenu, 10);
+	CCSize l_contentSize = m_buttonMenu->getContentSize();
+
+	ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/2, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	CCMenuItemSpriteExtra* l_continueButton = CCMenuItemSpriteExtra::create(
+		l_continueButtonSprite,
+		this,
+		menu_selector(PlayLevelMenuPopup::onContinue)
+	);
+
+	bool l_validSaveExists = validSaveExists();
+	if (!l_validSaveExists) {
+		l_continueButtonSprite->m_label->setColor({127,127,127});
+		l_continueButtonSprite->m_BGSprite->setColor({127,127,127});
+		l_continueButton->m_bEnabled = false;
+	}
+
+	m_buttonMenu->addChild(l_continueButton);
+	m_buttonMenu->updateLayout();
+
+	ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/2, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	CCMenuItemSpriteExtra* l_newGameButton = CCMenuItemSpriteExtra::create(
+		l_newGameButtonSprite,
+		this,
+		menu_selector(PlayLevelMenuPopup::onNewGame)
+	);
+	m_buttonMenu->addChild(l_newGameButton);
+	m_buttonMenu->updateLayout();
+}
+
+void PlayLevelMenuPopup::onNewGame(CCObject* sender) {
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+		l_playLayer->m_fields->m_saveSlot = -3;
+	}
+
+	onClose(nullptr);
+}
+
+void PlayLevelMenuPopup::onContinue(CCObject* sender) {
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+		l_playLayer->m_fields->m_saveSlot = 0;
+	}
+
+	onClose(nullptr);
+}
+
+void PlayLevelMenuPopup::keyBackClicked() {
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+		l_playLayer->m_fields->m_saveSlot = 0;
+
+		std::string l_filePath = l_playLayer->getSaveFilePath(true);
+		if (l_filePath == "") {
+			l_playLayer->m_fields->m_saveSlot = -3;
+		}
+	}
+
+	onClose(nullptr);
+}
+
+void PlayLevelMenuPopup::onClose(CCObject* sender) {
+	CCEGLView::get()->showCursor(false);
+	removeFromParentAndCleanup(true);
 }

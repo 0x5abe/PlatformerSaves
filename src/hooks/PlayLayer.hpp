@@ -42,9 +42,6 @@ enum class SavingState {
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
-protected:
-	std::string getSaveFilePath(bool i_checkExists = false);
-
 public:
 	struct Fields {
 		persistenceAPI::InputStream m_inputStream;
@@ -119,6 +116,8 @@ public:
 	bool readPsfFinishedSaving();
 
 	void showPlayLevelMenu();
+	
+	std::string getSaveFilePath(bool i_checkExists = false, int i_slot = -1);
 
 	void loadGame();
 
