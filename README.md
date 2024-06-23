@@ -15,6 +15,7 @@ Pick up right where you left off and enjoy taking breaks without having to leave
 
 - Multiple save slots
 - Cloud saves
+- Better UI
 
 ## Report a bug
 
