@@ -1,4 +1,5 @@
 #include "PlayLevelMenuPopup.hpp"
+#include "Geode/binding/PlayLayer.hpp"
 #include "Geode/cocos/CCDirector.h"
 #include "Geode/cocos/base_nodes/Layout.hpp"
 #include "Geode/cocos/label_nodes/CCLabelBMFont.h"
@@ -30,18 +31,6 @@ bool PlayLevelMenuPopup::init() {
 	return true;
 }
 
-bool PlayLevelMenuPopup::validSaveExists(){
-	std::string l_filePath;
-	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	for (int i = 0; i < 4; i++) {
-		l_filePath = l_playLayer->getSaveFilePath(true, i);
-		if (l_filePath != "") {
-			return true;
-		}
-	}
-	return false;
-}
-
 void PlayLevelMenuPopup::setup() {
 	CCDirector* l_director = CCDirector::sharedDirector();
 	CCSize l_winSize = l_director->getWinSize();
@@ -68,8 +57,8 @@ void PlayLevelMenuPopup::setup() {
 		menu_selector(PlayLevelMenuPopup::onContinue)
 	);
 
-	bool l_validSaveExists = validSaveExists();
-	if (!l_validSaveExists) {
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	if (l_playLayer && !l_playLayer->validSaveExists()) {
 		l_continueButtonSprite->m_label->setColor({127,127,127});
 		l_continueButtonSprite->m_BGSprite->setColor({127,127,127});
 		l_continueButton->m_bEnabled = false;

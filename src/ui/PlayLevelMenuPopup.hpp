@@ -18,7 +18,5 @@ private:
 
 	void onContinue(cocos2d::CCObject* i_sender);
 
-	bool validSaveExists();
-
 	cocos2d::extension::CCScale9Sprite* m_background;
 };

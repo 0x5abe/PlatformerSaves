@@ -116,6 +116,8 @@ public:
 	bool readPsfFinishedSaving();
 
 	void showPlayLevelMenu();
+
+	bool validSaveExists();
 	
 	std::string getSaveFilePath(bool i_checkExists = false, int i_slot = -1);
 
@@ -148,4 +150,6 @@ public:
 	void showSavingIcon(bool i_show);
 
 	void endOutputStream();
+
+	bool canSave();
 };

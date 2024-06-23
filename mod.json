@@ -7,7 +7,17 @@
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
-	"description": "",
+	"description": "Save and load your progress in platformer levels!",
+	"repository": "https://github.com/0x5abe/PlatformerSaves",
+	"resources": {
+        "sprites": [
+            "resources/saveButton.png"
+        ]
+    },
+	"tags": [
+		"enhancement",
+		"gameplay"
+	],
 	"dependencies": [
 		{
 			"id": "geode.custom-keybinds",

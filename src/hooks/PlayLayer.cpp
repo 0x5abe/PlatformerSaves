@@ -86,13 +86,9 @@ void PSPlayLayer::onQuit() {
 	if (!m_fields->m_onQuitCalled) {
 		m_fields->m_onQuitCalled = true;
 	}
-	if (m_fields->m_normalModeCheckpoints->count() > 0) {
-		
-		PSCheckpointObject* l_lastCheckpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject());
-		log::info("m_fields->m_lastSavedCheckpointTimestamp: {}", m_fields->m_lastSavedCheckpointTimestamp);
-		log::info("l_lastCheckpoint->m_fields->m_timestamp: {}", l_lastCheckpoint->m_fields->m_timestamp);
-		log::info("Should ask for save: {}", l_lastCheckpoint->m_fields->m_timestamp > m_fields->m_lastSavedCheckpointTimestamp);
-	}
+
+	log::info("Should ask for save: {}", canSave());
+
 	PlayLayer::onQuit();
 	s_currentPlayLayer = nullptr;
 }
@@ -253,6 +249,17 @@ std::string PSPlayLayer::getSaveFilePath(bool i_checkExists, int i_slot) {
 	return l_filePath;
 }
 
+bool PSPlayLayer::validSaveExists() {
+	std::string l_filePath;
+	for (int i = 0; i < 4; i++) {
+		l_filePath = getSaveFilePath(true, i);
+		if (l_filePath != "") {
+			return true;
+		}
+	}
+	return false;
+}
+
 void PSPlayLayer::setupKeybinds() {
 	// TodoRemove
 	addEventListener<keybinds::InvokeBindFilter>(
@@ -295,4 +302,12 @@ void PSPlayLayer::showSavingIcon(bool i_show) {
 	}
 	m_fields->m_savingIcon->pauseSchedulerAndActions();
 	m_fields->m_savingIcon->setVisible(false);
+}
+
+bool PSPlayLayer::canSave() {
+	if (m_fields->m_normalModeCheckpoints->count() > 0) {
+		PSCheckpointObject* l_lastCheckpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject());
+		return l_lastCheckpoint->m_fields->m_timestamp > m_fields->m_lastSavedCheckpointTimestamp;
+	}
+	return false;
 }

@@ -8,11 +8,22 @@
 
 class $modify(PSPauseLayer, PauseLayer) {
 public:
+	struct Fields {
+		cocos2d::CCSprite* m_saveCheckpointsSprite;
+		CCMenuItemSpriteExtra* m_saveCheckpointsButton;
+	};
 
 	// overrides
+	$override
+	void customSetup();
+
 	$override
 	void onEdit(cocos2d::CCObject* i_sender);
 
 	$override
 	void tryQuit(cocos2d::CCObject* i_sender);
+
+	// custom methods
+
+	void onSaveCheckpoints(cocos2d::CCObject* i_sender);
 };
