@@ -60,7 +60,8 @@ void PSPlayLayer::loadGame() {
 			}
 			else if (m_fields->m_saveSlot == -2) {
 				m_fields->m_saveSlot = 0;
-				m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+				m_fields->m_loadingState = LoadingState::Ready;
+				//m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 				break;
 			}
 			else if (m_fields->m_saveSlot == -3) {
@@ -163,7 +164,8 @@ void PSPlayLayer::loadGame() {
 					if (i_btn2) {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
-						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						m_fields->m_loadingState = LoadingState::Ready;
+						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
 				}
@@ -208,7 +210,8 @@ void PSPlayLayer::loadGame() {
 					if (i_btn2) {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
-						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						m_fields->m_loadingState = LoadingState::Ready;
+						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
 				}

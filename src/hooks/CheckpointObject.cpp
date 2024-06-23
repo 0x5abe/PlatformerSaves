@@ -196,7 +196,6 @@ inline void operator<<(OutputStream& o_stream, PSCheckpointObject& i_value) {
 	o_stream << *reinterpret_cast<double*>(&i_value.m_maybeAPointer2);
 	VEC_SEPARATOR_O
 
-	// TODO FIX CRASH
 	// gd::vector<DynamicSaveObject> m_vectorDynamicSaveObjects;
 	o_stream << i_value.m_vectorDynamicSaveObjects;
 	VEC_SEPARATOR_O

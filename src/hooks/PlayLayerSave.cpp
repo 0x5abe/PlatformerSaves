@@ -38,7 +38,6 @@ void PSPlayLayer::saveGame() {
 		case SavingState::Setup: {
 			//log::info("Goes into beginning");
 			
-			// Todo: get last checkpoint in array and save it ONLY in normal mode
 			if (m_fields->m_normalModeCheckpoints->count() == 0) {
 				m_fields->m_savingState = SavingState::Ready;
 				break;

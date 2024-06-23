@@ -44,7 +44,7 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				if (!l_playMenu) {
 					return false;
 				}
-				//Todo: Fix scale and color of play button
+				//Todo: Fix scale and color of play button, goes hand by hand with fixing cancel load for vanilla
 				l_playMenu->setTouchEnabled(true);
 				CCNode* l_playButton = l_playMenu->getChildByID("play-button");
 				if (!l_playButton) {
