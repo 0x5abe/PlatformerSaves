@@ -14,13 +14,11 @@ $on_mod(Loaded) {
 void setupKeybinds() {
 	using namespace keybinds;
 
-	// TODO REMOVE
 	BindManager::get()->registerBindable({
-		"test-key-2"_spr,
-		"Test 2",
-		"Save",
+		"save-game"_spr,
+		"Save game",
+		"Hotkey for quick saving",
 		{ Keybind::create(KEY_K, Modifier::None) },
 		Category::PLAY,
 	});
-	// ENDTODO
 }

@@ -2,6 +2,7 @@
 #include "CheckpointObject.hpp"
 #include "Geode/binding/PlayLayer.hpp"
 #include "domain/CheckpointGameObjectReference.hpp"
+#include "hooks/PauseLayer.hpp"
 #include <filesystem>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <util/algorithm.hpp>
@@ -235,17 +236,19 @@ bool PSPlayLayer::validSaveExists() {
 }
 
 void PSPlayLayer::setupKeybinds() {
-	// TodoRemove
 	addEventListener<keybinds::InvokeBindFilter>(
 		[this](keybinds::InvokeBindEvent* event) {
-			if (event->isDown()) {
-				startSaveGame();
+			if (event->isDown() && canSave() && startSaveGame()) {
+				PSPauseLayer* l_pauseLayer = static_cast<PSPauseLayer*>(CCScene::get()->getChildByID("PauseLayer"));
+				if (l_pauseLayer) {
+					if (l_pauseLayer->m_fields->m_saveCheckpointsSprite != nullptr) l_pauseLayer->m_fields->m_saveCheckpointsSprite->setColor({127,127,127});
+					if (l_pauseLayer->m_fields->m_saveCheckpointsButton != nullptr) l_pauseLayer->m_fields->m_saveCheckpointsButton->m_bEnabled = false;
+				}
 			}
 			return ListenerResult::Propagate;
 		},
-		"test-key-2"_spr
+		"save-game"_spr
 	);
-	// EndTodo
 }
 
 void PSPlayLayer::setupSavingIcon() {
@@ -290,7 +293,7 @@ bool PSPlayLayer::canSave() {
 }
 
 bool PSPlayLayer::savesEnabled() {
-	log::info("savesEnabled: {}", Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor);
+	//log::info("savesEnabled: {}", Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor);
 	return Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor;
 }
 
