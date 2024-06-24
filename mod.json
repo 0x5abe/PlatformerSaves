@@ -3,7 +3,7 @@
 	"gd": {
 		"win": "2.206"
 	},
-	"version": "v0.0.1",
+	"version": "v1.0.0-alpha.1",
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
@@ -34,7 +34,7 @@
 		},
 		{
 			"id": "sabe.persistenceapi",
-			"version": ">=v0.0.1",
+			"version": ">=v1.0.0-alpha.1",
 			"importance": "required"
 		}
 	],
