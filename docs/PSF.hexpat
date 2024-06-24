@@ -451,7 +451,7 @@ struct FMODQueuedMusic {
 
 struct FMODSoundState {
     string m_unkString;
-    u8 m_unk2[164];
+    u8 m_unk2[156];
 };
 
 struct FMODAudioState {

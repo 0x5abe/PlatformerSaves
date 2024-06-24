@@ -47,6 +47,28 @@ void PSPlayLayer::setupHasCompleted() {
 	if (!m_isPlatformer) {
 		m_fields->m_loadingState = LoadingState::Ready;
 	}
+	else if (!savesEnabled() && m_fields->m_loadingState != LoadingState::WaitingForPopup) {
+		if (!Mod::get()->getSavedValue<bool>("has-seen-editor-notice")) {
+			CCEGLView::get()->showCursor(true);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Editor Level Saves",
+				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the mod settings page.",
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					Mod::get()->setSavedValue<bool>("has-seen-editor-notice", true);
+					m_fields->m_loadingState = LoadingState::Ready;
+					CCEGLView::get()->showCursor(false);
+					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+					if (l_lockCursor) {
+						CCEGLView::get()->toggleLockCursor(true);
+					}
+				}
+			);
+		} else {
+			m_fields->m_loadingState = LoadingState::Ready;
+		}
+	}
 	if (m_fields->m_loadingState != LoadingState::Ready) {
 		//log::info("[setupHasCompleted] hasnt finished loading checkpoints");
 
@@ -66,7 +88,6 @@ void PSPlayLayer::setupHasCompleted() {
 		//log::info("[setupHasCompleted] m_loadingProgress: {}", m_loadingProgress);
 	}
 	if (m_fields->m_loadingState == LoadingState::Ready && !m_fields->m_cancelLevelLoad) {
-		//log::info("[setupHasCompleted] finished loading SP");
 		m_loadingProgress = 1.0f;
 
 		// now reset the order of arrival that we're actually going into the level
@@ -82,17 +103,6 @@ void PSPlayLayer::setupHasCompleted() {
 	}
 }
 
-void PSPlayLayer::onQuit() {
-	if (!m_fields->m_onQuitCalled) {
-		m_fields->m_onQuitCalled = true;
-	}
-
-	log::info("Should ask for save: {}", canSave());
-
-	PlayLayer::onQuit();
-	s_currentPlayLayer = nullptr;
-}
-
 void PSPlayLayer::postUpdate(float i_unkFloat) {
 	m_fields->m_inPostUpdate = true;
 	m_fields->m_triedPlacingCheckpoint = m_tryPlaceCheckpoint;
@@ -101,57 +111,12 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 	
 	m_fields->m_inPostUpdate = false;
 	m_fields->m_triedPlacingCheckpoint = false;
-
-	//log::info("m_checkpointArray count: {}", m_checkpointArray->count());
-	// log::info("m_gameState->m_dynamicObjActions1 size: {}", m_gameState.m_dynamicObjActions1.size());
-	// for (int i = 0; i < m_gameState.m_dynamicObjActions1.size(); i++) {
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject1: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject1));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject2: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject2));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject3: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject3));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject4: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject4));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject5: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject5));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject6: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject6));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject7: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject7));
-	// 	log::info("m_dynamicObjActions1[{}]->m_gameObject8: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions1[i].m_gameObject8));
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject1 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject1->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject1->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject2 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject2->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject2->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject3 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject3->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject3->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject4 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject4->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject4->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject5 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject5->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject5->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject6 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject6->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject6->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject7 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject7->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject7->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions1[i].m_gameObject8 != nullptr) log::info("m_dynamicObjActions1[{}]->m_gameObject8->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions1[i].m_gameObject8->m_uniqueID);
-		
-	// }
-	// log::info("m_gameState->m_dynamicObjActions2 size: {}", m_gameState.m_dynamicObjActions2.size());
-	// for (int i = 0; i < m_gameState.m_dynamicObjActions2.size(); i++) {
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject1: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject1));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject2: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject2));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject3: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject3));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject4: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject4));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject5: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject5));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject6: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject6));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject7: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject7));
-	// 	log::info("m_dynamicObjActions2[{}]->m_gameObject8: {}", i, reinterpret_cast<uint64_t>(m_gameState.m_dynamicObjActions2[i].m_gameObject8));
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject1 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject1->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject1->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject2 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject2->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject2->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject3 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject3->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject3->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject4 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject4->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject4->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject5 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject5->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject5->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject6 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject6->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject6->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject7 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject7->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject7->m_uniqueID);
-	// 	if (m_gameState.m_dynamicObjActions2[i].m_gameObject8 != nullptr) log::info("m_dynamicObjActions2[{}]->m_gameObject8->m_uniqueID: {}", i, m_gameState.m_dynamicObjActions2[i].m_gameObject8->m_uniqueID);
-	// }
-	// log::info("m_player1: {}", reinterpret_cast<uint64_t>(m_player1));
-	// log::info("m_player1->m_uniqueID: {}", m_player1->m_uniqueID);
-	// log::info("m_player2: {}", reinterpret_cast<uint64_t>(m_player2));
-	 log::info("m_timePlayed: {}", m_timePlayed);
 }
 
 CheckpointObject* PSPlayLayer::markCheckpoint() {
 	PSCheckpointObject* l_checkpointObject = static_cast<PSCheckpointObject*>(PlayLayer::markCheckpoint());
 	
-	if (m_fields->m_inPostUpdate && !m_isPracticeMode) {
+	if (savesEnabled() && m_fields->m_inPostUpdate && !m_isPracticeMode) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_triggeredCheckpointGameObject != nullptr) {
@@ -170,21 +135,21 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 void PSPlayLayer::resetLevel() {
 	m_fields->m_inResetLevel = true;
 	PlayLayer::resetLevel();
-	if (m_isPlatformer) {
+	if (savesEnabled() && m_isPlatformer) {
 		toggleMGVisibility(true); // it's actually toggleHideAttempts but virtuals are off for some reason IF IT BREAKS CHANGE IT BACK
 	}
 	m_fields->m_inResetLevel = false;
 }
 
 void PSPlayLayer::prepareMusic(bool i_unkBool) {
-	if (m_fields->m_inSetupHasCompleted && m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0 && !m_fields->m_inResetLevel) {
+	if (savesEnabled() && m_fields->m_inSetupHasCompleted && m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0 && !m_fields->m_inResetLevel) {
 		return;
 	}
 	PlayLayer::prepareMusic(i_unkBool);
 }
 
 void PSPlayLayer::startMusic() {
-	if (m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0) {
+	if (savesEnabled() && m_isPlatformer && m_fields->m_normalModeCheckpoints->count() > 0) {
 		return;
 	}
 	PlayLayer::startMusic();
@@ -197,13 +162,18 @@ void PSPlayLayer::togglePracticeMode(bool i_value) {
 }
 
 void PSPlayLayer::resetLevelFromStart() {
-	if (m_fields->m_inTogglePracticeMode && m_isPlatformer && !m_isPracticeMode && m_fields->m_normalModeCheckpoints->count() > 0) {
+	if (savesEnabled() && m_fields->m_inTogglePracticeMode && m_isPlatformer && !m_isPracticeMode && m_fields->m_normalModeCheckpoints->count() > 0) {
 		PlayLayer::removeAllCheckpoints();
 		registerCheckpointsAndTriggeredCheckpointGameObjects();
 		PlayLayer::resetLevel();
 		return;
 	}
 	PlayLayer::resetLevelFromStart();
+}
+
+void PSPlayLayer::onQuit() {
+	s_currentPlayLayer = nullptr;
+	PlayLayer::onQuit();
 }
 
 // custom methods
@@ -227,20 +197,24 @@ std::string PSPlayLayer::getSaveFilePath(bool i_checkExists, int i_slot) {
 		i_slot = m_fields->m_saveSlot;
 	}
 	std::string l_filePath = Mod::get()->getSaveDir().generic_string();
-	
+	std::string l_cleanLevelName = m_level->m_levelName;
+	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '.'), l_cleanLevelName.end());
+	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '/'), l_cleanLevelName.end());
+	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '\\'), l_cleanLevelName.end());
+
 	switch(m_level->m_levelType) {
 		case GJLevelType::Local:
 			l_filePath.append(std::format("/saves/local/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
 			break;
 		case GJLevelType::Editor:
-			l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", m_level->m_levelName.c_str(), m_level->m_levelRev, i_slot, PSF_EXT));
+			l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", l_cleanLevelName.c_str(), m_level->m_levelRev, i_slot, PSF_EXT));
 			break;
 		case GJLevelType::Saved:
 		default:
 			l_filePath.append(std::format("/saves/online/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
 			break;
 	}
-	log::info("Filepath: \"{}\"", l_filePath);
+	//log::info("Filepath: \"{}\"", l_filePath);
 
 	if (i_checkExists && !std::filesystem::exists(l_filePath)) {
 		//log::info("File doesnt exist: {}", l_filePath);
@@ -305,9 +279,26 @@ void PSPlayLayer::showSavingIcon(bool i_show) {
 }
 
 bool PSPlayLayer::canSave() {
+	if (!savesEnabled()) {
+		return false;
+	}
 	if (m_fields->m_normalModeCheckpoints->count() > 0) {
 		PSCheckpointObject* l_lastCheckpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject());
 		return l_lastCheckpoint->m_fields->m_timestamp > m_fields->m_lastSavedCheckpointTimestamp;
 	}
 	return false;
+}
+
+bool PSPlayLayer::savesEnabled() {
+	log::info("savesEnabled: {}", Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor);
+	return Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor;
+}
+
+void PSPlayLayer::removeSaveFile() {
+	endInputStream();
+	endOutputStream();
+	std::string l_filePath = getSaveFilePath(true);
+	if (l_filePath != "") {
+		std::filesystem::remove(l_filePath);
+	}
 }

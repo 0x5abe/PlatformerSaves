@@ -67,6 +67,8 @@ public:
 		bool m_inSetupHasCompleted = false;
 		bool m_inResetLevel = false;
 		bool m_inTogglePracticeMode = false;
+		bool m_exitAfterSave = false;
+		bool m_editorNoticeClosed = false;
 		long long m_lastSavedCheckpointTimestamp = 0;
 	};
 
@@ -80,9 +82,6 @@ public:
 
 	$override
 	void setupHasCompleted();
-
-	$override
-	void onQuit();
 
 	$override
 	void postUpdate(float i_unkFloat);
@@ -104,6 +103,9 @@ public:
 
 	$override
 	void resetLevelFromStart();
+
+	$override
+	void onQuit();
 	
 	// custom methods
 
@@ -151,5 +153,11 @@ public:
 
 	void endOutputStream();
 
+	void endInputStream();
+
 	bool canSave();
+
+	bool savesEnabled();
+
+	void removeSaveFile();
 };

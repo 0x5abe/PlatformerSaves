@@ -44,6 +44,12 @@
 			"name": "Autosave",
 			"description": "Automatically saves the game when reaching a new checkpoint.",
 			"type": "bool"
+		},
+		"editor-saves": {
+			"default": false,
+			"name": "Editor level saves",
+			"description": "Enables saving the game in editor levels (unstable). If the level gets edited after saving all progress must be reset.",
+			"type": "bool"
 		}
 	},
 	"incompatibilities": [

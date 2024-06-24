@@ -13,10 +13,10 @@ bool PSPlayLayer::readPsfLevelStringHash() {
 	m_fields->m_inputStream >> l_savedLevelStringHash;
 	
 	if (l_savedLevelStringHash != util::algorithm::hash_string(m_level->m_levelString.c_str())) {
-		log::info("[readPsfLevelStringHash] different levelstring hash");
+		//log::info("[readPsfLevelStringHash] different levelstring hash");
 		return false;
 	}
-	log::info("[readPsfLevelStringHash] same levelstring hash");
+	//log::info("[readPsfLevelStringHash] same levelstring hash");
 	return true;
 }
 
@@ -25,10 +25,10 @@ bool PSPlayLayer::readPsfVersion() {
 
 	m_fields->m_inputStream.read(l_psfMagicAndVer, sizeof(s_psfMagicAndVer));
 	if (std::strncmp(s_psfMagicAndVer, l_psfMagicAndVer, sizeof(s_psfMagicAndVer))) {
-		log::info("[readPsfVersion] different version");
+		//log::info("[readPsfVersion] different version");
 		return false;
 	}
-	log::info("[readPsfVersion] same version");
+	//log::info("[readPsfVersion] same version");
 	return true;
 }
 
@@ -37,10 +37,10 @@ bool PSPlayLayer::readPsfFinishedSaving() {
 
 	m_fields->m_inputStream.read(reinterpret_cast<char*>(l_params), 16-sizeof(s_psfMagicAndVer));
 	if (l_params[0] == false) {
-		log::info("[readPsfFinishedSaving] did not finish writing");
+		//log::info("[readPsfFinishedSaving] did not finish writing");
 		return false;
 	}
-	log::info("[readPsfVersion] finished writing");
+	//log::info("[readPsfVersion] finished writing");
 	return true;
 }
 
@@ -118,7 +118,7 @@ void PSPlayLayer::loadGame() {
 				m_fields->m_loadingState = LoadingState::HandleIncorrectHash;
 				break;
 			}
-			m_fields->m_loadingState = LoadingState::ReadCheckpoint;
+			m_fields->m_loadingState = LoadingState::ReadCheckpointCount;
 			// falls through
 		}
 		case LoadingState::ReadCheckpointCount: {
@@ -146,6 +146,7 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::Ready: {
+			endInputStream();
 			if (m_fields->m_normalModeCheckpoints->count() > 0) {
 				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
 			}
@@ -168,6 +169,10 @@ void PSPlayLayer::loadGame() {
 						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
+					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+					if (l_lockCursor) {
+						CCEGLView::get()->toggleLockCursor(true);
+					}
 				}
 			);
 			break;
@@ -177,7 +182,7 @@ void PSPlayLayer::loadGame() {
 			//log::info("!!!!!!!!!!!!!!!! CREATED POPUP");
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The version of the save file does not match the current one. Try to update it?",
+				"The version of the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>)",
 				"Cancel",
 				"Ok",
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -187,6 +192,10 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::Ready;
 					}
 					CCEGLView::get()->showCursor(false);
+					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+					if (l_lockCursor) {
+						CCEGLView::get()->toggleLockCursor(true);
+					}
 				}
 			);
 			break;
@@ -203,7 +212,7 @@ void PSPlayLayer::loadGame() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The save file for this level appears to be corrupted",
+				"The save file for this level appears to be <cr>corrupted</c>",
 				"Cancel",
 				"Ok",
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -214,6 +223,10 @@ void PSPlayLayer::loadGame() {
 						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
 					CCEGLView::get()->showCursor(false);
+					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+					if (l_lockCursor) {
+						CCEGLView::get()->toggleLockCursor(true);
+					}
 				}
 			);
 			break;
@@ -221,19 +234,40 @@ void PSPlayLayer::loadGame() {
 		case LoadingState::HandleIncorrectHash: {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
-			createQuickPopup("Error loading game",
-				"The version of the level in the save file does not match the current one. Try to load it anyways? (this might be unstable or crash the game)",
-				"Cancel",
-				"Ok",
-				[&](FLAlertLayer*, bool i_btn2) {
-					if (i_btn2) {
-						m_fields->m_loadingState = LoadingState::ReadCheckpoint;
-					} else {
+			if (m_level->m_levelType == GJLevelType::Editor) {
+				createQuickPopup("Error loading game",
+					"The version of the level in the save file does not match the current one. <cy>A new game will be started</c>",
+					"Ok",
+					nullptr,
+					[&](FLAlertLayer*, bool i_btn2) {
+						removeSaveFile();
 						m_fields->m_loadingState = LoadingState::Ready;
+						CCEGLView::get()->showCursor(false);
+						bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+						if (l_lockCursor) {
+							CCEGLView::get()->toggleLockCursor(true);
+						}
 					}
-					CCEGLView::get()->showCursor(false);
-				}
-			);
+				);
+			} else {
+				createQuickPopup("Error loading game",
+					"The version of the level in the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>)",
+					"Cancel",
+					"Ok",
+					[&](FLAlertLayer*, bool i_btn2) {
+						if (i_btn2) {
+							m_fields->m_loadingState = LoadingState::ReadCheckpointCount;
+						} else {
+							m_fields->m_loadingState = LoadingState::Ready;
+						}
+						CCEGLView::get()->showCursor(false);
+						bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+						if (l_lockCursor) {
+							CCEGLView::get()->toggleLockCursor(true);
+						}
+					}
+				);
+			}
 			break;
 		}
 		case LoadingState::WaitingForPopup: {
@@ -246,6 +280,7 @@ void PSPlayLayer::loadGame() {
 				l_levelInfoLayer->m_progressTimer->setVisible(false);
 			}
 			m_fields->m_loadingState = LoadingState::Ready;
+			break;
 		}
 	}
 }
@@ -316,4 +351,8 @@ void PSPlayLayer::endAsyncProcessCreateObjectsFromSetup() {
 		CC_SAFE_RELEASE(m_fields->m_transitionFadeScene);
 		m_fields->m_transitionFadeScene = nullptr;
 	}
+}
+
+void PSPlayLayer::endInputStream() {
+	m_fields->m_inputStream.end();
 }

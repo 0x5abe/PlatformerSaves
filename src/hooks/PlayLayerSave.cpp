@@ -1,5 +1,6 @@
 #include "PlayLayer.hpp"
 #include <filesystem>
+#include <hooks/PauseLayer.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
 
@@ -114,6 +115,14 @@ void PSPlayLayer::saveGame() {
 			m_fields->m_outputStream.write((char*)&o_finishedSaving,sizeof(bool));
 			endOutputStream();
 			showSavingIcon(false);
+			if (m_fields->m_exitAfterSave) {
+				//log::info("Goes into exitAfterSave");
+				m_fields->m_exitAfterSave = false;
+				PauseLayer* l_pauseLayer = static_cast<PauseLayer*>(CCScene::get()->getChildByID("PauseLayer"));
+				if (l_pauseLayer) {
+					l_pauseLayer->onQuit(this);
+				}
+			}
 			break;
 		}
 	}

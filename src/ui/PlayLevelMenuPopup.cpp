@@ -7,7 +7,6 @@
 
 using namespace geode::prelude;
 
-
 PlayLevelMenuPopup* PlayLevelMenuPopup::create() {
 	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup();
 
@@ -36,7 +35,6 @@ void PlayLevelMenuPopup::setup() {
 	CCSize l_winSize = l_director->getWinSize();
 
 	CCSize l_size = CCSize(l_winSize/2);
-
 	m_background = CCScale9Sprite::create("GJ_square01.png");
 	m_background->setContentSize(l_size);
 	m_background->setPosition(l_winSize / 2.0f);
@@ -111,5 +109,9 @@ void PlayLevelMenuPopup::keyBackClicked() {
 
 void PlayLevelMenuPopup::onClose(CCObject* sender) {
 	CCEGLView::get()->showCursor(false);
+	bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+	if (l_lockCursor) {
+		CCEGLView::get()->toggleLockCursor(true);
+	}
 	removeFromParentAndCleanup(true);
 }

@@ -11,6 +11,7 @@ public:
 	struct Fields {
 		cocos2d::CCSprite* m_saveCheckpointsSprite;
 		CCMenuItemSpriteExtra* m_saveCheckpointsButton;
+		bool m_cancelSave;
 	};
 
 	// overrides
@@ -22,6 +23,12 @@ public:
 
 	$override
 	void tryQuit(cocos2d::CCObject* i_sender);
+
+	$override
+	void onRestartFull(cocos2d::CCObject* i_sender);
+
+	$override
+	void onQuit(cocos2d::CCObject* i_sender);
 
 	// custom methods
 
