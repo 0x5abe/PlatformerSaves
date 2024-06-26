@@ -3,7 +3,6 @@
 #include "Geode/binding/PlayLayer.hpp"
 #include "domain/CheckpointGameObjectReference.hpp"
 #include "hooks/PauseLayer.hpp"
-#include <filesystem>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
