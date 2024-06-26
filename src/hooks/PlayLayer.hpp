@@ -8,7 +8,6 @@
 
 class PSPlayLayer;
 
-#define PSF_EXT ".psf"
 extern PSPlayLayer* s_currentPlayLayer;
 extern char s_psfMagicAndVer[11];
 
@@ -121,7 +120,7 @@ public:
 
 	bool validSaveExists();
 	
-	std::string getSaveFilePath(bool i_checkExists = false, int i_slot = -1);
+	std::string getSaveFilePath(int i_slot = -1, bool i_checkExists = false);
 
 	void loadGame();
 
@@ -159,5 +158,5 @@ public:
 
 	bool savesEnabled();
 
-	void removeSaveFile();
+	void removeSaveFile(int i_slot = -1);
 };

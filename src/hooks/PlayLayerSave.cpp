@@ -45,7 +45,7 @@ void PSPlayLayer::saveGame() {
 			}
 			m_fields->m_remainingCheckpointSaveCount = 1;//m_fields->m_normalModeCheckpoints->count();
 		
-			std::string l_filePath = getSaveFilePath();
+			std::string l_filePath = getSaveFilePath(-1);
 			std::string l_fileDirectory = util::filesystem::getParentDirectoryFromPath(l_filePath);
 			if (!std::filesystem::exists(l_fileDirectory) && !std::filesystem::create_directories(l_fileDirectory)) {
 				m_fields->m_savingState = SavingState::Ready;

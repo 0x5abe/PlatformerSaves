@@ -53,7 +53,7 @@ void PSPlayLayer::setupHasCompleted() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Editor Level Saves",
-				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the mod settings page.",
+				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the <cy>mod settings</c> page.",
 				"Ok",
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -193,46 +193,15 @@ void PSPlayLayer::registerCheckpointsAndTriggeredCheckpointGameObjects() {
 	}
 }
 
-std::string PSPlayLayer::getSaveFilePath(bool i_checkExists, int i_slot) {
+std::string PSPlayLayer::getSaveFilePath(int i_slot, bool i_checkExists) {
 	if (i_slot == -1) {
 		i_slot = m_fields->m_saveSlot;
 	}
-	std::string l_filePath = Mod::get()->getSaveDir().generic_string();
-	std::string l_cleanLevelName = m_level->m_levelName;
-	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '.'), l_cleanLevelName.end());
-	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '/'), l_cleanLevelName.end());
-	l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '\\'), l_cleanLevelName.end());
-
-	switch(m_level->m_levelType) {
-		case GJLevelType::Local:
-			l_filePath.append(std::format("/saves/local/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
-			break;
-		case GJLevelType::Editor:
-			l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", l_cleanLevelName.c_str(), m_level->m_levelRev, i_slot, PSF_EXT));
-			break;
-		case GJLevelType::Saved:
-		default:
-			l_filePath.append(std::format("/saves/online/{}/slot{}{}", m_level->m_levelID.value(), i_slot, PSF_EXT));
-			break;
-	}
-	//log::info("Filepath: \"{}\"", l_filePath);
-
-	if (i_checkExists && !std::filesystem::exists(l_filePath)) {
-		//log::info("File doesnt exist: {}", l_filePath);
-		return "";
-	}
-	return l_filePath;
+	return util::filesystem::getSaveFilePath(m_level, i_slot, i_checkExists);
 }
 
 bool PSPlayLayer::validSaveExists() {
-	std::string l_filePath;
-	for (int i = 0; i < 4; i++) {
-		l_filePath = getSaveFilePath(true, i);
-		if (l_filePath != "") {
-			return true;
-		}
-	}
-	return false;
+	return util::filesystem::validSaveExists(m_level);
 }
 
 void PSPlayLayer::setupKeybinds() {
@@ -297,11 +266,11 @@ bool PSPlayLayer::savesEnabled() {
 	return Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor;
 }
 
-void PSPlayLayer::removeSaveFile() {
+void PSPlayLayer::removeSaveFile(int i_slot) {
+	if (i_slot == -1) {
+		i_slot = m_fields->m_saveSlot;
+	}
 	endInputStream();
 	endOutputStream();
-	std::string l_filePath = getSaveFilePath(true);
-	if (l_filePath != "") {
-		std::filesystem::remove(l_filePath);
-	}
+	util::filesystem::removeSaveFile(m_level, i_slot);
 }

@@ -1,9 +1,9 @@
 {
-	"geode": "3.1.0",
+	"geode": "3.1.1",
 	"gd": {
 		"win": "2.206"
 	},
-	"version": "v1.0.0-alpha.1",
+	"version": "v1.0.1-alpha.1",
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
@@ -49,6 +49,12 @@
 			"default": false,
 			"name": "Editor level saves",
 			"description": "Enables saving the game in editor levels (unstable). If the level gets edited after saving all progress must be reset.",
+			"type": "bool"
+		},
+		"remove-save-on-complete": {
+			"default": false,
+			"name": "Remove save on complete",
+			"description": "Removes the save file for a level once it is completed.",
 			"type": "bool"
 		}
 	},

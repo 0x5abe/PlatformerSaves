@@ -98,7 +98,7 @@ void PlayLevelMenuPopup::keyBackClicked() {
 	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
 		l_playLayer->m_fields->m_saveSlot = 0;
 
-		std::string l_filePath = l_playLayer->getSaveFilePath(true);
+		std::string l_filePath = l_playLayer->getSaveFilePath(-1, true);
 		if (l_filePath == "") {
 			l_playLayer->m_fields->m_saveSlot = -3;
 		}

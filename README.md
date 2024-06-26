@@ -29,3 +29,4 @@ You can report a bug by [creating an issue](https://github.com/0x5abe/Platformer
 
 - The Geode team for the amazing tool they've created and inspiring me to make GD mods
 - Nikki for help with bindings
+- Maromalo for testing and suggestions

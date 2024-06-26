@@ -1,4 +1,3 @@
-
 #pragma once
 #include "Geode/binding/PauseLayer.hpp"
 #include "Geode/cocos/cocoa/CCObject.h"

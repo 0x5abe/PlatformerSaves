@@ -75,7 +75,7 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::SetupFileRead: {
-			std::string l_filePath = getSaveFilePath(true);
+			std::string l_filePath = getSaveFilePath(-1, true);
 			if (l_filePath == "") {
 				m_fields->m_loadingState = LoadingState::Ready;
 				m_fields->m_loadingProgress = 0.99f;
