@@ -43,24 +43,8 @@ enum class SavingState {
 class $modify(PSPlayLayer, PlayLayer) {
 public:
 	struct Fields {
-		persistenceAPI::InputStream m_inputStream;
-		persistenceAPI::OutputStream m_outputStream;
-		int m_saveSlot = -1;
-		int m_uniqueIdBase = 12;
 		bool m_onQuitCalled = false;
-		LoadingState m_loadingState = LoadingState::Setup;
-		float m_loadingProgress = 0.0f;
-		unsigned int m_remainingCheckpointLoadCount = 0;
-		unsigned int m_remainingCheckpointSaveCount = 0;
-		SavingState m_savingState = SavingState::Ready;
-		unsigned int m_bytesToRead = 0;
-		unsigned int m_bytesRead = 0;
 		bool m_signalForAsyncLoad = false;
-		cocos2d::CCScene* m_transitionFadeScene = nullptr;
-		bool m_cancelLevelLoad = false;
-		geode::Ref<cocos2d::CCSprite> m_savingIcon = nullptr;
-		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
-		std::vector<CheckpointGameObjectReference> m_triggeredCheckpointGameObjects;
 		bool m_triedPlacingCheckpoint = false;
 		bool m_inPostUpdate = false;
 		bool m_inSetupHasCompleted = false;
@@ -68,7 +52,23 @@ public:
 		bool m_inTogglePracticeMode = false;
 		bool m_exitAfterSave = false;
 		bool m_editorNoticeClosed = false;
+		bool m_cancelLevelLoad = false;
+		int m_saveSlot = -1;
+		int m_uniqueIdBase = 12;
+		unsigned int m_remainingCheckpointLoadCount = 0;
+		unsigned int m_remainingCheckpointSaveCount = 0;
+		unsigned int m_bytesToRead = 0;
+		unsigned int m_bytesRead = 0;
+		float m_loadingProgress = 0.0f;
 		long long m_lastSavedCheckpointTimestamp = 0;
+		persistenceAPI::InputStream m_inputStream;
+		persistenceAPI::OutputStream m_outputStream;
+		LoadingState m_loadingState = LoadingState::Setup;
+		SavingState m_savingState = SavingState::Ready;
+		cocos2d::CCScene* m_transitionFadeScene = nullptr;
+		geode::Ref<cocos2d::CCSprite> m_savingIcon = nullptr;
+		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
+		std::vector<CheckpointGameObjectReference> m_triggeredCheckpointGameObjects;
 	};
 
 	// overrides

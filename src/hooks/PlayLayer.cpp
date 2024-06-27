@@ -52,7 +52,7 @@ void PSPlayLayer::setupHasCompleted() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Editor Level Saves",
-				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the <cy>mod settings</c> page.",
+				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the PlatformerSaves <cy>mod settings</c> page.",
 				"Ok",
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {

@@ -158,7 +158,7 @@ void PSPlayLayer::loadGame() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The save file for this level could not be opened",
+				"The save file for this level could not be opened.",
 				"Cancel",
 				"Ok",
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -182,7 +182,7 @@ void PSPlayLayer::loadGame() {
 			//log::info("!!!!!!!!!!!!!!!! CREATED POPUP");
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The version of the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>)",
+				"The version of the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>).",
 				"Cancel",
 				"Ok",
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -212,7 +212,7 @@ void PSPlayLayer::loadGame() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The save file for this level appears to be <cr>corrupted</c>",
+				"The save file for this level appears to be <cr>corrupted</c>.",
 				"Cancel",
 				"Ok",
 				[&](FLAlertLayer*, bool i_btn2) {
@@ -236,7 +236,7 @@ void PSPlayLayer::loadGame() {
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			if (m_level->m_levelType == GJLevelType::Editor) {
 				createQuickPopup("Error loading game",
-					"The version of the level in the save file does not match the current one. <cy>A new game will be started</c>",
+					"The version of the level in the save file does not match the current one. <cy>A new game will be started</c>.",
 					"Ok",
 					nullptr,
 					[&](FLAlertLayer*, bool i_btn2) {
@@ -251,7 +251,7 @@ void PSPlayLayer::loadGame() {
 				);
 			} else {
 				createQuickPopup("Error loading game",
-					"The version of the level in the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>)",
+					"The version of the level in the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>).",
 					"Cancel",
 					"Ok",
 					[&](FLAlertLayer*, bool i_btn2) {

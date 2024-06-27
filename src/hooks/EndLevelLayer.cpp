@@ -14,7 +14,7 @@ void PSEndLevelLayer::onMenu(CCObject* i_sender) {
 		else if (!Mod::get()->getSavedValue<bool>("has-seen-remove-save-on-complete-notice")) {
 			Mod::get()->setSavedValue<bool>("has-seen-remove-save-on-complete-notice", true);
 			createQuickPopup("Remove Save",
-				"Do you want to <cr>remove</c> your save once you complete a level? This can be changed in the <cy>mod settings</c> page.",
+				"Do you want to <cr>remove</c> your save once you complete a level? This can be changed in the PlatformerSaves <cy>mod settings</c> page.",
 				"Keep",
 				"Remove",
 				[&](FLAlertLayer*, bool i_btn2) {
