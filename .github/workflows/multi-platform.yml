@@ -45,7 +45,7 @@ jobs:
       - name: test workflow id
         run: |
           echo " Workflow id: " $ID
-      - env:
+        env:
           ID: ${{ fromjson(steps.list-workflows.outputs.PA_WORKFLOWS).workflow_runs[0].id }}
   
       #- name: Fetch PersistenceAPI
