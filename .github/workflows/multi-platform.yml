@@ -34,7 +34,7 @@ jobs:
 
       - name: List PersistenceAPI workflows
       - id: list-workflows
-      - run: |
+        run: |
           echo "PA_WORKFLOWS=$(curl -L \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer <YOUR-TOKEN>" \
@@ -43,7 +43,7 @@ jobs:
           >> $GITHUB_OUTPUT
 
       - name: test workflow id
-      - run: |
+        run: |
           echo " Workflow id: " $ID
       - env:
           ID: ${{ fromjson(steps.list-workflows.outputs.PA_WORKFLOWS).workflow_runs[0].id }}
