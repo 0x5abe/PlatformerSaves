@@ -310,8 +310,8 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->setOpacity(0);
 
 	// TODO FIX THIS OFFSET 0X3D4
-	int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
-	*l_unkField1 = 3;
+	//int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
+	//*l_unkField1 = 3;
 
 	CC_SAFE_RELEASE(l_checkpoint->m_physicalCheckpointObject);
 	l_checkpoint->m_physicalCheckpointObject = l_newPhysicalCPO;
