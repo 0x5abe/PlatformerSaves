@@ -132,12 +132,12 @@ void PSPlayLayer::loadGame() {
 				m_fields->m_remainingCheckpointLoadCount--;
 			}
 			if (m_fields->m_remainingCheckpointLoadCount == 0) {
-				m_fields->m_loadingState = LoadingState::ReadTriggeredCheckpointGameObjects;
+				m_fields->m_loadingState = LoadingState::ReadActivatedCheckpoints;
 			}
 			// falls through
 		}
-		case LoadingState::ReadTriggeredCheckpointGameObjects: {
-			loadTriggeredCheckpointGameObjectsFromStream();
+		case LoadingState::ReadActivatedCheckpoints: {
+			loadActivatedCheckpointsFromStream();
 			m_fields->m_loadingState = LoadingState::ReadTimePlayed;
 			// falls through
 		}
@@ -150,7 +150,7 @@ void PSPlayLayer::loadGame() {
 			if (m_fields->m_normalModeCheckpoints->count() > 0) {
 				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
 			}
-			registerCheckpointsAndTriggeredCheckpointGameObjects();
+			registerCheckpointsAndActivatedCheckpoints();
 			//log::info("!!!!!!!!!!!!!!!! DO NOTHING");
 			break;
 		}
@@ -285,13 +285,13 @@ void PSPlayLayer::loadGame() {
 	}
 }
 
-void PSPlayLayer::loadTriggeredCheckpointGameObjectsFromStream() {
+void PSPlayLayer::loadActivatedCheckpointsFromStream() {
 	unsigned int l_size;
 	m_fields->m_inputStream.read(reinterpret_cast<char*>(&l_size), 4);
 	if (l_size != 0) {
-		m_fields->m_triggeredCheckpointGameObjects.resize(l_size);
+		m_fields->m_activatedCheckpoints.resize(l_size);
 		for (int i = 0; i < l_size; i++) {
-			m_fields->m_triggeredCheckpointGameObjects[i].load(m_fields->m_inputStream);
+			m_fields->m_activatedCheckpoints[i].load(m_fields->m_inputStream);
 		}
 	}
 }

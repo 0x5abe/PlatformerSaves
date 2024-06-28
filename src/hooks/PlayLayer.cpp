@@ -119,11 +119,11 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 	if (savesEnabled() && m_fields->m_inPostUpdate && !m_isPracticeMode) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
-		} else if (m_triggeredCheckpointGameObject != nullptr) {
+		} else if (m_activatedCheckpoint != nullptr) {
 			l_checkpointObject->m_fields->m_timePlayed = m_timePlayed;
 			l_checkpointObject->m_fields->m_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			m_fields->m_normalModeCheckpoints->addObject(l_checkpointObject);
-			m_fields->m_triggeredCheckpointGameObjects.push_back(CheckpointGameObjectReference(m_triggeredCheckpointGameObject));
+			m_fields->m_activatedCheckpoints.push_back(CheckpointGameObjectReference(m_activatedCheckpoint));
 			// autosave
 			if (Mod::get()->getSettingValue<bool>("auto-save")) startSaveGame();
 		}
@@ -164,7 +164,7 @@ void PSPlayLayer::togglePracticeMode(bool i_value) {
 void PSPlayLayer::resetLevelFromStart() {
 	if (savesEnabled() && m_fields->m_inTogglePracticeMode && m_isPlatformer && !m_isPracticeMode && m_fields->m_normalModeCheckpoints->count() > 0) {
 		PlayLayer::removeAllCheckpoints();
-		registerCheckpointsAndTriggeredCheckpointGameObjects();
+		registerCheckpointsAndActivatedCheckpoints();
 		PlayLayer::resetLevel();
 		return;
 	}
@@ -178,7 +178,7 @@ void PSPlayLayer::onQuit() {
 
 // custom methods
 
-void PSPlayLayer::registerCheckpointsAndTriggeredCheckpointGameObjects() {
+void PSPlayLayer::registerCheckpointsAndActivatedCheckpoints() {
 	PSCheckpointObject* l_checkpoint;
 	for (int i = 0; i < m_fields->m_normalModeCheckpoints->count(); i++) {
 		l_checkpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i));
@@ -187,8 +187,8 @@ void PSPlayLayer::registerCheckpointsAndTriggeredCheckpointGameObjects() {
 		l_checkpoint->m_physicalCheckpointObject->activateObject();
 		m_timePlayed = l_checkpoint->m_fields->m_timePlayed;
 	}
-	for (int i = 0; i < m_fields->m_triggeredCheckpointGameObjects.size(); i++) {
-		if (m_fields->m_triggeredCheckpointGameObjects[i].m_reference != nullptr) m_fields->m_triggeredCheckpointGameObjects[i].m_reference->triggerActivated(0.0f);
+	for (int i = 0; i < m_fields->m_activatedCheckpoints.size(); i++) {
+		if (m_fields->m_activatedCheckpoints[i].m_reference != nullptr) m_fields->m_activatedCheckpoints[i].m_reference->triggerActivated(0.0f);
 	}
 }
 

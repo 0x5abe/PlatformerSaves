@@ -85,7 +85,7 @@ void PSPauseLayer::onRestartFull(CCObject* i_sender) {
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	if (l_playLayer && l_playLayer->savesEnabled()) {
 		l_playLayer->m_fields->m_normalModeCheckpoints->removeAllObjects();
-		l_playLayer->m_fields->m_triggeredCheckpointGameObjects.clear();
+		l_playLayer->m_fields->m_activatedCheckpoints.clear();
 	}
 
 	PauseLayer::onRestartFull(i_sender);

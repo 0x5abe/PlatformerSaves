@@ -87,16 +87,16 @@ void PSPlayLayer::saveGame() {
 				break;
 			}
 			if (m_fields->m_remainingCheckpointSaveCount == 0) {
-				m_fields->m_savingState = SavingState::SaveTriggeredCheckpointGameObjects;
+				m_fields->m_savingState = SavingState::SaveActivatedCheckpoints;
 			}
 			// Todo use tasks maybe
 			// falls through
 		}
-		case SavingState::SaveTriggeredCheckpointGameObjects: {
-			unsigned int l_size = m_fields->m_triggeredCheckpointGameObjects.size();
+		case SavingState::SaveActivatedCheckpoints: {
+			unsigned int l_size = m_fields->m_activatedCheckpoints.size();
 			m_fields->m_outputStream.write(reinterpret_cast<char*>(&l_size), 4);
-			for (int i = 0; i < m_fields->m_triggeredCheckpointGameObjects.size(); i++) {
-				m_fields->m_triggeredCheckpointGameObjects[i].save(m_fields->m_outputStream);
+			for (int i = 0; i < m_fields->m_activatedCheckpoints.size(); i++) {
+				m_fields->m_activatedCheckpoints[i].save(m_fields->m_outputStream);
 			}
 			m_fields->m_savingState = SavingState::SaveTimePlayed;
 			// falls through

@@ -716,8 +716,8 @@ struct PSF {
     u32 levelStringChecksum;
     u32 checkpointObjectCount;
     CheckpointObject checkpointObjects[checkpointObjectCount];
-    u32 triggeredCheckpointGameObjectCount;
-    CheckpointGameObjectPtr triggeredCheckpointGameObjects[triggeredCheckpointGameObjectCount];
+    u32 activatedCheckpointCount;
+    CheckpointGameObjectPtr activatedCheckpoints[activatedCheckpointCount];
 };
 
 PSF file @ 0x0;

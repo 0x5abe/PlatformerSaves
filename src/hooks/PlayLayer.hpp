@@ -26,7 +26,7 @@ enum class LoadingState {
 	HandleIncorrectHash,
 	ReadCheckpointCount,
 	ReadCheckpoint,
-	ReadTriggeredCheckpointGameObjects,
+	ReadActivatedCheckpoints,
 	ReadTimePlayed,
 	WaitingForPopup,
 	CancelLevelLoad
@@ -36,7 +36,7 @@ enum class SavingState {
 	Ready,
 	Setup,
 	SaveCheckpoint,
-	SaveTriggeredCheckpointGameObjects,
+	SaveActivatedCheckpoints,
 	SaveTimePlayed
 };
 
@@ -68,7 +68,7 @@ public:
 		cocos2d::CCScene* m_transitionFadeScene = nullptr;
 		geode::Ref<cocos2d::CCSprite> m_savingIcon = nullptr;
 		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
-		std::vector<CheckpointGameObjectReference> m_triggeredCheckpointGameObjects;
+		std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
 	};
 
 	// overrides
@@ -108,7 +108,7 @@ public:
 	
 	// custom methods
 
-	void registerCheckpointsAndTriggeredCheckpointGameObjects();
+	void registerCheckpointsAndActivatedCheckpoints();
 
 	bool readPsfLevelStringHash();
 
@@ -126,7 +126,7 @@ public:
 
 	void loadCheckpointFromStream();
 
-	void loadTriggeredCheckpointGameObjectsFromStream();
+	void loadActivatedCheckpointsFromStream();
 
 	void updateAsyncProcessCreateObjectsFromSetup();
 
