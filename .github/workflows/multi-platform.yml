@@ -40,18 +40,16 @@ jobs:
           -H 'Accept: application/vnd.github+json; charset=utf-8' `
           'https://api.github.com/repos/0x5abe/PersistenceAPI/actions/runs?per_page=1&status=success')
           "workflows=$WorkflowList" >> $env:GITHUB_OUTPUT
-
-      - name: test workflow id
-        run: |
-          echo " Workflow id: " $ID
-        env:
-          ID: ${{ fromJSON(steps.list-workflows.outputs.workflows).workflow_runs[0].id }}
   
-      #- name: Fetch PersistenceAPI
-      #  uses: actions/download-artifact@v4
-      #  with:
-      #    repository: 0x5abe/PersistenceAPI
-      #    run-id: ${{ fromjson(steps.list-workflows.outputs.PA_WORKFLOWS).workflow_runs[0].id }}
+      - name: Fetch PersistenceAPI
+        uses: actions/download-artifact@v4
+        with:
+          repository: 0x5abe/PersistenceAPI
+          run-id: ${{ fromJSON(steps.list-workflows.outputs.workflows).workflow_runs[0].id }}
+      
+      - name: Test to see if downloaded
+        run: |
+          ls
 
       #- name: Build the mod
       #  uses: geode-sdk/build-geode-mod@main
