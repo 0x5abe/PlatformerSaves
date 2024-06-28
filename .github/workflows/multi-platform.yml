@@ -44,6 +44,7 @@ jobs:
       - name: Fetch PersistenceAPI
         uses: actions/download-artifact@v4
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: 0x5abe/PersistenceAPI
           run-id: ${{ fromJSON(steps.list-workflows.outputs.workflows).workflow_runs[0].id }}
       
