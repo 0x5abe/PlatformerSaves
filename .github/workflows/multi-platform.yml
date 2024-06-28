@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: List PersistenceAPI workflows
-      - id: list-workflows
+        id: list-workflows
         run: |
           echo "PA_WORKFLOWS=$(curl -L \
           -H "Accept: application/vnd.github+json" \
