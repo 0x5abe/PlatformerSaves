@@ -55,7 +55,7 @@ jobs:
           New-Item "build\geode-deps\sabe.persistenceapi\geode-dep-options.json" -ItemType File -Value '{ "required": true }'
 
       - name: Build the mod
-        uses: geode-sdk/build-geode-mod@main
+        uses: 0x5abe/build-geode-mod@main
         with:
           bindings: 0x5abe/geode-bindings
           bindings-ref: main
