@@ -702,7 +702,7 @@ struct CheckpointObject {
     unordered_map<s32,SequenceTriggerState> m_sequenceTriggerStateUnorderedMap;
     s64 m_unkGetsCopiedFromGameState;
     double timePlayed;
-    double timestamp;
+    u64 timestamp;
 };
 
 struct CheckpointGameObjectPtr {

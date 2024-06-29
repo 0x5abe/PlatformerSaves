@@ -97,6 +97,11 @@ void PSPlayLayer::setupHasCompleted() {
 		PlayLayer::setupHasCompleted();
 		m_fields->m_inSetupHasCompleted = false;
 
+		if (m_fields->m_normalModeCheckpoints->count() > 0) {
+			PSCheckpointObject* l_checkpoint = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject());
+			m_player1->setStartPos(l_checkpoint->m_fields->m_position);
+		}
+
 		m_fields->m_loadingProgress = 0.0f;
 		m_fields->m_bytesToRead = 0;
 		m_fields->m_bytesRead = 0;
