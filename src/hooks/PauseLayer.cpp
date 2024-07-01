@@ -20,7 +20,8 @@ void PSPauseLayer::customSetup() {
 				this,
 				menu_selector(PSPauseLayer::onSaveCheckpoints)
 			);
-			
+			m_fields->m_saveCheckpointsButton->setID("save-button"_spr);
+
 			if (!l_playLayer->canSave()) {
 				m_fields->m_saveCheckpointsSprite->setColor({127,127,127});
 				m_fields->m_saveCheckpointsButton->m_bEnabled = false;

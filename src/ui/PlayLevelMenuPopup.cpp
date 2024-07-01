@@ -54,6 +54,7 @@ void PlayLevelMenuPopup::setup() {
 		this,
 		menu_selector(PlayLevelMenuPopup::onContinue)
 	);
+	l_continueButton->setID("continue-button"_spr);
 
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	if (l_playLayer && !l_playLayer->validSaveExists()) {
@@ -71,6 +72,8 @@ void PlayLevelMenuPopup::setup() {
 		this,
 		menu_selector(PlayLevelMenuPopup::onNewGame)
 	);
+	l_newGameButton->setID("new-game-button"_spr);
+
 	m_buttonMenu->addChild(l_newGameButton);
 	m_buttonMenu->updateLayout();
 }

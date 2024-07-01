@@ -66,7 +66,7 @@ public:
 		LoadingState m_loadingState = LoadingState::Setup;
 		SavingState m_savingState = SavingState::Ready;
 		cocos2d::CCScene* m_transitionFadeScene = nullptr;
-		geode::Ref<cocos2d::CCSprite> m_savingIcon = nullptr;
+		geode::Ref<cocos2d::CCSprite> m_savingProgressCircleSprite = nullptr;
 		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
 		std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
 	};
@@ -146,9 +146,9 @@ public:
 
 	void setupKeybinds();
 
-	void setupSavingIcon();
+	void setupSavingProgressCircleSprite();
 
-	void showSavingIcon(bool i_show);
+	void showSavingProgressCircleSprite(bool i_show);
 
 	void endOutputStream();
 

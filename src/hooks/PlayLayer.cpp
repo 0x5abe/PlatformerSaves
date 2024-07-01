@@ -31,7 +31,7 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 		m_loadingProgress = 0.0f;
 	}
 	setupKeybinds();
-	setupSavingIcon();
+	setupSavingProgressCircleSprite();
 
 	return true;
 }
@@ -224,34 +224,35 @@ void PSPlayLayer::setupKeybinds() {
 	);
 }
 
-void PSPlayLayer::setupSavingIcon() {
+void PSPlayLayer::setupSavingProgressCircleSprite() {
 	CCSize l_winSize = CCDirector::sharedDirector()->getWinSize();
 	float l_separation = l_winSize.height/10;
 
-	m_fields->m_savingIcon = CCSprite::create("loadingCircle.png");
-	m_fields->m_savingIcon->setBlendFunc({ GL_ONE, GL_ONE });
-	m_fields->m_savingIcon->setPosition({l_winSize.width-l_separation,l_separation});
-	m_fields->m_savingIcon->setZOrder(100);
-	m_fields->m_savingIcon->setScale(0.5f);
+	m_fields->m_savingProgressCircleSprite = CCSprite::create("loadingCircle.png");
+	m_fields->m_savingProgressCircleSprite->setBlendFunc({ GL_ONE, GL_ONE });
+	m_fields->m_savingProgressCircleSprite->setPosition({l_winSize.width-l_separation,l_separation});
+	m_fields->m_savingProgressCircleSprite->setZOrder(100);
+	m_fields->m_savingProgressCircleSprite->setScale(0.5f);
+	m_fields->m_savingProgressCircleSprite->setID("saving-progress-circle-sprite"_spr);
 
-	m_fields->m_savingIcon->runAction(CCRepeatForever::create(CCRotateBy::create(1.0f, 360.f)));
-	m_fields->m_savingIcon->pauseSchedulerAndActions();
-	//m_fields->m_savingIcon->setVisible(false);
+	m_fields->m_savingProgressCircleSprite->runAction(CCRepeatForever::create(CCRotateBy::create(1.0f, 360.f)));
+	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
+	//m_fields->m_savingProgressCircleSprite->setVisible(false);
 }
 
-void PSPlayLayer::showSavingIcon(bool i_show) {
+void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {
 	CCScene* l_currentScene = CCScene::get();
-	if (!l_currentScene || !m_fields->m_savingIcon) return;
+	if (!l_currentScene || !m_fields->m_savingProgressCircleSprite) return;
 	if (i_show) {
-		if (!l_currentScene->getChildren()->containsObject(m_fields->m_savingIcon)) {
-			l_currentScene->addChild(m_fields->m_savingIcon);
+		if (!l_currentScene->getChildren()->containsObject(m_fields->m_savingProgressCircleSprite)) {
+			l_currentScene->addChild(m_fields->m_savingProgressCircleSprite);
 		}
-		m_fields->m_savingIcon->resumeSchedulerAndActions();
-		m_fields->m_savingIcon->setVisible(true);
+		m_fields->m_savingProgressCircleSprite->resumeSchedulerAndActions();
+		m_fields->m_savingProgressCircleSprite->setVisible(true);
 		return;	
 	}
-	m_fields->m_savingIcon->pauseSchedulerAndActions();
-	m_fields->m_savingIcon->setVisible(false);
+	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
+	m_fields->m_savingProgressCircleSprite->setVisible(false);
 }
 
 bool PSPlayLayer::canSave() {

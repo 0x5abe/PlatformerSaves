@@ -57,7 +57,7 @@ void PSPlayLayer::saveGame() {
 				break;
 			}
 
-			showSavingIcon(true);
+			showSavingProgressCircleSprite(true);
 			
 			writePsfHeader();
 			
@@ -114,7 +114,7 @@ void PSPlayLayer::saveGame() {
 			bool o_finishedSaving = true;
 			m_fields->m_outputStream.write((char*)&o_finishedSaving,sizeof(bool));
 			endOutputStream();
-			showSavingIcon(false);
+			showSavingProgressCircleSprite(false);
 			if (m_fields->m_exitAfterSave) {
 				//log::info("Goes into exitAfterSave");
 				m_fields->m_exitAfterSave = false;

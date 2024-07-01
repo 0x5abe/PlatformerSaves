@@ -49,7 +49,9 @@ void PSPlayLayer::loadGame() {
 		case LoadingState::Setup: {
 			m_fields->m_loadingProgress = 0.0f;
 
-			PlayLevelMenuPopup::create()->show();
+			PlayLevelMenuPopup* l_playLevelMenuPopup = PlayLevelMenuPopup::create();
+			l_playLevelMenuPopup->setID("play-level-menu-popup"_spr);
+			l_playLevelMenuPopup->show();
 			m_fields->m_loadingState = LoadingState::WaitingForPlayLevelMenuPopup;
 			// falls through
 		}
