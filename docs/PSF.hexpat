@@ -627,9 +627,12 @@ struct KeyframeObject {
 struct GroupCommandObject2 {
     u8 m_unk[440];
     vector<KeyframeObject> m_unkVecKeyframeObject;
-    u8 m_unk2[24];
-    vector<s32> m_unkVecInt;
+    u8 m_unk2[8];
+    GameObjectPtr m_gameObject;
+    padding[4];
     u8 m_unk3[8];
+    vector<s32> m_unkVecInt;
+    u8 m_unk4[8];
 };
 
 struct TimerItem {

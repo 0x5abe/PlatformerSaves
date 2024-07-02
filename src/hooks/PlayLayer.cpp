@@ -105,6 +105,7 @@ void PSPlayLayer::setupHasCompleted() {
 		m_fields->m_loadingProgress = 0.0f;
 		m_fields->m_bytesToRead = 0;
 		m_fields->m_bytesRead = 0;
+		s_currentPlayLayer = nullptr;
 	}
 }
 
@@ -179,6 +180,14 @@ void PSPlayLayer::resetLevelFromStart() {
 void PSPlayLayer::onQuit() {
 	s_currentPlayLayer = nullptr;
 	PlayLayer::onQuit();
+}
+
+void PSPlayLayer::updateVisibility(float i_unkFloat) {
+	PlayLayer::updateVisibility(i_unkFloat);
+
+	for (int i = 0; i < m_fields->m_normalModeCheckpoints->count(); i++) {
+		static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i))->m_physicalCheckpointObject->setOpacity(0);
+	}
 }
 
 // custom methods

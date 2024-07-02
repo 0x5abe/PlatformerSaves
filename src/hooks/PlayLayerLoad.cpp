@@ -302,16 +302,16 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	PSCheckpointObject* l_checkpoint = reinterpret_cast<PSCheckpointObject*>(CheckpointObject::create());
 	l_checkpoint->load(m_fields->m_inputStream); 
 
-	GameObject* l_newPhysicalCPO = GameObject::createWithFrame("square_01_001.png");
+	GameObject* l_newPhysicalCPO = GameObject::createWithFrame("blackSquare.png"_spr);
 	CC_SAFE_RETAIN(l_newPhysicalCPO);
 	l_newPhysicalCPO->m_objectID = 0x2c;
 	l_newPhysicalCPO->m_objectType = GameObjectType::Decoration;
 	l_newPhysicalCPO->m_glowSprite = nullptr;
-	l_newPhysicalCPO->m_unk292 = true; // who knows
+	l_newPhysicalCPO->m_unk306 = true; // who knows
 	l_newPhysicalCPO->m_unk3ef = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
 
-	// TODO FIX THIS OFFSET 0X3D4
+	// TODO FIX THIS OFFSET was 0x3d4 in 2.204
 	//int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
 	//*l_unkField1 = 3;
 

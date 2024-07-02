@@ -3,17 +3,22 @@
 	"gd": {
 		"win": "2.206"
 	},
-	"version": "v1.0.1-alpha.2",
+	"version": "v1.0.1-alpha.3",
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
 	"description": "Save and load your progress in platformer levels!",
 	"repository": "https://github.com/0x5abe/PlatformerSaves",
 	"resources": {
-        "sprites": [
-            "resources/saveButton.png"
-        ]
-    },
+		"spritesheets": {
+			"sheet": [
+				"resources/sheet/*.png"
+			]
+		},
+		"sprites": [
+			"resources/saveButton.png"
+		]
+	},
 	"tags": [
 		"enhancement",
 		"gameplay"

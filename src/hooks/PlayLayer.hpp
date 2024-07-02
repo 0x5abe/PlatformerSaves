@@ -105,6 +105,9 @@ public:
 
 	$override
 	void onQuit();
+
+	$override
+	void updateVisibility(float i_unkFloat);
 	
 	// custom methods
 

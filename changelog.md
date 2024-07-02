@@ -1,3 +1,8 @@
+## v1.0.1-alpha.3
+
+* Fixed a common crash
+* Fixed a bug where the hidden checkpoint would become visible after deleting every checkpoint in practice mode
+
 ## v1.0.1-alpha.2
 
 * Fixed incompatibility with Prism Menu that caused the Macro Editor to be visible when loading a save
