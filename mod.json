@@ -10,11 +10,6 @@
 	"description": "Save and load your progress in platformer levels!",
 	"repository": "https://github.com/0x5abe/PlatformerSaves",
 	"resources": {
-		"spritesheets": {
-			"sheet": [
-				"resources/sheet/*.png"
-			]
-		},
 		"sprites": [
 			"resources/saveButton.png"
 		]

@@ -302,7 +302,7 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	PSCheckpointObject* l_checkpoint = reinterpret_cast<PSCheckpointObject*>(CheckpointObject::create());
 	l_checkpoint->load(m_fields->m_inputStream); 
 
-	GameObject* l_newPhysicalCPO = GameObject::createWithFrame("blackSquare.png"_spr);
+	GameObject* l_newPhysicalCPO = GameObject::createWithFrame("square_01_001.png");
 	CC_SAFE_RETAIN(l_newPhysicalCPO);
 	l_newPhysicalCPO->m_objectID = 0x2c;
 	l_newPhysicalCPO->m_objectType = GameObjectType::Decoration;
