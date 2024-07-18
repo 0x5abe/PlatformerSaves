@@ -13,18 +13,18 @@
 using namespace geode::prelude;
 using namespace persistenceAPI;
 
-void PSCheckpointObject::load(InputStream& i_stream) {
+void PSCheckpointObject::load(Stream& i_stream) {
 	reinterpret_cast<PACCNode*>(this)->load(i_stream);
 	i_stream >> *this;
 }
 
-void PSCheckpointObject::save(OutputStream& o_stream) {
+void PSCheckpointObject::save(Stream& o_stream) {
 	//log::info("SAVING CHECKPOINT OBJECT");
 	reinterpret_cast<PACCNode*>(this)->save(o_stream);
 	o_stream << *this;
 }
 
-inline void operator>>(InputStream& i_stream, PSCheckpointObject& o_value) {
+inline void operator>>(Stream& i_stream, PSCheckpointObject& o_value) {
 	// GJGameState m_gameState;
 	//log::info("INPUT CCNODE uid: {}", o_value.m_uID);
 	//log::info("INPUT CCNODE frotationx: {}", o_value.m_fRotationX);
@@ -134,7 +134,7 @@ inline void operator>>(InputStream& i_stream, PSCheckpointObject& o_value) {
 	o_value.m_fields->m_wasLoaded = true;
 }
 
-inline void operator<<(OutputStream& o_stream, PSCheckpointObject& i_value) {
+inline void operator<<(Stream& o_stream, PSCheckpointObject& i_value) {
 	//log::info("OUTPUT CCNODE uid: {}", i_value.m_uID);
 	//log::info("OUTPUT CCNODE frotationx: {}", i_value.m_fRotationX);
 	//log::info("OUTPUT CCNODE scale y: {}", i_value.m_fScaleY);

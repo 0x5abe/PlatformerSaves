@@ -10,7 +10,7 @@ using namespace persistenceAPI;
 bool PSPlayLayer::readPsfLevelStringHash() {
 	unsigned int l_savedLevelStringHash;
 
-	m_fields->m_inputStream >> l_savedLevelStringHash;
+	m_fields->m_stream >> l_savedLevelStringHash;
 	
 	if (l_savedLevelStringHash != util::algorithm::hash_string(m_level->m_levelString.c_str())) {
 		//log::info("[readPsfLevelStringHash] different levelstring hash");
@@ -20,13 +20,17 @@ bool PSPlayLayer::readPsfLevelStringHash() {
 	return true;
 }
 
-bool PSPlayLayer::readPsfVersion() {
-	char l_psfMagicAndVer[sizeof(s_psfMagicAndVer)];
+bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
+	std::string l_psfMagicAndVer(sizeof(s_psfMagicAndVer), ' ');
 
-	m_fields->m_inputStream.read(l_psfMagicAndVer, sizeof(s_psfMagicAndVer));
-	if (std::strncmp(s_psfMagicAndVer, l_psfMagicAndVer, sizeof(s_psfMagicAndVer))) {
-		//log::info("[readPsfVersion] different version");
-		return false;
+	m_fields->m_stream.read(l_psfMagicAndVer.data(), sizeof(s_psfMagicAndVer));
+	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
+	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
+	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
+	log::info("[readPsfVersion] l_psfMagicAndVer: {}", l_psfMagicAndVer);
+	if (s_psfVersion != m_fields->m_readPsfVersion) {
+		log::info("[readPsfVersion] different version");
+		return updatePsfFormat();
 	}
 	//log::info("[readPsfVersion] same version");
 	return true;
@@ -35,7 +39,7 @@ bool PSPlayLayer::readPsfVersion() {
 bool PSPlayLayer::readPsfFinishedSaving() {
 	bool l_params[16-sizeof(s_psfMagicAndVer)];
 
-	m_fields->m_inputStream.read(reinterpret_cast<char*>(l_params), 16-sizeof(s_psfMagicAndVer));
+	m_fields->m_stream.read(reinterpret_cast<char*>(l_params), 16-sizeof(s_psfMagicAndVer));
 	if (l_params[0] == false) {
 		//log::info("[readPsfFinishedSaving] did not finish writing");
 		return false;
@@ -91,7 +95,7 @@ void PSPlayLayer::loadGame() {
 
 			m_fields->m_bytesToRead = std::filesystem::file_size(l_filePath);
 			m_fields->m_bytesRead = 0;
-			if(m_fields->m_bytesToRead == 0 || !m_fields->m_inputStream.setFileToRead(l_filePath, &m_fields->m_bytesRead)) {
+			if(m_fields->m_bytesToRead == 0 || !m_fields->m_stream.setFile(l_filePath, &m_fields->m_bytesRead)) {
 				m_fields->m_loadingState = LoadingState::HandleFileError;
 				break;
 			}
@@ -100,7 +104,7 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::ReadVersion: {
-			if (!readPsfVersion()) {
+			if (!readPsfVersionAndUpdateIfNecessary()) {
 				m_fields->m_loadingState = LoadingState::HandleIncorrectVersion;
 				break;
 			}
@@ -124,7 +128,7 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::ReadCheckpointCount: {
-			m_fields->m_inputStream >> m_fields->m_remainingCheckpointLoadCount;
+			m_fields->m_stream >> m_fields->m_remainingCheckpointLoadCount;
 			m_fields->m_loadingState = LoadingState::ReadCheckpoint;
 			// falls through
 		}
@@ -140,15 +144,18 @@ void PSPlayLayer::loadGame() {
 		}
 		case LoadingState::ReadActivatedCheckpoints: {
 			loadActivatedCheckpointsFromStream();
-			m_fields->m_loadingState = LoadingState::ReadTimePlayed;
+			m_fields->m_loadingState = LoadingState::ReadExtraData;
 			// falls through
 		}
-		case LoadingState::ReadTimePlayed: {
+		case LoadingState::ReadExtraData: {
+			m_fields->m_stream >> m_effectManager->m_persistentItemCountMap;
+			m_fields->m_stream >> m_fields->m_loadedPersistentTimerItemSet;
+			m_fields->m_updatePersistentTimerItemSet = true;
 			m_fields->m_loadingState = LoadingState::Ready;
 			// falls through
 		}
 		case LoadingState::Ready: {
-			endInputStream();
+			endStream();
 			if (m_fields->m_normalModeCheckpoints->count() > 0) {
 				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
 			}
@@ -289,18 +296,18 @@ void PSPlayLayer::loadGame() {
 
 void PSPlayLayer::loadActivatedCheckpointsFromStream() {
 	unsigned int l_size;
-	m_fields->m_inputStream.read(reinterpret_cast<char*>(&l_size), 4);
+	m_fields->m_stream.read(reinterpret_cast<char*>(&l_size), 4);
 	if (l_size != 0) {
 		m_fields->m_activatedCheckpoints.resize(l_size);
 		for (int i = 0; i < l_size; i++) {
-			m_fields->m_activatedCheckpoints[i].load(m_fields->m_inputStream);
+			m_fields->m_activatedCheckpoints[i].load(m_fields->m_stream);
 		}
 	}
 }
 
 void PSPlayLayer::loadCheckpointFromStream() {
 	PSCheckpointObject* l_checkpoint = reinterpret_cast<PSCheckpointObject*>(CheckpointObject::create());
-	l_checkpoint->load(m_fields->m_inputStream); 
+	l_checkpoint->load(m_fields->m_stream); 
 
 	GameObject* l_newPhysicalCPO = GameObject::createWithFrame("square_01_001.png");
 	CC_SAFE_RETAIN(l_newPhysicalCPO);
@@ -353,8 +360,4 @@ void PSPlayLayer::endAsyncProcessCreateObjectsFromSetup() {
 		CC_SAFE_RELEASE(m_fields->m_transitionFadeScene);
 		m_fields->m_transitionFadeScene = nullptr;
 	}
-}
-
-void PSPlayLayer::endInputStream() {
-	m_fields->m_inputStream.end();
 }

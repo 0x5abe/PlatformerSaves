@@ -658,12 +658,12 @@ struct EffectManagerState {
     vector<CollisionTriggerAction> m_vectorCollisionTriggerAction;
     vector<ToggleTriggerAction> m_vectorToggleTriggerAction;
     vector<SpawnTriggerAction> m_vectorSpawnTriggerAction;
-    unordered_map<s32,s32> m_unorderedMapInt_int;
+    unordered_map<s32,s32> m_itemCountMap;
     unordered_map<s32,bool> m_unorderedMapInt_bool;
     vector<GroupCommandObject2> m_vectorGroupCommandObject2;
     unordered_map<s32,pair<double,double>> m_unorderedMapInt_pair_double_double;
     unordered_set<s32> m_unorderedSet_int2;
-    unordered_map<s32,TimerItem> m_unorderedMapInt_TimerItem;
+    unordered_map<s32,TimerItem> m_timerItemMap;
     unordered_map<s32,vector<TimerTriggerAction>> m_unorderedMapInt_vectorTimerTriggerAction;
 };
 
@@ -721,6 +721,8 @@ struct PSF {
     CheckpointObject checkpointObjects[checkpointObjectCount];
     u32 activatedCheckpointCount;
     CheckpointGameObjectPtr activatedCheckpoints[activatedCheckpointCount];
+    unordered_map<s32,s32> m_persistentItemCountMap;
+    unordered_set<s32> m_persistentTimerItemSet;
 };
 
 PSF file @ 0x0;

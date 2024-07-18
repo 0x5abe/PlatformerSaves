@@ -10,6 +10,7 @@ class PSPlayLayer;
 
 extern PSPlayLayer* s_currentPlayLayer;
 extern char s_psfMagicAndVer[11];
+extern int s_psfVersion;
 
 enum class LoadingState {
 	Ready,
@@ -27,7 +28,7 @@ enum class LoadingState {
 	ReadCheckpointCount,
 	ReadCheckpoint,
 	ReadActivatedCheckpoints,
-	ReadTimePlayed,
+	ReadExtraData,
 	WaitingForPopup,
 	CancelLevelLoad
 };
@@ -37,7 +38,7 @@ enum class SavingState {
 	Setup,
 	SaveCheckpoint,
 	SaveActivatedCheckpoints,
-	SaveTimePlayed
+	SaveExtraData
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
@@ -53,22 +54,24 @@ public:
 		bool m_exitAfterSave = false;
 		bool m_editorNoticeClosed = false;
 		bool m_cancelLevelLoad = false;
+		bool m_updatePersistentTimerItemSet = false;
 		int m_saveSlot = -1;
 		int m_uniqueIdBase = 12;
+		int m_readPsfVersion = -1;
 		unsigned int m_remainingCheckpointLoadCount = 0;
 		unsigned int m_remainingCheckpointSaveCount = 0;
 		unsigned int m_bytesToRead = 0;
 		unsigned int m_bytesRead = 0;
 		float m_loadingProgress = 0.0f;
 		long long m_lastSavedCheckpointTimestamp = 0;
-		persistenceAPI::InputStream m_inputStream;
-		persistenceAPI::OutputStream m_outputStream;
+		persistenceAPI::Stream m_stream;
 		LoadingState m_loadingState = LoadingState::Setup;
 		SavingState m_savingState = SavingState::Ready;
 		cocos2d::CCScene* m_transitionFadeScene = nullptr;
 		geode::Ref<cocos2d::CCSprite> m_savingProgressCircleSprite = nullptr;
 		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
 		std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
+		gd::unordered_set<int> m_loadedPersistentTimerItemSet;
 	};
 
 	// overrides
@@ -115,7 +118,7 @@ public:
 
 	bool readPsfLevelStringHash();
 
-	bool readPsfVersion();
+	bool readPsfVersionAndUpdateIfNecessary();
 
 	bool readPsfFinishedSaving();
 
@@ -153,13 +156,13 @@ public:
 
 	void showSavingProgressCircleSprite(bool i_show);
 
-	void endOutputStream();
-
-	void endInputStream();
+	void endStream();
 
 	bool canSave();
 
 	bool savesEnabled();
 
 	void removeSaveFile(int i_slot = -1);
+
+	bool updatePsfFormat();
 };

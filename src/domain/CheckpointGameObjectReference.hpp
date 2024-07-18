@@ -12,6 +12,6 @@ public:
 		m_reference = i_reference;
 	}
 
-	void load(persistenceAPI::InputStream& i_stream);
-	void save(persistenceAPI::OutputStream& o_stream);
+	void load(persistenceAPI::Stream& i_stream);
+	void save(persistenceAPI::Stream& o_stream);
 };

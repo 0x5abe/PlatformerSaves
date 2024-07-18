@@ -11,7 +11,8 @@ using namespace geode::prelude;
 using namespace persistenceAPI;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.7";
+char s_psfMagicAndVer[] = "PSF v0.0.8";
+int s_psfVersion = 8;
 
 // overrides
 
@@ -114,6 +115,11 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 	m_fields->m_triedPlacingCheckpoint = m_tryPlaceCheckpoint;
 
 	PlayLayer::postUpdate(i_unkFloat);
+
+	if (m_fields->m_updatePersistentTimerItemSet) {
+		m_fields->m_updatePersistentTimerItemSet = false;
+		m_effectManager->m_persistentTimerItemSet = m_fields->m_loadedPersistentTimerItemSet;
+	}
 	
 	m_fields->m_inPostUpdate = false;
 	m_fields->m_triedPlacingCheckpoint = false;
@@ -264,6 +270,10 @@ void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {
 	m_fields->m_savingProgressCircleSprite->setVisible(false);
 }
 
+void PSPlayLayer::endStream() {
+	m_fields->m_stream.end();
+}
+
 bool PSPlayLayer::canSave() {
 	if (!savesEnabled()) {
 		return false;
@@ -284,7 +294,24 @@ void PSPlayLayer::removeSaveFile(int i_slot) {
 	if (i_slot == -1) {
 		i_slot = m_fields->m_saveSlot;
 	}
-	endInputStream();
-	endOutputStream();
+	endStream();
 	util::filesystem::removeSaveFile(m_level, i_slot);
+}
+
+bool PSPlayLayer::updatePsfFormat() {
+	switch (m_fields->m_readPsfVersion) {
+		case 7: {
+			m_fields->m_stream.seek(0);
+			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
+			m_fields->m_stream.seek(0, true);
+			m_fields->m_stream.clear();
+			m_fields->m_stream.writeZero(2*sizeof(int));
+			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
+			m_fields->m_readPsfVersion = s_psfVersion;
+			return true;
+		}
+		default: {
+			return false;
+		}
+	}
 }
