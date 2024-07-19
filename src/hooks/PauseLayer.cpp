@@ -13,8 +13,10 @@ void PSPauseLayer::customSetup() {
 	if (l_playLayer && l_playLayer->savesEnabled() && l_playLayer->m_isPlatformer) {
 		CCMenu* l_leftButtonMenu = static_cast<CCMenu*>(getChildByID("left-button-menu"));
 		if (l_leftButtonMenu) {
-			m_fields->m_saveCheckpointsSprite = CCSprite::create("saveButton.png"_spr);
-			m_fields->m_saveCheckpointsSprite->setScale(0.35);
+			m_fields->m_saveCheckpointsSprite = CircleButtonSprite::createWithSprite("saveButton.png"_spr, 1.6, CircleBaseColor::Green, CircleBaseSize::Medium);
+			m_fields->m_saveCheckpointsSprite->setScale(0.66);
+			CCSize l_contentSize = m_fields->m_saveCheckpointsSprite->getContentSize();
+			m_fields->m_saveCheckpointsSprite->setContentSize({l_contentSize.width, 49});
 			m_fields->m_saveCheckpointsButton = CCMenuItemSpriteExtra::create(
 				m_fields->m_saveCheckpointsSprite,
 				this,
@@ -24,6 +26,7 @@ void PSPauseLayer::customSetup() {
 
 			if (!l_playLayer->canSave()) {
 				m_fields->m_saveCheckpointsSprite->setColor({127,127,127});
+				if (m_fields->m_saveCheckpointsSprite->getChildren()->count() > 0) static_cast<CCSprite*>(m_fields->m_saveCheckpointsSprite->getChildren()->objectAtIndex(0))->setColor({127,127,127});
 				m_fields->m_saveCheckpointsButton->m_bEnabled = false;
 			}
 			l_leftButtonMenu->addChild(m_fields->m_saveCheckpointsButton);
@@ -99,6 +102,7 @@ void PSPauseLayer::onSaveCheckpoints(CCObject* i_sender) {
 	if (l_playLayer && l_playLayer->m_fields->m_savingState == SavingState::Ready) {
 		if (l_playLayer && l_playLayer->startSaveGame()) {
 			m_fields->m_saveCheckpointsSprite->setColor({127,127,127});
+			if (m_fields->m_saveCheckpointsSprite->getChildren()->count() > 0) static_cast<CCSprite*>(m_fields->m_saveCheckpointsSprite->getChildren()->objectAtIndex(0))->setColor({127,127,127});
 			m_fields->m_saveCheckpointsButton->m_bEnabled = false;
 		}
 	}

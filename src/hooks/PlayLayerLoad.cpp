@@ -27,9 +27,9 @@ bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
 	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
-	log::info("[readPsfVersion] l_psfMagicAndVer: {}", l_psfMagicAndVer);
+	//log::info("[readPsfVersion] l_psfMagicAndVer: {}", l_psfMagicAndVer);
 	if (s_psfVersion != m_fields->m_readPsfVersion) {
-		log::info("[readPsfVersion] different version");
+		//log::info("[readPsfVersion] different version");
 		return updatePsfFormat();
 	}
 	//log::info("[readPsfVersion] same version");
