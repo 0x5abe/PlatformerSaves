@@ -60,6 +60,8 @@ jobs:
           bindings: 0x5abe/geode-bindings
           bindings-ref: main
           combine: true
+          cli: "latest"
+          sdk: "latest"
           target: ${{ matrix.config.target }}
 
   package:
