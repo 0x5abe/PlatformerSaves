@@ -25,6 +25,10 @@ bool PlayLevelMenuPopup::init() {
 	}
 
 	CCEGLView::get()->showCursor(true);
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	
+	m_validSaveExists = l_playLayer && l_playLayer->validSaveExists();
+
 	setup();
 
 	return true;
@@ -57,7 +61,7 @@ void PlayLevelMenuPopup::setup() {
 	l_continueButton->setID("continue-button"_spr);
 
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	if (l_playLayer && !l_playLayer->validSaveExists()) {
+	if (l_playLayer && !m_validSaveExists) {
 		l_continueButtonSprite->m_label->setColor({127,127,127});
 		l_continueButtonSprite->m_BGSprite->setColor({127,127,127});
 		l_continueButton->m_bEnabled = false;
@@ -80,8 +84,27 @@ void PlayLevelMenuPopup::setup() {
 
 void PlayLevelMenuPopup::onNewGame(CCObject* sender) {
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
-		l_playLayer->m_fields->m_saveSlot = -3;
+	if (l_playLayer) {
+		if (m_validSaveExists) {
+			createQuickPopup("Start new game",
+				"Are you sure you want to <co>start a new game</c>?",
+				"Cancel",
+				"Ok",
+				[&](FLAlertLayer*, bool i_btn2) {
+					l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+					if (i_btn2) {
+						if (l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+							l_playLayer->m_fields->m_saveSlot = -3;
+						}
+						onClose(nullptr);
+					}
+				}
+			);
+			return;
+		}
+		if (l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+			l_playLayer->m_fields->m_saveSlot = -3;
+		}
 	}
 
 	onClose(nullptr);

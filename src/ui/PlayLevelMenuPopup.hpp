@@ -10,6 +10,8 @@ public:
 	void keyBackClicked() override;
 
 private:
+	bool m_validSaveExists = false;
+	
 	void setup();
 
 	void onClose(cocos2d::CCObject* i_sender);
