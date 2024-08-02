@@ -66,8 +66,8 @@ void PSPlayLayer::loadGame() {
 			}
 			else if (m_fields->m_saveSlot == -2) {
 				m_fields->m_saveSlot = 0;
-				m_fields->m_loadingState = LoadingState::Ready;
-				//m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+				//m_fields->m_loadingState = LoadingState::Ready;
+				m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 				break;
 			}
 			else if (m_fields->m_saveSlot == -3) {
@@ -149,8 +149,12 @@ void PSPlayLayer::loadGame() {
 		}
 		case LoadingState::ReadExtraData: {
 			m_fields->m_stream >> m_effectManager->m_persistentItemCountMap;
+
 			m_fields->m_stream >> m_fields->m_loadedPersistentTimerItemSet;
-			m_fields->m_updatePersistentTimerItemSet = true;
+
+			m_fields->m_stream >> m_fields->m_loadedAttempts;
+			
+			m_fields->m_updateExtraData = true;
 			m_fields->m_loadingState = LoadingState::Ready;
 			// falls through
 		}
@@ -175,7 +179,9 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
 						m_fields->m_loadingState = LoadingState::Ready;
-						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						//Todo: Fix cancel level load for Vanilla platformers
+						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						// TodoEnd
 					}
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
@@ -229,7 +235,9 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
 						m_fields->m_loadingState = LoadingState::Ready;
-						//Todo: Fix cancel level load for Vanilla platformers m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						//Todo: Fix cancel level load for Vanilla platformers
+						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						// TodoEnd
 					}
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");

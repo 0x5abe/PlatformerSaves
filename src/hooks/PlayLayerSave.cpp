@@ -103,7 +103,11 @@ void PSPlayLayer::saveGame() {
 		}
 		case SavingState::SaveExtraData: {
 			m_fields->m_stream << m_effectManager->m_persistentItemCountMap;
+
 			m_fields->m_stream << m_effectManager->m_persistentTimerItemSet;
+
+			m_fields->m_stream << m_attempts;
+
 			m_fields->m_savingState = SavingState::Ready;
 			// falls through
 		}

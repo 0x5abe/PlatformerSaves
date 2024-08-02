@@ -50,11 +50,12 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				if (!l_playButton) {
 					return false;
 				}
-				CCNode* l_playButtonSprite = static_cast<CCNode*>(l_playButton->getChildren()->objectAtIndex(0));
+				CCSprite* l_playButtonSprite = static_cast<CCSprite*>(l_playButton->getChildren()->objectAtIndex(0));
 				if (!l_playButtonSprite) {
 					return false;
 				}
 				l_playButtonSprite->removeAllChildrenWithCleanup(true);
+				l_playButtonSprite->setColor({255, 255, 255});
 			}
 
 			LevelSelectLayer* l_mainLayer = static_cast<LevelSelectLayer*>(CCScene::get()->getChildByID("main-layer"));
@@ -82,6 +83,14 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				// isBusy2
 				// it's for when trying to use a button to get into the level instead of click
 				*reinterpret_cast<byte*>(geode::base::get()+0x685ff8) = 0;
+			}
+
+			LevelAreaInnerLayer* l_levelAreaInnerLayer = static_cast<LevelAreaInnerLayer*>(CCScene::get()->getChildByID("LevelAreaInnerLayer"));
+			if (l_levelAreaInnerLayer) {
+				l_levelAreaInnerLayer->m_isBusy = false;
+				if (l_levelAreaInnerLayer->getChildrenCount() == 3) {
+					l_levelAreaInnerLayer->getChildren()->removeObjectAtIndex(2);
+				}
 			}
 
 			return false;

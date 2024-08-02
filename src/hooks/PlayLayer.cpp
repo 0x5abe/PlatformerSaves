@@ -11,8 +11,8 @@ using namespace geode::prelude;
 using namespace persistenceAPI;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.8";
-int s_psfVersion = 8;
+char s_psfMagicAndVer[] = "PSF v0.0.9";
+int s_psfVersion = 9;
 
 // overrides
 
@@ -116,9 +116,10 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 
 	PlayLayer::postUpdate(i_unkFloat);
 
-	if (m_fields->m_updatePersistentTimerItemSet) {
-		m_fields->m_updatePersistentTimerItemSet = false;
+	if (m_fields->m_updateExtraData) {
+		m_fields->m_updateExtraData = false;
 		m_effectManager->m_persistentTimerItemSet = m_fields->m_loadedPersistentTimerItemSet;
+		m_attempts = m_fields->m_loadedAttempts;
 	}
 	
 	m_fields->m_inPostUpdate = false;
@@ -306,7 +307,17 @@ bool PSPlayLayer::updatePsfFormat() {
 			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
 			m_fields->m_stream.seek(0, true);
 			m_fields->m_stream.clear();
-			m_fields->m_stream.writeZero(2*sizeof(int));
+			m_fields->m_stream.writeZero(3*sizeof(int));
+			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
+			m_fields->m_readPsfVersion = s_psfVersion;
+			return true;
+		}
+		case 8: {
+			m_fields->m_stream.seek(0);
+			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
+			m_fields->m_stream.seek(0, true);
+			m_fields->m_stream.clear();
+			m_fields->m_stream.writeZero(sizeof(int));
 			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
 			m_fields->m_readPsfVersion = s_psfVersion;
 			return true;

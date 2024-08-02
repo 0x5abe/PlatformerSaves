@@ -58,10 +58,10 @@ jobs:
         uses: 0x5abe/build-geode-mod@main
         with:
           bindings: 0x5abe/geode-bindings
-          bindings-ref: main
+          bindings-ref: cocos
           combine: true
           cli: "latest"
-          sdk: "latest"
+          sdk: "nightly"
           target: ${{ matrix.config.target }}
 
   package:

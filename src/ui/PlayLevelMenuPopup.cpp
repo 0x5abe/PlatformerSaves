@@ -122,12 +122,7 @@ void PlayLevelMenuPopup::onContinue(CCObject* sender) {
 void PlayLevelMenuPopup::keyBackClicked() {
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
-		l_playLayer->m_fields->m_saveSlot = 0;
-
-		std::string l_filePath = l_playLayer->getSaveFilePath(-1, true);
-		if (l_filePath == "") {
-			l_playLayer->m_fields->m_saveSlot = -3;
-		}
+		l_playLayer->m_fields->m_saveSlot = -2;
 	}
 
 	onClose(nullptr);

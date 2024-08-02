@@ -54,10 +54,11 @@ public:
 		bool m_exitAfterSave = false;
 		bool m_editorNoticeClosed = false;
 		bool m_cancelLevelLoad = false;
-		bool m_updatePersistentTimerItemSet = false;
+		bool m_updateExtraData = false;
 		int m_saveSlot = -1;
 		int m_uniqueIdBase = 12;
 		int m_readPsfVersion = -1;
+		int m_loadedAttempts = 0;
 		unsigned int m_remainingCheckpointLoadCount = 0;
 		unsigned int m_remainingCheckpointSaveCount = 0;
 		unsigned int m_bytesToRead = 0;
