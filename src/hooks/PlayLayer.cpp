@@ -3,6 +3,7 @@
 #include "Geode/binding/PlayLayer.hpp"
 #include "domain/CheckpointGameObjectReference.hpp"
 #include "hooks/PauseLayer.hpp"
+#include "hooks/FMODAudioEngine.hpp"
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
@@ -74,18 +75,14 @@ void PSPlayLayer::setupHasCompleted() {
 		//log::info("[setupHasCompleted] hasnt finished loading checkpoints");
 
 		loadGame();
-		
-		//m_fields->m_loadingProgress += (m_fields->m_loadingProgress/8.0f);
+
 		//log::info("[setupHasCompleted] m_bytesRead: {}", m_fields->m_bytesRead);
 		//log::info("[setupHasCompleted] m_bytesToRead: {}", m_fields->m_bytesToRead);
 		if (m_fields->m_bytesToRead > 0) {
 			m_fields->m_loadingProgress = (static_cast<float>(m_fields->m_bytesRead)/static_cast<float>(m_fields->m_bytesToRead));
 		}
-		// if (m_fields->m_loadingProgress != 1.0f) {
+
 		m_loadingProgress = m_fields->m_loadingProgress;
-		// } else {
-		// 	m_loadingProgress = 0.99f;
-		// }
 		//log::info("[setupHasCompleted] m_loadingProgress: {}", m_loadingProgress);
 	}
 	if (m_fields->m_loadingState == LoadingState::Ready && !m_fields->m_cancelLevelLoad) {
@@ -93,6 +90,10 @@ void PSPlayLayer::setupHasCompleted() {
 
 		// now reset the order of arrival that we're actually going into the level
 		CCNode::resetGlobalOrderOfArrival();
+		
+		// restore loadMusic
+		PSFMODAudioEngine* l_audioEngine = static_cast<PSFMODAudioEngine*>(FMODAudioEngine::get());
+		l_audioEngine->m_fields->m_disableLoadMusic = false;
 
 		m_fields->m_inSetupHasCompleted = true;
 		PlayLayer::setupHasCompleted();
@@ -129,7 +130,7 @@ void PSPlayLayer::postUpdate(float i_unkFloat) {
 CheckpointObject* PSPlayLayer::markCheckpoint() {
 	PSCheckpointObject* l_checkpointObject = static_cast<PSCheckpointObject*>(PlayLayer::markCheckpoint());
 	
-	if (savesEnabled() && m_fields->m_inPostUpdate && !m_isPracticeMode) {
+	if (l_checkpointObject && savesEnabled() && m_fields->m_inPostUpdate && !m_isPracticeMode) {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_activatedCheckpoint != nullptr) {
@@ -254,7 +255,6 @@ void PSPlayLayer::setupSavingProgressCircleSprite() {
 
 	m_fields->m_savingProgressCircleSprite->runAction(CCRepeatForever::create(CCRotateBy::create(1.0f, 360.f)));
 	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
-	//m_fields->m_savingProgressCircleSprite->setVisible(false);
 }
 
 void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {

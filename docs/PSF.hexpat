@@ -723,6 +723,7 @@ struct PSF {
     CheckpointGameObjectPtr activatedCheckpoints[activatedCheckpointCount];
     unordered_map<s32,s32> m_persistentItemCountMap;
     unordered_set<s32> m_persistentTimerItemSet;
+    s32 m_attempts;
 };
 
 PSF file @ 0x0;

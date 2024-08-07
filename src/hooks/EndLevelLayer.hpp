@@ -6,6 +6,7 @@
 class $modify(PSEndLevelLayer, EndLevelLayer) {
 public:
 	// overrides
+	
 	$override
 	void onMenu(cocos2d::CCObject* i_sender);
 };

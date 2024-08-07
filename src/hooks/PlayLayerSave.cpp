@@ -43,7 +43,7 @@ void PSPlayLayer::saveGame() {
 				m_fields->m_savingState = SavingState::Ready;
 				break;
 			}
-			m_fields->m_remainingCheckpointSaveCount = 1;//m_fields->m_normalModeCheckpoints->count();
+			m_fields->m_remainingCheckpointSaveCount = 1;
 		
 			std::string l_filePath = getSaveFilePath(-1);
 			std::string l_fileDirectory = util::filesystem::getParentDirectoryFromPath(l_filePath);
@@ -89,7 +89,7 @@ void PSPlayLayer::saveGame() {
 			if (m_fields->m_remainingCheckpointSaveCount == 0) {
 				m_fields->m_savingState = SavingState::SaveActivatedCheckpoints;
 			}
-			// Todo use tasks maybe
+			// TODO: use tasks maybe
 			// falls through
 		}
 		case SavingState::SaveActivatedCheckpoints: {

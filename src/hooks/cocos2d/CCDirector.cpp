@@ -1,5 +1,6 @@
 #include "CCDirector.hpp"
 #include <hooks/PlayLayer.hpp>
+#include "hooks/FMODAudioEngine.hpp"
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
@@ -35,6 +36,11 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 			CC_SAFE_RELEASE(s_currentPlayLayer->m_fields->m_transitionFadeScene);
 			s_currentPlayLayer->m_fields->m_transitionFadeScene = nullptr;
 			s_currentPlayLayer = nullptr;
+
+			// restore loadMusic
+			PSFMODAudioEngine* l_audioEngine = static_cast<PSFMODAudioEngine*>(FMODAudioEngine::get());
+			l_audioEngine->m_fields->m_disableLoadMusic = false;
+
 			CCScene* l_currentScene = CCScene::get();
 
 			LevelInfoLayer* l_levelInfoLayer = static_cast<LevelInfoLayer*>(CCScene::get()->getChildByID("LevelInfoLayer"));
@@ -44,7 +50,6 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				if (!l_playMenu) {
 					return false;
 				}
-				//Todo: Fix scale and color of play button, goes hand by hand with fixing cancel load for vanilla
 				l_playMenu->setTouchEnabled(true);
 				CCNode* l_playButton = l_playMenu->getChildByID("play-button");
 				if (!l_playButton) {

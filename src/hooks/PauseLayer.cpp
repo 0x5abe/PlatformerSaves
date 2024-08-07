@@ -10,10 +10,10 @@ void PSPauseLayer::customSetup() {
 	PauseLayer::customSetup();
 
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	if (l_playLayer && l_playLayer->savesEnabled() && l_playLayer->m_isPlatformer) {
+	if (l_playLayer && l_playLayer->savesEnabled() && l_playLayer->m_isPlatformer && !Mod::get()->getSettingValue<bool>("auto-save")) {
 		CCMenu* l_leftButtonMenu = static_cast<CCMenu*>(getChildByID("left-button-menu"));
 		if (l_leftButtonMenu) {
-			m_fields->m_saveCheckpointsSprite = CircleButtonSprite::createWithSprite("saveButton.png"_spr, 1.6, CircleBaseColor::Green, CircleBaseSize::Medium);
+			m_fields->m_saveCheckpointsSprite = CircleButtonSprite::createWithSprite("saveButton.png"_spr, 1.5, CircleBaseColor::Green, CircleBaseSize::Medium);
 			m_fields->m_saveCheckpointsSprite->setScale(0.66);
 			CCSize l_contentSize = m_fields->m_saveCheckpointsSprite->getContentSize();
 			m_fields->m_saveCheckpointsSprite->setContentSize({l_contentSize.width, 49});

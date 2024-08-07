@@ -38,7 +38,7 @@ void PlayLevelMenuPopup::setup() {
 	CCDirector* l_director = CCDirector::sharedDirector();
 	CCSize l_winSize = l_director->getWinSize();
 
-	CCSize l_size = CCSize(l_winSize/2);
+	CCSize l_size = CCSize(l_winSize / 2.0f);
 	m_background = CCScale9Sprite::create("GJ_square01.png");
 	m_background->setContentSize(l_size);
 	m_background->setPosition(l_winSize / 2.0f);
@@ -46,9 +46,8 @@ void PlayLevelMenuPopup::setup() {
 
 	m_buttonMenu = CCMenu::create();
 	m_buttonMenu->ignoreAnchorPointForPosition(false);
-	m_buttonMenu->setContentSize(l_size/2);
-	m_buttonMenu->setPosition(l_winSize/2);
-	m_buttonMenu->setLayout(ColumnLayout::create());
+	m_buttonMenu->setContentSize(l_size);
+	m_buttonMenu->setPosition(l_winSize / 2.0f);
 	m_mainLayer->addChild(m_buttonMenu, 10);
 	CCSize l_contentSize = m_buttonMenu->getContentSize();
 
@@ -59,7 +58,8 @@ void PlayLevelMenuPopup::setup() {
 		menu_selector(PlayLevelMenuPopup::onContinue)
 	);
 	l_continueButton->setID("continue-button"_spr);
-
+	l_continueButton->setPosition({l_size.width/2, (l_size.height/2)-(l_size.height/9.4f)});
+	
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	if (l_playLayer && !m_validSaveExists) {
 		l_continueButtonSprite->m_label->setColor({127,127,127});
@@ -68,7 +68,6 @@ void PlayLevelMenuPopup::setup() {
 	}
 
 	m_buttonMenu->addChild(l_continueButton);
-	m_buttonMenu->updateLayout();
 
 	ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/2, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
 	CCMenuItemSpriteExtra* l_newGameButton = CCMenuItemSpriteExtra::create(
@@ -77,9 +76,23 @@ void PlayLevelMenuPopup::setup() {
 		menu_selector(PlayLevelMenuPopup::onNewGame)
 	);
 	l_newGameButton->setID("new-game-button"_spr);
+	l_newGameButton->setPosition({l_size.width/2, (l_size.height/2)+(l_size.height/9.4f)});
 
 	m_buttonMenu->addChild(l_newGameButton);
-	m_buttonMenu->updateLayout();
+
+	CCSprite* l_closeSprite = cocos2d::CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+	l_closeSprite->setScale(.8f);
+
+	CCMenuItemSpriteExtra* l_closeButton = CCMenuItemSpriteExtra::create(
+		l_closeSprite,
+		this,
+		menu_selector(PlayLevelMenuPopup::onClose)
+	);
+	l_closeButton->setID("close-button"_spr);
+	float l_closeButtonPosOffset = l_closeButton->getContentWidth()/5;
+	l_closeButton->setPosition({l_closeButtonPosOffset,l_size.height-l_closeButtonPosOffset});
+
+	m_buttonMenu->addChild(l_closeButton);
 }
 
 void PlayLevelMenuPopup::onNewGame(CCObject* sender) {
@@ -96,7 +109,7 @@ void PlayLevelMenuPopup::onNewGame(CCObject* sender) {
 						if (l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
 							l_playLayer->m_fields->m_saveSlot = -3;
 						}
-						onClose(nullptr);
+						onRemove(nullptr);
 					}
 				}
 			);
@@ -107,7 +120,7 @@ void PlayLevelMenuPopup::onNewGame(CCObject* sender) {
 		}
 	}
 
-	onClose(nullptr);
+	onRemove(nullptr);
 }
 
 void PlayLevelMenuPopup::onContinue(CCObject* sender) {
@@ -116,7 +129,7 @@ void PlayLevelMenuPopup::onContinue(CCObject* sender) {
 		l_playLayer->m_fields->m_saveSlot = 0;
 	}
 
-	onClose(nullptr);
+	onRemove(nullptr);
 }
 
 void PlayLevelMenuPopup::keyBackClicked() {
@@ -125,10 +138,19 @@ void PlayLevelMenuPopup::keyBackClicked() {
 		l_playLayer->m_fields->m_saveSlot = -2;
 	}
 
-	onClose(nullptr);
+	onRemove(nullptr);
 }
 
 void PlayLevelMenuPopup::onClose(CCObject* sender) {
+	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+	if (l_playLayer && l_playLayer->m_fields->m_loadingState == LoadingState::WaitingForPlayLevelMenuPopup) {
+		l_playLayer->m_fields->m_saveSlot = -2;
+	}
+
+	onRemove(nullptr);
+}
+
+void PlayLevelMenuPopup::onRemove(CCObject* sender) {
 	CCEGLView::get()->showCursor(false);
 	bool l_lockCursor = GameManager::get()->getGameVariable("0128");
 	if (l_lockCursor) {

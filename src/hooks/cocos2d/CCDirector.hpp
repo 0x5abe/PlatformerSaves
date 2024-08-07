@@ -4,9 +4,9 @@
 #include <Geode/modify/CCDirector.hpp>
 
 class $modify(PSCCDirector, cocos2d::CCDirector) {
-	public:
+public:
 	// overrides
-
+	
 	$override
 	bool replaceScene(cocos2d::CCScene* i_scene);
 };

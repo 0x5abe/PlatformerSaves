@@ -27,12 +27,10 @@ bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
 	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
-	//log::info("[readPsfVersion] l_psfMagicAndVer: {}", l_psfMagicAndVer);
+
 	if (s_psfVersion != m_fields->m_readPsfVersion) {
-		//log::info("[readPsfVersion] different version");
 		return updatePsfFormat();
 	}
-	//log::info("[readPsfVersion] same version");
 	return true;
 }
 
@@ -40,11 +38,11 @@ bool PSPlayLayer::readPsfFinishedSaving() {
 	bool l_params[16-sizeof(s_psfMagicAndVer)];
 
 	m_fields->m_stream.read(reinterpret_cast<char*>(l_params), 16-sizeof(s_psfMagicAndVer));
+
 	if (l_params[0] == false) {
-		//log::info("[readPsfFinishedSaving] did not finish writing");
 		return false;
 	}
-	//log::info("[readPsfVersion] finished writing");
+
 	return true;
 }
 
@@ -60,13 +58,12 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::WaitingForPlayLevelMenuPopup: {
-			// Todo fix this so it's not ugly
+			// TODO: fix this so it's not ugly
 			if (m_fields->m_saveSlot == -1) {
 				break;
 			}
 			else if (m_fields->m_saveSlot == -2) {
 				m_fields->m_saveSlot = 0;
-				//m_fields->m_loadingState = LoadingState::Ready;
 				m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 				break;
 			}
@@ -164,7 +161,6 @@ void PSPlayLayer::loadGame() {
 				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
 			}
 			registerCheckpointsAndActivatedCheckpoints();
-			//log::info("!!!!!!!!!!!!!!!! DO NOTHING");
 			break;
 		}
 		case LoadingState::HandleFileError: {
@@ -178,10 +174,7 @@ void PSPlayLayer::loadGame() {
 					if (i_btn2) {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
-						m_fields->m_loadingState = LoadingState::Ready;
-						//Todo: Fix cancel level load for Vanilla platformers
 						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-						// TodoEnd
 					}
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
@@ -194,7 +187,6 @@ void PSPlayLayer::loadGame() {
 		}
 		case LoadingState::HandleIncorrectVersion: {
 			CCEGLView::get()->showCursor(true);
-			//log::info("!!!!!!!!!!!!!!!! CREATED POPUP");
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The version of the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>).",
@@ -234,10 +226,7 @@ void PSPlayLayer::loadGame() {
 					if (i_btn2) {
 						m_fields->m_loadingState = LoadingState::Ready;
 					} else {
-						m_fields->m_loadingState = LoadingState::Ready;
-						//Todo: Fix cancel level load for Vanilla platformers
 						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-						// TodoEnd
 					}
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
@@ -326,7 +315,7 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_unk3ef = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
 
-	// TODO FIX THIS OFFSET was 0x3d4 in 2.204
+	// TODO: FIX THIS OFFSET was 0x3d4 in 2.204
 	//int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
 	//*l_unkField1 = 3;
 
@@ -342,13 +331,11 @@ void PSPlayLayer::updateAsyncProcessCreateObjectsFromSetup() {
 	cocos2d::SEL_CallFunc l_sel = callfunc_selector(PSPlayLayer::updateAsyncProcessCreateObjectsFromSetup);
 	PSPlayLayer::processCreateObjectsFromSetup();
 	if (m_loadingProgress >= 1.0) {
-		//log::info("Finished loading!!!!!");
 		l_sel = callfunc_selector(PSPlayLayer::endAsyncProcessCreateObjectsFromSetup);
 	}
 	 
 	CCScene* l_currentScene = CCScene::get();
 	if (l_currentScene) {
-		//log::info("Loop load!!!!!");
 		l_currentScene->runAction(
 			CCSequence::create(
 				CCDelayTime::create(0.0f),
