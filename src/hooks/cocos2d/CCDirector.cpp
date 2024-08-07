@@ -61,6 +61,13 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				}
 				l_playButtonSprite->removeAllChildrenWithCleanup(true);
 				l_playButtonSprite->setColor({255, 255, 255});
+				l_levelInfoLayer->m_songWidget->m_buttonMenu->setTouchEnabled(true);
+			}
+
+			EditLevelLayer* l_editLevelLayer = static_cast<EditLevelLayer*>(CCScene::get()->getChildByID("EditLevelLayer"));
+			if (l_editLevelLayer) {
+				// isBusy
+				l_editLevelLayer->m_exiting = false;
 			}
 
 			LevelSelectLayer* l_mainLayer = static_cast<LevelSelectLayer*>(CCScene::get()->getChildByID("main-layer"));
