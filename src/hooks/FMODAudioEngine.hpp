@@ -9,7 +9,7 @@ public:
 	struct Fields {
 		bool m_disableFadeOutMusic;
 		bool m_disableLoadMusic;
-		FMOD::Channel* m_backgroundMusicChannelBackup;
+		FMOD::ChannelGroup* m_backgroundMusicChannelBackup;
 		gd::unordered_map<int,float> m_unkMapIntFloat7Backup;
 		gd::unordered_map<int,float> m_unkMapIntFloat8Backup;
 		gd::unordered_map<int,float> m_unkMapIntFloat9Backup;
