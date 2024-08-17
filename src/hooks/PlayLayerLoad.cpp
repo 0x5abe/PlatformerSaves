@@ -311,8 +311,8 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_objectID = 0x2c;
 	l_newPhysicalCPO->m_objectType = GameObjectType::Decoration;
 	l_newPhysicalCPO->m_glowSprite = nullptr;
-	l_newPhysicalCPO->m_unk306 = true; // who knows
-	l_newPhysicalCPO->m_unk3ef = true; // who knows
+	l_newPhysicalCPO->m_isDisabled2 = true; // who knows
+	l_newPhysicalCPO->m_isInvisible = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
 
 	// TODO: FIX THIS OFFSET was 0x3d4 in 2.204

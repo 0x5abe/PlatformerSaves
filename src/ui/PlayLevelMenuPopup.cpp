@@ -1,7 +1,6 @@
 #include "PlayLevelMenuPopup.hpp"
 #include "Geode/binding/PlayLayer.hpp"
 #include "Geode/cocos/CCDirector.h"
-#include "Geode/cocos/base_nodes/Layout.hpp"
 #include "Geode/cocos/label_nodes/CCLabelBMFont.h"
 #include <hooks/PlayLayer.hpp>
 
@@ -51,32 +50,56 @@ void PlayLevelMenuPopup::setup() {
 	m_mainLayer->addChild(m_buttonMenu, 10);
 	CCSize l_contentSize = m_buttonMenu->getContentSize();
 
-	ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/2, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	ButtonSprite* l_removeSaveButtonSprite = ButtonSprite::create("Remove Save", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_06.png", .0f, 1.f);
+	//ButtonSprite* l_removeSaveButtonSprite = ButtonSprite::create("Remove Save", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_06.png", .0f, 0.8f);
+	CCMenuItemSpriteExtra* l_removeSaveButton = CCMenuItemSpriteExtra::create(
+		l_removeSaveButtonSprite,
+		this,
+		menu_selector(PlayLevelMenuPopup::onRemoveSave)
+	);
+	l_removeSaveButton->setID("remove-save-button"_spr);
+	l_removeSaveButton->setPosition({l_size.width/2, (l_size.height/2)-(l_size.height/4.7f)});
+	//if (l_removeSaveButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_removeSaveButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
+	m_removeSaveButtonSprite = l_removeSaveButtonSprite;
+	m_removeSaveButton = l_removeSaveButton;
+
+	ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	//ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_01.png", .0f, 0.8f);
 	CCMenuItemSpriteExtra* l_continueButton = CCMenuItemSpriteExtra::create(
 		l_continueButtonSprite,
 		this,
 		menu_selector(PlayLevelMenuPopup::onContinue)
 	);
 	l_continueButton->setID("continue-button"_spr);
-	l_continueButton->setPosition({l_size.width/2, (l_size.height/2)-(l_size.height/9.4f)});
-	
+	l_continueButton->setPosition({l_size.width/2, l_size.height/2});
+	//if (l_continueButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_continueButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
+	m_continueButtonSprite = l_continueButtonSprite;
+	m_continueButton = l_continueButton;
+
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	if (l_playLayer && !m_validSaveExists) {
 		l_continueButtonSprite->m_label->setColor({127,127,127});
 		l_continueButtonSprite->m_BGSprite->setColor({127,127,127});
 		l_continueButton->m_bEnabled = false;
+
+		l_removeSaveButtonSprite->m_label->setColor({127,127,127});
+		l_removeSaveButtonSprite->m_BGSprite->setColor({127,127,127});
+		l_removeSaveButton->m_bEnabled = false;
 	}
-
+	
+	m_buttonMenu->addChild(l_removeSaveButton);
 	m_buttonMenu->addChild(l_continueButton);
-
-	ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/2, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	
+	ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
+	//ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_01.png", .0f, 0.8f);
 	CCMenuItemSpriteExtra* l_newGameButton = CCMenuItemSpriteExtra::create(
 		l_newGameButtonSprite,
 		this,
 		menu_selector(PlayLevelMenuPopup::onNewGame)
 	);
 	l_newGameButton->setID("new-game-button"_spr);
-	l_newGameButton->setPosition({l_size.width/2, (l_size.height/2)+(l_size.height/9.4f)});
+	l_newGameButton->setPosition({l_size.width/2, (l_size.height/2)+(l_size.height/4.7f)});
+	//if (l_newGameButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_newGameButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
 
 	m_buttonMenu->addChild(l_newGameButton);
 
@@ -130,6 +153,37 @@ void PlayLevelMenuPopup::onContinue(CCObject* sender) {
 	}
 
 	onRemove(nullptr);
+}
+
+void PlayLevelMenuPopup::onRemoveSave(CCObject* sender) {
+	if (m_validSaveExists) {
+		createQuickPopup("Remove save file",
+			"Are you sure you want to <cr>remove the save file</c>?",
+			"Cancel",
+			"Ok",
+			[&](FLAlertLayer*, bool i_btn2) {
+				if (i_btn2) {
+					PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+					if (l_playLayer) {
+						l_playLayer->removeSaveFile(0);
+						
+						if (m_continueButtonSprite) {
+							m_continueButtonSprite->m_label->setColor({127,127,127});
+							m_continueButtonSprite->m_BGSprite->setColor({127,127,127});
+						}
+						if (m_continueButton) m_continueButton->m_bEnabled = false;
+
+						if (m_removeSaveButtonSprite) {
+							m_removeSaveButtonSprite->m_label->setColor({127,127,127});
+							m_removeSaveButtonSprite->m_BGSprite->setColor({127,127,127});
+						}
+						if (m_removeSaveButton) m_removeSaveButton->m_bEnabled = false;
+						m_validSaveExists = false;
+					}
+				}
+			}
+		);
+	}
 }
 
 void PlayLevelMenuPopup::keyBackClicked() {
