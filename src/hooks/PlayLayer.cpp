@@ -323,7 +323,30 @@ bool PSPlayLayer::updatePsfFormat() {
 			return true;
 		}
 		default: {
+			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
 			return false;
 		}
 	}
+}
+
+bool PSPlayLayer::makeBackup() {
+	std::string l_filePath = getSaveFilePath(-1, true);
+	if (l_filePath == "") {
+		return false;
+	}
+
+	l_filePath.append(std::format(".{}.bak",m_fields->m_readPsfVersion));
+	//log::info("Backup file path: {}", l_filePath);
+	if (!m_fields->m_backupStream.setFile(l_filePath, true)) {
+		return false;
+	}
+
+	std::vector<char> buf(m_fields->m_bytesToRead);
+	m_fields->m_stream.seek(0);
+	m_fields->m_stream.read(buf.data(), m_fields->m_bytesToRead);
+	m_fields->m_backupStream.write(buf.data(), m_fields->m_bytesToRead);
+	m_fields->m_backupStream.end();
+	m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
+
+	return true;
 }

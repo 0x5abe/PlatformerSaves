@@ -66,6 +66,7 @@ public:
 		float m_loadingProgress = 0.0f;
 		long long m_lastSavedCheckpointTimestamp = 0;
 		persistenceAPI::Stream m_stream;
+		persistenceAPI::Stream m_backupStream;
 		LoadingState m_loadingState = LoadingState::Setup;
 		SavingState m_savingState = SavingState::Ready;
 		cocos2d::CCScene* m_transitionFadeScene = nullptr;
@@ -166,4 +167,6 @@ public:
 	void removeSaveFile(int i_slot = -1);
 
 	bool updatePsfFormat();
+
+	bool makeBackup();
 };

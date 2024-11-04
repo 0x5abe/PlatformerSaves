@@ -1,4 +1,6 @@
+#include "Geode/loader/Log.hpp"
 #include "PlayLayer.hpp"
+#include <cstddef>
 #include <filesystem>
 #include <ui/PlayLevelMenuPopup.hpp>
 #include <util/algorithm.hpp>
@@ -27,8 +29,10 @@ bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
 	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
-
 	if (s_psfVersion != m_fields->m_readPsfVersion) {
+		if (!makeBackup()) {
+			return false;
+		}
 		return updatePsfFormat();
 	}
 	return true;
@@ -167,15 +171,11 @@ void PSPlayLayer::loadGame() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The save file for this level could not be opened.",
-				"Cancel",
+				"The save file for this level <cr>could not be opened</c>.",
 				"Ok",
+				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
-					if (i_btn2) {
-						m_fields->m_loadingState = LoadingState::Ready;
-					} else {
-						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					}
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
 					if (l_lockCursor) {
@@ -189,15 +189,11 @@ void PSPlayLayer::loadGame() {
 			CCEGLView::get()->showCursor(true);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
-				"The version of the save file does not match the current one. <cy>Try to load it anyways</c>? (<cr>this might be unstable or crash the game</c>).",
-				"Cancel",
+				"Updating the save file <cr>failed</c>.",
 				"Ok",
+				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
-					if (i_btn2) {
-						m_fields->m_loadingState = LoadingState::UpdateVersion;
-					} else {
-						m_fields->m_loadingState = LoadingState::Ready;
-					}
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
 					if (l_lockCursor) {
@@ -220,14 +216,10 @@ void PSPlayLayer::loadGame() {
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The save file for this level appears to be <cr>corrupted</c>.",
-				"Cancel",
 				"Ok",
+				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
-					if (i_btn2) {
-						m_fields->m_loadingState = LoadingState::Ready;
-					} else {
-						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					}
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					CCEGLView::get()->showCursor(false);
 					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
 					if (l_lockCursor) {
@@ -243,11 +235,15 @@ void PSPlayLayer::loadGame() {
 			if (m_level->m_levelType == GJLevelType::Editor) {
 				createQuickPopup("Error loading game",
 					"The version of the level in the save file does not match the current one. <cy>A new game will be started</c>.",
+					"Cancel",
 					"Ok",
-					nullptr,
 					[&](FLAlertLayer*, bool i_btn2) {
-						removeSaveFile();
-						m_fields->m_loadingState = LoadingState::Ready;
+						if (i_btn2) {
+							removeSaveFile();
+							m_fields->m_loadingState = LoadingState::Ready;
+						} else {
+							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+						}
 						CCEGLView::get()->showCursor(false);
 						bool l_lockCursor = GameManager::get()->getGameVariable("0128");
 						if (l_lockCursor) {
@@ -264,7 +260,7 @@ void PSPlayLayer::loadGame() {
 						if (i_btn2) {
 							m_fields->m_loadingState = LoadingState::ReadCheckpointCount;
 						} else {
-							m_fields->m_loadingState = LoadingState::Ready;
+							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 						}
 						CCEGLView::get()->showCursor(false);
 						bool l_lockCursor = GameManager::get()->getGameVariable("0128");

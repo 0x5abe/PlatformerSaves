@@ -51,7 +51,6 @@ void PlayLevelMenuPopup::setup() {
 	CCSize l_contentSize = m_buttonMenu->getContentSize();
 
 	ButtonSprite* l_removeSaveButtonSprite = ButtonSprite::create("Remove Save", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_06.png", .0f, 1.f);
-	//ButtonSprite* l_removeSaveButtonSprite = ButtonSprite::create("Remove Save", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_06.png", .0f, 0.8f);
 	CCMenuItemSpriteExtra* l_removeSaveButton = CCMenuItemSpriteExtra::create(
 		l_removeSaveButtonSprite,
 		this,
@@ -59,12 +58,10 @@ void PlayLevelMenuPopup::setup() {
 	);
 	l_removeSaveButton->setID("remove-save-button"_spr);
 	l_removeSaveButton->setPosition({l_size.width/2, (l_size.height/2)-(l_size.height/4.7f)});
-	//if (l_removeSaveButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_removeSaveButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
 	m_removeSaveButtonSprite = l_removeSaveButtonSprite;
 	m_removeSaveButton = l_removeSaveButton;
 
 	ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
-	//ButtonSprite* l_continueButtonSprite = ButtonSprite::create("Continue", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_01.png", .0f, 0.8f);
 	CCMenuItemSpriteExtra* l_continueButton = CCMenuItemSpriteExtra::create(
 		l_continueButtonSprite,
 		this,
@@ -72,7 +69,6 @@ void PlayLevelMenuPopup::setup() {
 	);
 	l_continueButton->setID("continue-button"_spr);
 	l_continueButton->setPosition({l_size.width/2, l_size.height/2});
-	//if (l_continueButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_continueButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
 	m_continueButtonSprite = l_continueButtonSprite;
 	m_continueButton = l_continueButton;
 
@@ -91,7 +87,6 @@ void PlayLevelMenuPopup::setup() {
 	m_buttonMenu->addChild(l_continueButton);
 	
 	ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/1.5, true, "goldFont.fnt", "GJ_button_01.png", .0f, 1.f);
-	//ButtonSprite* l_newGameButtonSprite = ButtonSprite::create("New game", l_size.width/1.5, true, "bigFont.fnt", "GJ_button_01.png", .0f, 0.8f);
 	CCMenuItemSpriteExtra* l_newGameButton = CCMenuItemSpriteExtra::create(
 		l_newGameButtonSprite,
 		this,
@@ -99,7 +94,6 @@ void PlayLevelMenuPopup::setup() {
 	);
 	l_newGameButton->setID("new-game-button"_spr);
 	l_newGameButton->setPosition({l_size.width/2, (l_size.height/2)+(l_size.height/4.7f)});
-	//if (l_newGameButtonSprite->getChildrenCount() > 1) static_cast<CCScale9Sprite*>(l_newGameButtonSprite->getChildren()->objectAtIndex(1))->setScaleY(.825f);
 
 	m_buttonMenu->addChild(l_newGameButton);
 

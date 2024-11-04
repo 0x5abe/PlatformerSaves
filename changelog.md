@@ -1,3 +1,10 @@
+## v1.0.1-alpha.4
+
+* Added storing of attempts, persistent item and timers
+* Added a close button to exit out of the play level menu, as well as pressing ESC
+* Removed save button in pause menu when auto save is enabled
+* Fixed a common crash that could occur when dashing into a checkpoint or finishing a level
+
 ## v1.0.1-alpha.3
 
 * Fixed a common crash
