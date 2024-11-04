@@ -1,6 +1,4 @@
-#include "Geode/loader/Log.hpp"
 #include "PlayLayer.hpp"
-#include <cstddef>
 #include <filesystem>
 #include <ui/PlayLevelMenuPopup.hpp>
 #include <util/algorithm.hpp>
