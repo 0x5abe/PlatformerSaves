@@ -1,7 +1,7 @@
 {
-	"geode": "3.9.0",
+	"geode": "4.1.0",
 	"gd": {
-		"win": "2.206"
+		"win": "2.2074"
 	},
 	"version": "v1.0.1-alpha.4",
 	"id": "sabe.platformersaves",
