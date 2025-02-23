@@ -52,7 +52,7 @@ void PSPlayLayer::saveGame() {
 				break;
 			}
 
-			if (!m_fields->m_stream.setFile(l_filePath, true)) {
+			if (!m_fields->m_stream.setFile(l_filePath, 2, true)) {
 				m_fields->m_savingState = SavingState::Ready;
 				break;
 			}

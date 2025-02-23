@@ -27,12 +27,14 @@ bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
 	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
+	geode::log::info("Read PSF Version: {}", m_fields->m_readPsfVersion);
 	if (s_psfVersion != m_fields->m_readPsfVersion) {
 		if (!makeBackup()) {
 			return false;
 		}
 		return updatePsfFormat();
 	}
+	m_fields->m_stream.setPAVersion(2);
 	return true;
 }
 
@@ -94,7 +96,7 @@ void PSPlayLayer::loadGame() {
 
 			m_fields->m_bytesToRead = std::filesystem::file_size(l_filePath);
 			m_fields->m_bytesRead = 0;
-			if(m_fields->m_bytesToRead == 0 || !m_fields->m_stream.setFile(l_filePath, &m_fields->m_bytesRead)) {
+			if(m_fields->m_bytesToRead == 0 || !m_fields->m_stream.setFile(l_filePath, &m_fields->m_bytesRead, 2)) {
 				m_fields->m_loadingState = LoadingState::HandleFileError;
 				break;
 			}
@@ -199,14 +201,6 @@ void PSPlayLayer::loadGame() {
 					}
 				}
 			);
-			break;
-		}
-		case LoadingState::UpdateVersion: {
-			if (true) {
-				m_fields->m_loadingState = LoadingState::ReadFinishedSaving;
-			} else {
-				m_fields->m_loadingState = LoadingState::Ready;
-			}
 			break;
 		}
 		case LoadingState::HandleDidNotFinishSaving: {

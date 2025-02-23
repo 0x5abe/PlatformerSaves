@@ -10,9 +10,9 @@ public:
 		bool m_disableFadeOutMusic;
 		bool m_disableLoadMusic;
 		FMOD::ChannelGroup* m_backgroundMusicChannelBackup;
-		gd::unordered_map<int,float> m_unkMapIntFloat7Backup;
-		gd::unordered_map<int,float> m_unkMapIntFloat8Backup;
-		gd::unordered_map<int,float> m_unkMapIntFloat9Backup;
+		gd::unordered_map<int,float> m_unkMapIntFloat1Backup;
+		gd::unordered_map<int,float> m_unkMapIntFloat2Backup;
+		gd::unordered_map<int,float> m_unkMapIntFloat3Backup;
 	};
 
 	// overrides

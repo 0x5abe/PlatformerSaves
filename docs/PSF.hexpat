@@ -229,9 +229,9 @@ struct SongTriggerGameObjectPtr {
 
 struct SongChannelState {
     SongTriggerGameObjectPtr m_songTriggerGameObject1;
-    u8 m_unk2[8];
+    double m_unkDouble1;
     SongTriggerGameObjectPtr m_songTriggerGameObject2;
-    u8 m_unk3[8];
+    double m_unkDouble2;
 };
 
 struct SongTriggerState {
@@ -460,16 +460,16 @@ struct FMODAudioState {
     map<pair<s32,s32>,FMODSoundTween> m_unkMapPairIntIntFMODSoundTween1;
     map<pair<s32,s32>,FMODSoundTween> m_unkMapPairIntIntFMODSoundTween2;
     map<pair<s32,s32>,FMODSoundTween> m_unkMapPairIntIntFMODSoundTween3;
+    unordered_map<s32,float> m_volumeForChannels1;
+    unordered_map<s32,float> m_volumeForChannels2;
+    unordered_map<s32,float> m_pitchForChannels1;
+    unordered_map<s32,float> m_volumeForChannels3;
+    unordered_map<s32,float> m_volumeForChannels4;
+    unordered_map<s32,float> m_pitchForChannels2;
     unordered_map<s32,float> m_unkMapIntFloat1;
     unordered_map<s32,float> m_unkMapIntFloat2;
     unordered_map<s32,float> m_unkMapIntFloat3;
     unordered_map<s32,float> m_unkMapIntFloat4;
-    unordered_map<s32,float> m_unkMapIntFloat5;
-    unordered_map<s32,float> m_unkMapIntFloat6;
-    unordered_map<s32,float> m_unkMapIntFloat7;
-    unordered_map<s32,float> m_unkMapIntFloat8;
-    unordered_map<s32,float> m_unkMapIntFloat9;
-    unordered_map<s32,float> m_unkMapIntFloat10;
     unordered_map<s32,FMODQueuedMusic> m_unkMapIntFMODQueuedMusic1;
     unordered_map<s32,FMODQueuedMusic> m_unkMapIntFMODQueuedMusic2;
     unordered_map<s32,FMODSoundState> m_unkMapIntFMODSoundState;
@@ -509,7 +509,7 @@ struct PlayerCheckpoint {
     u8 m_unkBytes5[8];
 };
 
-struct DynamicSaveObject {
+struct SavedObjectStateRef {
     GameObjectPtr m_gameObject;
     double m_unkDouble1;
     double m_unkDouble2;
@@ -521,7 +521,7 @@ struct DynamicSaveObject {
     float m_unkFloat6;
 };
 
-struct ActiveSaveObject1 {
+struct SavedActiveObjectState {
     GameObjectPtr m_gameObject;
     bool m_unkBool1;
     bool m_unkBool2;
@@ -549,7 +549,7 @@ enum EasingType : u32 {
     BackOut = 18,
 };
 
-struct ActiveSaveObject2 {
+struct SavedSpecialObjectState {
     GameObjectPtr m_gameObject;
     EasingType m_easingType;
 };
@@ -693,9 +693,9 @@ struct CheckpointObject {
     s16 m_unkShort1;
     s32 m_unkInt4;
     s32 m_unkInt5;
-    vector<DynamicSaveObject> m_vectorDynamicSaveObjects;
-    vector<ActiveSaveObject1> m_vectorActiveSaveObjects1;
-    vector<ActiveSaveObject2> m_vectorActiveSaveObjects2;
+    vector<SavedObjectStateRef> m_vectorDynamicSaveObjects;
+    vector<SavedActiveObjectState> m_vectorActiveSaveObjectState;
+    vector<SavedSpecialObjectState> m_vectorSpecialSaveObjectState;
     EffectManagerState m_effectManagerState;
     bool m_hasGradientTriggerObjectArray;
     if (m_hasGradientTriggerObjectArray) {

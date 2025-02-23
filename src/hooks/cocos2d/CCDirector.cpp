@@ -94,12 +94,14 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				}
 				// isBusy2
 				// it's for when trying to use a button to get into the level instead of click
-				*reinterpret_cast<byte*>(geode::base::get()+0x685ff8) = 0;
+				*reinterpret_cast<byte*>(geode::base::get()+0x6a3048) = 0;
 			}
 
 			LevelAreaInnerLayer* l_levelAreaInnerLayer = static_cast<LevelAreaInnerLayer*>(CCScene::get()->getChildByID("LevelAreaInnerLayer"));
 			if (l_levelAreaInnerLayer) {
-				l_levelAreaInnerLayer->m_isBusy = false;
+				//TODO: test!!!
+				l_levelAreaInnerLayer->m_playing = false;
+				l_levelAreaInnerLayer->m_exiting = false;
 				if (l_levelAreaInnerLayer->getChildrenCount() == 3) {
 					l_levelAreaInnerLayer->getChildren()->removeObjectAtIndex(2);
 				}

@@ -20,7 +20,6 @@ enum class LoadingState {
 	HandleFileError,
 	ReadVersion,
 	HandleIncorrectVersion,
-	UpdateVersion,
 	ReadFinishedSaving,
 	HandleDidNotFinishSaving,
 	ReadHash,

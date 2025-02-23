@@ -28,30 +28,30 @@ void PSFMODAudioEngine::loadMusic(gd::string i_path, float i_speed, float i_p2, 
 void PSFMODAudioEngine::backupMusic() {
 	m_fields->m_backgroundMusicChannelBackup = m_backgroundMusicChannel;
 	m_backgroundMusicChannel = nullptr;
-	for (int i = 0; i < m_audioState.m_unkMapIntFloat7.size(); i++) {
-		m_fields->m_unkMapIntFloat7Backup[i] = m_audioState.m_unkMapIntFloat7[i];
+	for (int i = 0; i < m_audioState.m_unkMapIntFloat1.size(); i++) {
+		m_fields->m_unkMapIntFloat1Backup[i] = m_audioState.m_unkMapIntFloat1[i];
 	}
-	for (int i = 0; i < m_audioState.m_unkMapIntFloat8.size(); i++) {
-		m_fields->m_unkMapIntFloat8Backup[i] = m_audioState.m_unkMapIntFloat8[i];
+	for (int i = 0; i < m_audioState.m_unkMapIntFloat2.size(); i++) {
+		m_fields->m_unkMapIntFloat2Backup[i] = m_audioState.m_unkMapIntFloat2[i];
 	}
-	for (int i = 0; i < m_audioState.m_unkMapIntFloat9.size(); i++) {
-		m_fields->m_unkMapIntFloat9Backup[i] = m_audioState.m_unkMapIntFloat9[i];
+	for (int i = 0; i < m_audioState.m_unkMapIntFloat3.size(); i++) {
+		m_fields->m_unkMapIntFloat3Backup[i] = m_audioState.m_unkMapIntFloat3[i];
 	}
 }
 
 void PSFMODAudioEngine::restoreMusic() {
 	m_backgroundMusicChannel = m_fields->m_backgroundMusicChannelBackup;
 	m_fields->m_backgroundMusicChannelBackup = nullptr;
-	for (int i = 0; i < m_fields->m_unkMapIntFloat7Backup.size(); i++) {
-		m_audioState.m_unkMapIntFloat7[i] = m_fields->m_unkMapIntFloat7Backup[i];
+	for (int i = 0; i < m_fields->m_unkMapIntFloat1Backup.size(); i++) {
+		m_audioState.m_unkMapIntFloat1[i] = m_fields->m_unkMapIntFloat1Backup[i];
 	}
-	for (int i = 0; i < m_fields->m_unkMapIntFloat8Backup.size(); i++) {
-		m_audioState.m_unkMapIntFloat8[i] = m_fields->m_unkMapIntFloat8Backup[i];
+	for (int i = 0; i < m_fields->m_unkMapIntFloat2Backup.size(); i++) {
+		m_audioState.m_unkMapIntFloat2[i] = m_fields->m_unkMapIntFloat2Backup[i];
 	}
-	for (int i = 0; i < m_fields->m_unkMapIntFloat9Backup.size(); i++) {
-		m_audioState.m_unkMapIntFloat9[i] = m_fields->m_unkMapIntFloat9Backup[i];
+	for (int i = 0; i < m_fields->m_unkMapIntFloat3Backup.size(); i++) {
+		m_audioState.m_unkMapIntFloat3[i] = m_fields->m_unkMapIntFloat3Backup[i];
 	}
-	m_fields->m_unkMapIntFloat7Backup.clear();
-	m_fields->m_unkMapIntFloat8Backup.clear();
-	m_fields->m_unkMapIntFloat9Backup.clear();
+	m_fields->m_unkMapIntFloat1Backup.clear();
+	m_fields->m_unkMapIntFloat2Backup.clear();
+	m_fields->m_unkMapIntFloat3Backup.clear();
 }

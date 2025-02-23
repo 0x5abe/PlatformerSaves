@@ -33,9 +33,13 @@ option(WITH_PS_SEPARATORS "Add separators between saved fields for debugging pur
 
 if(WITH_PS_DESCRIBE)
 	add_definitions(-DPS_DESCRIBE)
+	add_definitions(-DPA_DESCRIBE)
+	add_definitions(-DPA_DEBUG)
 endif()
 if(WITH_PS_SEPARATORS)
 	add_definitions(-DPS_SEPARATORS)
+	add_definitions(-DPA_SEPARATORS)
+	add_definitions(-DPA_DEBUG)
 endif()
 
 if (NOT DEFINED ENV{GEODE_SDK})

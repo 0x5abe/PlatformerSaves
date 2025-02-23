@@ -12,8 +12,8 @@ using namespace geode::prelude;
 using namespace persistenceAPI;
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.0.9";
-int s_psfVersion = 9;
+char s_psfMagicAndVer[] = "PSF v0.1.0";
+int s_psfVersion = 10;
 
 // overrides
 
@@ -150,7 +150,7 @@ void PSPlayLayer::resetLevel() {
 	m_fields->m_inResetLevel = true;
 	PlayLayer::resetLevel();
 	if (savesEnabled() && m_isPlatformer) {
-		toggleMGVisibility(true); // it's actually toggleHideAttempts but virtuals are off for some reason IF IT BREAKS CHANGE IT BACK
+		toggleHideAttempts(true);
 	}
 	m_fields->m_inResetLevel = false;
 }
@@ -303,23 +303,28 @@ void PSPlayLayer::removeSaveFile(int i_slot) {
 bool PSPlayLayer::updatePsfFormat() {
 	switch (m_fields->m_readPsfVersion) {
 		case 7: {
+			m_fields->m_stream.setPAVersion(1);
 			m_fields->m_stream.seek(0);
 			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
 			m_fields->m_stream.seek(0, true);
 			m_fields->m_stream.clear();
 			m_fields->m_stream.writeZero(3*sizeof(int));
 			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
-			m_fields->m_readPsfVersion = s_psfVersion;
 			return true;
 		}
 		case 8: {
+			m_fields->m_stream.setPAVersion(1);
 			m_fields->m_stream.seek(0);
 			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
 			m_fields->m_stream.seek(0, true);
 			m_fields->m_stream.clear();
 			m_fields->m_stream.writeZero(sizeof(int));
 			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
-			m_fields->m_readPsfVersion = s_psfVersion;
+			return true;
+		}
+		case 9: {
+			m_fields->m_stream.setPAVersion(1);
+			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
 			return true;
 		}
 		default: {
