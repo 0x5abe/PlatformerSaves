@@ -1,5 +1,6 @@
 #include "PauseLayer.hpp"
 #include <hooks/PlayLayer.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
@@ -72,11 +73,7 @@ void PSPauseLayer::onQuit(CCObject* i_sender) {
 					PauseLayer::onQuit(i_sender);
 					m_fields->m_cancelSave = false;
 				}
-				CCEGLView::get()->showCursor(false);
-				bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-				if (l_lockCursor) {
-					CCEGLView::get()->toggleLockCursor(true);
-				}
+				util::platform::hideAndLockCursor(true);
 			}
 		);
 		return;

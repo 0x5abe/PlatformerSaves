@@ -7,9 +7,18 @@
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+
+#if defined(GEODE_IS_WINDOWS)
+	#define UNIQUE_ID_OFFSET 0x69c158
+#elif  defined(GEODE_IS_ANDROID64)
+	#define UNIQUE_ID_OFFSET 0x11fe018
+#elif  defined(GEODE_IS_ANDROID32)
+	#define UNIQUE_ID_OFFSET 0xa9f00c
+#endif
 
 PSPlayLayer* s_currentPlayLayer = nullptr;
 char s_psfMagicAndVer[] = "PSF v0.1.0";
@@ -38,6 +47,15 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 	return true;
 }
 
+void PSPlayLayer::processCreateObjectsFromSetup() {
+	if (!m_fields->m_startedLoadingObjects) {
+		m_fields->m_startedLoadingObjects = true;
+		*reinterpret_cast<int*>(geode::base::get()+UNIQUE_ID_OFFSET) = 12;
+		reinterpret_cast<persistenceAPI::PAPlayLayer*>(this)->m_fields->m_uniqueIDBase = *reinterpret_cast<int*>(geode::base::get()+UNIQUE_ID_OFFSET);
+	}
+	PlayLayer::processCreateObjectsFromSetup();
+}
+
 void PSPlayLayer::createObjectsFromSetupFinished() {
 	if (m_fields->m_loadingState == LoadingState::Setup) {
 		PlayLayer::createObjectsFromSetupFinished();
@@ -51,7 +69,7 @@ void PSPlayLayer::setupHasCompleted() {
 	}
 	else if (!savesEnabled() && m_fields->m_loadingState != LoadingState::WaitingForPopup) {
 		if (!Mod::get()->getSavedValue<bool>("has-seen-editor-notice")) {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Editor Level Saves",
 				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the PlatformerSaves <cy>mod settings</c> page.",
@@ -60,11 +78,7 @@ void PSPlayLayer::setupHasCompleted() {
 				[&](FLAlertLayer*, bool i_btn2) {
 					Mod::get()->setSavedValue<bool>("has-seen-editor-notice", true);
 					m_fields->m_loadingState = LoadingState::Ready;
-					CCEGLView::get()->showCursor(false);
-					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-					if (l_lockCursor) {
-						CCEGLView::get()->toggleLockCursor(true);
-					}
+					util::platform::hideAndLockCursor(true);
 				}
 			);
 		} else {
@@ -340,7 +354,7 @@ bool PSPlayLayer::makeBackup() {
 		return false;
 	}
 
-	l_filePath.append(std::format(".{}.bak",m_fields->m_readPsfVersion));
+	l_filePath.append(fmt::format(".{}.bak",m_fields->m_readPsfVersion));
 	//log::info("Backup file path: {}", l_filePath);
 	if (!m_fields->m_backupStream.setFile(l_filePath, true)) {
 		return false;

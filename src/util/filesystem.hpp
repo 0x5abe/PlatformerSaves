@@ -22,14 +22,14 @@ namespace util::filesystem {
 
 		switch(i_level->m_levelType) {
 			case GJLevelType::Local:
-				l_filePath.append(std::format("/saves/local/{}/slot{}{}", i_level->m_levelID.value(), i_slot, PSF_EXT));
+				l_filePath.append(fmt::format("/saves/local/{}/slot{}{}", i_level->m_levelID.value(), i_slot, PSF_EXT));
 				break;
 			case GJLevelType::Editor:
-				l_filePath.append(std::format("/saves/editor/{}_rev{}/slot{}{}", l_cleanLevelName.c_str(), i_level->m_levelRev, i_slot, PSF_EXT));
+				l_filePath.append(fmt::format("/saves/editor/{}_rev{}/slot{}{}", l_cleanLevelName.c_str(), i_level->m_levelRev, i_slot, PSF_EXT));
 				break;
 			case GJLevelType::Saved:
 			default:
-				l_filePath.append(std::format("/saves/online/{}/slot{}{}", i_level->m_levelID.value(), i_slot, PSF_EXT));
+				l_filePath.append(fmt::format("/saves/online/{}/slot{}{}", i_level->m_levelID.value(), i_slot, PSF_EXT));
 				break;
 		}
 		//log::info("Filepath: \"{}\"", l_filePath);

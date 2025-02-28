@@ -3,6 +3,7 @@
 #include "Geode/cocos/CCDirector.h"
 #include "Geode/cocos/label_nodes/CCLabelBMFont.h"
 #include <hooks/PlayLayer.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 
@@ -22,8 +23,7 @@ bool PlayLevelMenuPopup::init() {
 	if (!FLAlertLayer::init(150)) {
 		return false;
 	}
-
-	CCEGLView::get()->showCursor(true);
+	util::platform::hideAndLockCursor(false);
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	
 	m_validSaveExists = l_playLayer && l_playLayer->validSaveExists();
@@ -199,10 +199,6 @@ void PlayLevelMenuPopup::onClose(CCObject* sender) {
 }
 
 void PlayLevelMenuPopup::onRemove(CCObject* sender) {
-	CCEGLView::get()->showCursor(false);
-	bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-	if (l_lockCursor) {
-		CCEGLView::get()->toggleLockCursor(true);
-	}
+	util::platform::hideAndLockCursor(true);
 	removeFromParentAndCleanup(true);
 }

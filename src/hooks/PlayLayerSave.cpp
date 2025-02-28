@@ -135,6 +135,9 @@ void PSPlayLayer::saveGame() {
 
 void PSPlayLayer::saveCheckpointToStream(unsigned int i_index) {
 	//log::info("Saving Startpoints to stream");
+#if defined(PS_DEBUG) && defined(PS_DESCRIBE)
+	static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->describe();
+#endif
 	static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->save(m_fields->m_stream);
 	//log::info("Saved Startpoints to stream");
 }

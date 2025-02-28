@@ -3,6 +3,7 @@
 #include <ui/PlayLevelMenuPopup.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
@@ -168,7 +169,7 @@ void PSPlayLayer::loadGame() {
 			break;
 		}
 		case LoadingState::HandleFileError: {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The save file for this level <cr>could not be opened</c>.",
@@ -176,17 +177,13 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					CCEGLView::get()->showCursor(false);
-					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-					if (l_lockCursor) {
-						CCEGLView::get()->toggleLockCursor(true);
-					}
+					util::platform::hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleIncorrectVersion: {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"Updating the save file <cr>failed</c>.",
@@ -194,17 +191,13 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					CCEGLView::get()->showCursor(false);
-					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-					if (l_lockCursor) {
-						CCEGLView::get()->toggleLockCursor(true);
-					}
+					util::platform::hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleDidNotFinishSaving: {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The save file for this level appears to be <cr>corrupted</c>.",
@@ -212,17 +205,13 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					CCEGLView::get()->showCursor(false);
-					bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-					if (l_lockCursor) {
-						CCEGLView::get()->toggleLockCursor(true);
-					}
+					util::platform::hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleIncorrectHash: {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			if (m_level->m_levelType == GJLevelType::Editor) {
 				createQuickPopup("Error loading game",
@@ -236,11 +225,7 @@ void PSPlayLayer::loadGame() {
 						} else {
 							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 						}
-						CCEGLView::get()->showCursor(false);
-						bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-						if (l_lockCursor) {
-							CCEGLView::get()->toggleLockCursor(true);
-						}
+						util::platform::hideAndLockCursor(true);
 					}
 				);
 			} else {
@@ -254,11 +239,7 @@ void PSPlayLayer::loadGame() {
 						} else {
 							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 						}
-						CCEGLView::get()->showCursor(false);
-						bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-						if (l_lockCursor) {
-							CCEGLView::get()->toggleLockCursor(true);
-						}
+						util::platform::hideAndLockCursor(true);
 					}
 				);
 			}
@@ -303,7 +284,7 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_isInvisible = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
 
-	// TODO: FIX THIS OFFSET was 0x3d4 in 2.204
+	// This never seemed to matter
 	//int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);
 	//*l_unkField1 = 3;
 
@@ -311,6 +292,10 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_checkpoint->m_physicalCheckpointObject = l_newPhysicalCPO;
 	
 	l_checkpoint->m_physicalCheckpointObject->setStartPos(l_checkpoint->m_fields->m_position);
+
+#if defined(PS_DEBUG) && defined(PS_DESCRIBE)
+	l_checkpoint->describe();
+#endif
 
 	m_fields->m_normalModeCheckpoints->addObject(l_checkpoint);
 }

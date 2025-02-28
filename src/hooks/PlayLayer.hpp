@@ -54,8 +54,8 @@ public:
 		bool m_editorNoticeClosed = false;
 		bool m_cancelLevelLoad = false;
 		bool m_updateExtraData = false;
+		bool m_startedLoadingObjects = false;
 		int m_saveSlot = -1;
-		int m_uniqueIdBase = 12;
 		int m_readPsfVersion = -1;
 		int m_loadedAttempts = 0;
 		unsigned int m_remainingCheckpointLoadCount = 0;
@@ -79,6 +79,9 @@ public:
 
 	$override
 	bool init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreateObjects);
+
+	$override
+	void processCreateObjectsFromSetup();
 
 	$override 
 	void createObjectsFromSetupFinished();
@@ -148,7 +151,8 @@ public:
 	void saveCheckpointToStream(unsigned int i_index);
 	
 	inline int getGameObjectIndex(GameObject* i_object) {
-		return i_object->m_uniqueID-m_fields->m_uniqueIdBase;
+		int l_uniqueIDBase = reinterpret_cast<persistenceAPI::PAPlayLayer*>(this)->m_fields->m_uniqueIDBase;
+		return i_object->m_uniqueID-l_uniqueIDBase;
 	}
 
 	void setupKeybinds();

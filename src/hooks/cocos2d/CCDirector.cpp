@@ -1,9 +1,19 @@
 #include "CCDirector.hpp"
+#include <cstdint>
 #include <hooks/PlayLayer.hpp>
-#include "hooks/FMODAudioEngine.hpp"
+#include <hooks/FMODAudioEngine.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+
+#if defined(GEODE_IS_WINDOWS)
+	#define DIDCLICK_OFFSET 0x6a3048
+#elif  defined(GEODE_IS_ANDROID64)
+	#define DIDCLICK_OFFSET 0x12114a1
+#elif  defined(GEODE_IS_ANDROID32)
+	#define DIDCLICK_OFFSET 0xaac0fd
+#endif
 
 // overrides
 
@@ -32,7 +42,7 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 		}
 
 		if (s_currentPlayLayer->m_fields->m_cancelLevelLoad) {
-			CCEGLView::get()->showCursor(true);
+			util::platform::hideAndLockCursor(false);
 			CC_SAFE_RELEASE(s_currentPlayLayer->m_fields->m_transitionFadeScene);
 			s_currentPlayLayer->m_fields->m_transitionFadeScene = nullptr;
 			s_currentPlayLayer = nullptr;
@@ -92,9 +102,9 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 				if (l_levelPage3) {
 					l_levelPage3->m_isBusy = false;
 				}
-				// isBusy2
+				// didClick
 				// it's for when trying to use a button to get into the level instead of click
-				*reinterpret_cast<byte*>(geode::base::get()+0x6a3048) = 0;
+				*reinterpret_cast<uint8_t*>(geode::base::get()+DIDCLICK_OFFSET) = 0;
 			}
 
 			LevelAreaInnerLayer* l_levelAreaInnerLayer = static_cast<LevelAreaInnerLayer*>(CCScene::get()->getChildByID("LevelAreaInnerLayer"));
