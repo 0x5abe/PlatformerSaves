@@ -28,7 +28,7 @@ bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
 	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
-	geode::log::info("Read PSF Version: {}", m_fields->m_readPsfVersion);
+	//log::info("[readPsfVersionAndUpdateIfNecessary] Read PSF Version: {}", m_fields->m_readPsfVersion);
 	if (s_psfVersion != m_fields->m_readPsfVersion) {
 		if (!makeBackup()) {
 			return false;
@@ -255,6 +255,7 @@ void PSPlayLayer::loadGame() {
 				l_levelInfoLayer->m_progressTimer->setVisible(false);
 			}
 			m_fields->m_loadingState = LoadingState::Ready;
+			endStream();
 			break;
 		}
 	}

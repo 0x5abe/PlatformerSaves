@@ -148,12 +148,16 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 		if (m_fields->m_triedPlacingCheckpoint) {
 			m_fields->m_triedPlacingCheckpoint = false;
 		} else if (m_activatedCheckpoint != nullptr) {
+			//log::info("[markCheckpoint] triggered checkpoint");
 			l_checkpointObject->m_fields->m_timePlayed = m_timePlayed;
 			l_checkpointObject->m_fields->m_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			m_fields->m_normalModeCheckpoints->addObject(l_checkpointObject);
 			m_fields->m_activatedCheckpoints.push_back(CheckpointGameObjectReference(m_activatedCheckpoint));
 			// autosave
-			if (Mod::get()->getSettingValue<bool>("auto-save")) startSaveGame();
+			if (Mod::get()->getSettingValue<bool>("auto-save")) {
+				//log::info("[markCheckpoint] autosave triggered");
+				startSaveGame();
+			}
 		}
 	}
 
@@ -360,12 +364,18 @@ bool PSPlayLayer::makeBackup() {
 		return false;
 	}
 
+	//initialize buffer
 	std::vector<char> buf(m_fields->m_bytesToRead);
+
+	//read all the file into it and restore previous state (offset and bytes read)
 	m_fields->m_stream.seek(0);
 	m_fields->m_stream.read(buf.data(), m_fields->m_bytesToRead);
+	m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
+	m_fields->m_bytesRead = sizeof(s_psfMagicAndVer);
+
+	//write the buffer into a file as a backup
 	m_fields->m_backupStream.write(buf.data(), m_fields->m_bytesToRead);
 	m_fields->m_backupStream.end();
-	m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
 
 	return true;
 }
