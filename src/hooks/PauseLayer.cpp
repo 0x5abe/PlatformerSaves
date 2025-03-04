@@ -4,6 +4,7 @@
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+using namespace util::platform;
 
 // overrides
 
@@ -73,7 +74,7 @@ void PSPauseLayer::onQuit(CCObject* i_sender) {
 					PauseLayer::onQuit(i_sender);
 					m_fields->m_cancelSave = false;
 				}
-				util::platform::hideAndLockCursor(true);
+				hideAndLockCursor(true);
 			}
 		);
 		return;

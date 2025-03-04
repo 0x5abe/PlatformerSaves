@@ -6,6 +6,7 @@
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+using namespace util::platform;
 
 #if defined(GEODE_IS_WINDOWS)
 	#define DIDCLICK_OFFSET 0x6a3048
@@ -42,7 +43,7 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 		}
 
 		if (s_currentPlayLayer->m_fields->m_cancelLevelLoad) {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			CC_SAFE_RELEASE(s_currentPlayLayer->m_fields->m_transitionFadeScene);
 			s_currentPlayLayer->m_fields->m_transitionFadeScene = nullptr;
 			s_currentPlayLayer = nullptr;

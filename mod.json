@@ -54,6 +54,18 @@
 			"name": "Remove save on complete",
 			"description": "Removes the save file for a level once it is completed.",
 			"type": "bool"
+		},
+		"level-version-warning": {
+			"default": true,
+			"name": "Updated level version warning",
+			"description": "Show a warning when opening a save file that was updated from a previous version of the level.",
+			"type": "bool"
+		},
+		"psf-version-warning": {
+			"default": true,
+			"name": "Updated save file warning",
+			"description": "Show a warning when opening a save file that was updated from a previous PlatformerSaves version.",
+			"type": "bool"
 		}
 	},
 	"incompatibilities": [

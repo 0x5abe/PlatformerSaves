@@ -11,6 +11,7 @@
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+using namespace util::platform;
 
 #if defined(GEODE_IS_WINDOWS)
 	#define UNIQUE_ID_OFFSET 0x69c158
@@ -20,6 +21,7 @@ using namespace persistenceAPI;
 	#define UNIQUE_ID_OFFSET 0xa9f00c
 #endif
 
+// Max PSF version is 31 cause after that bitfield is broken
 PSPlayLayer* s_currentPlayLayer = nullptr;
 char s_psfMagicAndVer[] = "PSF v0.1.0";
 int s_psfVersion = 10;
@@ -29,6 +31,15 @@ int s_psfVersion = 10;
 bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreateObjects) {
 	// for processing objects asynchronously every time
 	s_currentPlayLayer = this;
+	#if defined(GEODE_IS_WINDOWS)
+		m_fields->m_platform = PSPlatform::Win;
+	#elif defined(GEODE_IS_ANDROID64)
+		m_fields->m_platform = PSPlatform::Android64;
+	#elif defined(GEODE_IS_ANDROID32)
+		m_fields->m_platform = PSPlatform::Android32;
+	#elif defined(GEODE_IS_MACOS)
+		m_fields->m_platform = PSPlatform::Mac;
+	#endif
 	m_fields->m_signalForAsyncLoad = !i_dontCreateObjects;
 	if (m_fields->m_signalForAsyncLoad) {
 		m_loadingProgress = 1.0f;
@@ -69,7 +80,7 @@ void PSPlayLayer::setupHasCompleted() {
 	}
 	else if (!savesEnabled() && m_fields->m_loadingState != LoadingState::WaitingForPopup) {
 		if (!Mod::get()->getSavedValue<bool>("has-seen-editor-notice")) {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Editor Level Saves",
 				"Saving the game is <cr>disabled</c> by default for editor levels since it can be <cr>unstable</c>. You can change this behavior in the PlatformerSaves <cy>mod settings</c> page.",
@@ -78,7 +89,7 @@ void PSPlayLayer::setupHasCompleted() {
 				[&](FLAlertLayer*, bool i_btn2) {
 					Mod::get()->setSavedValue<bool>("has-seen-editor-notice", true);
 					m_fields->m_loadingState = LoadingState::Ready;
-					util::platform::hideAndLockCursor(true);
+					hideAndLockCursor(true);
 				}
 			);
 		} else {
@@ -318,8 +329,8 @@ void PSPlayLayer::removeSaveFile(int i_slot) {
 	util::filesystem::removeSaveFile(m_level, i_slot);
 }
 
-bool PSPlayLayer::updatePsfFormat() {
-	switch (m_fields->m_readPsfVersion) {
+bool PSPlayLayer::updatePSFFormat() {
+	switch (m_fields->m_readPSFVersion) {
 		case 7: {
 			m_fields->m_stream.setPAVersion(1);
 			m_fields->m_stream.seek(0);
@@ -358,7 +369,7 @@ bool PSPlayLayer::makeBackup() {
 		return false;
 	}
 
-	l_filePath.append(fmt::format(".{}.bak",m_fields->m_readPsfVersion));
+	l_filePath.append(fmt::format(".{}.bak",m_fields->m_readPSFVersion));
 	//log::info("Backup file path: {}", l_filePath);
 	if (!m_fields->m_backupStream.setFile(l_filePath, true)) {
 		return false;

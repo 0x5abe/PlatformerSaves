@@ -3,9 +3,11 @@
 #include <hooks/PauseLayer.hpp>
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
+#include <util/platform.hpp>
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+using namespace util::platform;
 
 bool PSPlayLayer::startSaveGame() {
 	if (m_fields->m_savingState != SavingState::Ready || m_isPracticeMode) return false;
@@ -26,9 +28,24 @@ bool PSPlayLayer::startSaveGame() {
 	return true;
 }
 
-void PSPlayLayer::writePsfHeader() {
+void PSPlayLayer::writePSFHeader() {
 	m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
-	m_fields->m_stream.writeZero(16-sizeof(s_psfMagicAndVer));
+	// finishedSaving
+	m_fields->m_stream.writeZero(sizeof(bool));
+	PSFData l_psfData;
+	l_psfData.data = 0;
+	// save platform
+	l_psfData.m_platform = static_cast<uint8_t>(m_fields->m_platform);
+	// save original psf version
+	l_psfData.m_originalVersion = m_fields->m_originalPSFVersion;
+	// save updated from previous level version
+	l_psfData.m_updatedFromPreviousLevelVersion = m_fields->m_updatedFromPreviousLevelVersion;
+	m_fields->m_stream.write(reinterpret_cast<char*>(&l_psfData.data),sizeof(l_psfData.data));
+	// save low detail mode
+	bool l_lowDetailMode = m_level->m_lowDetailMode && m_level->m_lowDetailModeToggled;
+	m_fields->m_stream.write(reinterpret_cast<char*>(&l_lowDetailMode),sizeof(l_lowDetailMode));
+	// unused bytes
+	m_fields->m_stream.writeZero(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)+sizeof(bool)));
 	unsigned int l_levelStringHash = util::algorithm::hash_string(m_level->m_levelString.c_str());
 	m_fields->m_stream << l_levelStringHash;
 }
@@ -53,7 +70,7 @@ void PSPlayLayer::saveGame() {
 			}
 
 			int l_PAVersion = 2;
-			if (m_fields->m_readPsfVersion > 0 && m_fields->m_readPsfVersion < 10) {
+			if (m_fields->m_readPSFVersion > 0 && m_fields->m_readPSFVersion < 10) {
 				l_PAVersion = 1;
 			}
 			if (!m_fields->m_stream.setFile(l_filePath, l_PAVersion, true)) {
@@ -63,7 +80,7 @@ void PSPlayLayer::saveGame() {
 
 			showSavingProgressCircleSprite(true);
 			
-			writePsfHeader();
+			writePSFHeader();
 			
 			m_fields->m_stream << m_fields->m_remainingCheckpointSaveCount;
 

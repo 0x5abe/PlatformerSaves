@@ -5,6 +5,7 @@
 #include <domain/CheckpointGameObjectReference.hpp>
 #include <hooks/CheckpointObject.hpp>
 #include <sabe.persistenceapi/include/PersistenceAPI.hpp>
+#include <util/platform.hpp>
 
 class PSPlayLayer;
 
@@ -22,6 +23,13 @@ enum class LoadingState {
 	HandleIncorrectVersion,
 	ReadFinishedSaving,
 	HandleDidNotFinishSaving,
+	ReadPSFData,
+	ShowPlatformError,
+	ShowPlatformWarning,
+	ShowLevelVersionWarning,
+	ShowPSFVersionWarning,
+	ReadLowDetailMode,
+	HandleIncorrectLowDetailMode,
 	ReadHash,
 	HandleIncorrectHash,
 	ReadCheckpointCount,
@@ -40,6 +48,15 @@ enum class SavingState {
 	SaveExtraData
 };
 
+union PSFData {
+	struct {
+		uint8_t m_originalVersion : 5;
+		uint8_t m_platform : 2;
+		uint8_t m_updatedFromPreviousLevelVersion : 1;
+	};
+	uint8_t data;
+};
+
 class $modify(PSPlayLayer, PlayLayer) {
 public:
 	struct Fields {
@@ -55,14 +72,18 @@ public:
 		bool m_cancelLevelLoad = false;
 		bool m_updateExtraData = false;
 		bool m_startedLoadingObjects = false;
+		uint8_t m_originalPSFVersion = 0;
+		bool m_updatedFromPreviousLevelVersion = false;
 		int m_saveSlot = -1;
-		int m_readPsfVersion = -1;
+		int m_readPSFVersion = -1;
 		int m_loadedAttempts = 0;
 		unsigned int m_remainingCheckpointLoadCount = 0;
 		unsigned int m_remainingCheckpointSaveCount = 0;
 		unsigned int m_bytesToRead = 0;
 		unsigned int m_bytesRead = 0;
 		float m_loadingProgress = 0.0f;
+		util::platform::PSPlatform m_platform;
+		util::platform::PSPlatform m_readPlatform;
 		long long m_lastSavedCheckpointTimestamp = 0;
 		persistenceAPI::Stream m_stream;
 		persistenceAPI::Stream m_backupStream;
@@ -120,11 +141,15 @@ public:
 
 	void registerCheckpointsAndActivatedCheckpoints();
 
-	bool readPsfLevelStringHash();
+	bool readPSFVersionAndUpdateIfNecessary();
 
-	bool readPsfVersionAndUpdateIfNecessary();
+	bool readPSFFinishedSaving();
 
-	bool readPsfFinishedSaving();
+	void readPSFData();
+
+	bool readLowDetailMode();
+
+	bool readPSFLevelStringHash();
 
 	void showPlayLevelMenu();
 
@@ -142,7 +167,7 @@ public:
 
 	void endAsyncProcessCreateObjectsFromSetup();
 
-	void writePsfHeader();
+	void writePSFHeader();
 
 	bool startSaveGame();
 
@@ -169,7 +194,7 @@ public:
 
 	void removeSaveFile(int i_slot = -1);
 
-	bool updatePsfFormat();
+	bool updatePSFFormat();
 
 	bool makeBackup();
 };

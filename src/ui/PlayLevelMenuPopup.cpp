@@ -6,6 +6,7 @@
 #include <util/platform.hpp>
 
 using namespace geode::prelude;
+using namespace util::platform;
 
 PlayLevelMenuPopup* PlayLevelMenuPopup::create() {
 	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup();
@@ -23,7 +24,7 @@ bool PlayLevelMenuPopup::init() {
 	if (!FLAlertLayer::init(150)) {
 		return false;
 	}
-	util::platform::hideAndLockCursor(false);
+	hideAndLockCursor(false);
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
 	
 	m_validSaveExists = l_playLayer && l_playLayer->validSaveExists();
@@ -199,6 +200,6 @@ void PlayLevelMenuPopup::onClose(CCObject* sender) {
 }
 
 void PlayLevelMenuPopup::onRemove(CCObject* sender) {
-	util::platform::hideAndLockCursor(true);
+	hideAndLockCursor(true);
 	removeFromParentAndCleanup(true);
 }

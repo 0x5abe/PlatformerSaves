@@ -7,47 +7,75 @@
 
 using namespace geode::prelude;
 using namespace persistenceAPI;
+using namespace util::platform;
 
-bool PSPlayLayer::readPsfLevelStringHash() {
-	unsigned int l_savedLevelStringHash;
-
-	m_fields->m_stream >> l_savedLevelStringHash;
-	
-	if (l_savedLevelStringHash != util::algorithm::hash_string(m_level->m_levelString.c_str())) {
-		//log::info("[readPsfLevelStringHash] different levelstring hash");
-		return false;
-	}
-	//log::info("[readPsfLevelStringHash] same levelstring hash");
-	return true;
-}
-
-bool PSPlayLayer::readPsfVersionAndUpdateIfNecessary() {
+bool PSPlayLayer::readPSFVersionAndUpdateIfNecessary() {
 	std::string l_psfMagicAndVer(sizeof(s_psfMagicAndVer), ' ');
 
 	m_fields->m_stream.read(l_psfMagicAndVer.data(), sizeof(s_psfMagicAndVer));
 	l_psfMagicAndVer = l_psfMagicAndVer.substr(5, 5);
 	l_psfMagicAndVer.erase(std::remove(l_psfMagicAndVer.begin(), l_psfMagicAndVer.end(), '.'), l_psfMagicAndVer.end());
-	m_fields->m_readPsfVersion = std::stoi(l_psfMagicAndVer);
-	//log::info("[readPsfVersionAndUpdateIfNecessary] Read PSF Version: {}", m_fields->m_readPsfVersion);
-	if (s_psfVersion != m_fields->m_readPsfVersion) {
+	m_fields->m_readPSFVersion = std::stoi(l_psfMagicAndVer);
+	//log::info("[readPSFVersionAndUpdateIfNecessary] Read PSF Version: {}", m_fields->m_readPSFVersion);
+	if (s_psfVersion != m_fields->m_readPSFVersion) {
 		if (!makeBackup()) {
 			return false;
 		}
-		return updatePsfFormat();
+		bool l_updateSucceded = updatePSFFormat();
+		if (l_updateSucceded) {
+			m_fields->m_originalPSFVersion = m_fields->m_readPSFVersion;
+		}
+		return l_updateSucceded;
 	}
 	m_fields->m_stream.setPAVersion(2);
 	return true;
 }
 
-bool PSPlayLayer::readPsfFinishedSaving() {
-	bool l_params[16-sizeof(s_psfMagicAndVer)];
+bool PSPlayLayer::readPSFFinishedSaving() {
+	bool l_finishedSaving = false;
+	m_fields->m_stream.read(reinterpret_cast<char*>(&l_finishedSaving), sizeof(bool));
 
-	m_fields->m_stream.read(reinterpret_cast<char*>(l_params), 16-sizeof(s_psfMagicAndVer));
+	return l_finishedSaving;
+}
 
-	if (l_params[0] == false) {
+void PSPlayLayer::readPSFData() {
+	PSFData l_psfData;
+	l_psfData.data = 0;
+	m_fields->m_stream.read(reinterpret_cast<char*>(&l_psfData.data), sizeof(l_psfData.data));
+	// do this check because if file was updated during this load process we would overwrite it with 0
+	if (l_psfData.m_originalVersion != 0) {
+		m_fields->m_originalPSFVersion = l_psfData.m_originalVersion;
+	}
+	m_fields->m_updatedFromPreviousLevelVersion = l_psfData.m_updatedFromPreviousLevelVersion;
+	m_fields->m_readPlatform = static_cast<PSPlatform>(l_psfData.m_platform);
+	//log::info("[readPSFData] l_psfData.m_originalVersion: {}", static_cast<unsigned int>(l_psfData.m_originalVersion));
+	//log::info("[readPSFData] l_psfData.m_updatedFromPreviousLevelVersion: {}", static_cast<bool>(l_psfData.m_originalVersion));
+	//log::info("[readPSFData] l_psfData.m_readPlatform: {}", static_cast<unsigned int>(l_psfData.m_platform));
+	//log::info("[readPSFData] m_fields->m_originalPSFVersion: {}", m_fields->m_originalPSFVersion);
+	//log::info("[readPSFData] m_fields->m_updatedFromPreviousLevelVersion: {}", m_fields->m_updatedFromPreviousLevelVersion);
+	//log::info("[readPSFData] m_fields->m_readPlatform: {}", static_cast<unsigned int>(m_fields->m_readPlatform));
+}
+
+bool PSPlayLayer::readLowDetailMode() {
+	bool l_lowDetailMode = false;
+	m_fields->m_stream.read(reinterpret_cast<char*>(&l_lowDetailMode), sizeof(bool));
+
+	// unused bytes
+	m_fields->m_stream.ignore(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)+sizeof(bool)));
+
+	return l_lowDetailMode;
+}
+
+bool PSPlayLayer::readPSFLevelStringHash() {
+	unsigned int l_savedLevelStringHash;
+
+	m_fields->m_stream >> l_savedLevelStringHash;
+	
+	if (l_savedLevelStringHash != util::algorithm::hash_string(m_level->m_levelString.c_str())) {
+		//log::info("[readPSFLevelStringHash] different levelstring hash");
 		return false;
 	}
-
+	//log::info("[readPSFLevelStringHash] same levelstring hash");
 	return true;
 }
 
@@ -106,7 +134,7 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::ReadVersion: {
-			if (!readPsfVersionAndUpdateIfNecessary()) {
+			if (!readPSFVersionAndUpdateIfNecessary()) {
 				m_fields->m_loadingState = LoadingState::HandleIncorrectVersion;
 				break;
 			}
@@ -114,15 +142,44 @@ void PSPlayLayer::loadGame() {
 			// falls through
 		}
 		case LoadingState::ReadFinishedSaving: {
-			if (!readPsfFinishedSaving()) {
+			if (!readPSFFinishedSaving()) {
 				m_fields->m_loadingState = LoadingState::HandleDidNotFinishSaving;
+				break;
+			}
+			m_fields->m_loadingState = LoadingState::ReadPSFData;
+			// falls through
+		}
+		case LoadingState::ReadPSFData: {
+			readPSFData();
+			if ((m_fields->m_readPlatform != m_fields->m_platform) && m_fields->m_readPSFVersion < 10) {
+				m_fields->m_loadingState = LoadingState::ShowPlatformError;
+				break;
+			} else if (m_fields->m_readPlatform != m_fields->m_platform) {
+				m_fields->m_loadingState = LoadingState::ShowPlatformWarning;
+				break;
+			}
+			if (m_fields->m_updatedFromPreviousLevelVersion && Mod::get()->getSettingValue<bool>("level-version-warning")) {
+				m_fields->m_loadingState = LoadingState::ShowLevelVersionWarning;
+				break;
+			}
+			if (m_fields->m_originalPSFVersion != 0 && m_fields->m_originalPSFVersion != m_fields->m_readPSFVersion && Mod::get()->getSettingValue<bool>("psf-version-warning")) {
+				m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
+				break;
+			}
+			m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+			// falls through
+		}
+		case LoadingState::ReadLowDetailMode: {
+			bool l_lowDetailMode = readLowDetailMode();
+			if (m_level->m_lowDetailMode && l_lowDetailMode != m_level->m_lowDetailModeToggled) {
+				m_fields->m_loadingState = LoadingState::HandleIncorrectLowDetailMode;
 				break;
 			}
 			m_fields->m_loadingState = LoadingState::ReadHash;
 			// falls through
 		}
 		case LoadingState::ReadHash: {
-			if (!readPsfLevelStringHash()) {
+			if (!readPSFLevelStringHash()) {
 				m_fields->m_loadingState = LoadingState::HandleIncorrectHash;
 				break;
 			}
@@ -169,7 +226,7 @@ void PSPlayLayer::loadGame() {
 			break;
 		}
 		case LoadingState::HandleFileError: {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The save file for this level <cr>could not be opened</c>.",
@@ -177,13 +234,13 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					util::platform::hideAndLockCursor(true);
+					hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleIncorrectVersion: {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"Updating the save file <cr>failed</c>.",
@@ -191,13 +248,13 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					util::platform::hideAndLockCursor(true);
+					hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleDidNotFinishSaving: {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Error loading game",
 				"The save file for this level appears to be <cr>corrupted</c>.",
@@ -205,13 +262,105 @@ void PSPlayLayer::loadGame() {
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
 					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
-					util::platform::hideAndLockCursor(true);
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
+		case LoadingState::ShowPlatformError: {
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Error loading game",
+				"This save file version is <cr>not supported</c> on this platform.",
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
+		case LoadingState::ShowPlatformWarning: {
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Warning",
+				"This save file is from a different platform. <cy>Load it anyways</c>? (<cr>this might be unstable or crash the game</c>).",
+				"Cancel",
+				"Ok",
+				[&](FLAlertLayer*, bool i_btn2) {
+					if (i_btn2) {
+						if (m_fields->m_updatedFromPreviousLevelVersion && Mod::get()->getSettingValue<bool>("level-version-warning")) {
+							m_fields->m_loadingState = LoadingState::ShowLevelVersionWarning;
+							return;
+						}
+						if (m_fields->m_originalPSFVersion != 0 && m_fields->m_originalPSFVersion != m_fields->m_readPSFVersion && Mod::get()->getSettingValue<bool>("psf-version-warning")) {
+							m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
+							return;
+						}
+						m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+					} else {
+						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+					}
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
+		case LoadingState::ShowLevelVersionWarning: {
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Warning",
+				"The level in the save file was updated from a previous version of the level, <cr>this might be unstable or crash the game</c>. This warning can be disabled in the PlatformerSaves <cy>mod settings</c> page.",
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					if (m_fields->m_originalPSFVersion != 0 && m_fields->m_originalPSFVersion != m_fields->m_readPSFVersion && Mod::get()->getSettingValue<bool>("psf-version-warning")) {
+						m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
+						return;
+					}
+					m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
+		case LoadingState::ShowPSFVersionWarning: {
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Warning",
+				"This save file was updated from a previous version of PlatformerSaves, <cr>this might be unstable or crash the game</c>. This warning can be disabled in the PlatformerSaves <cy>mod settings</c> page.",
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
+		case LoadingState::HandleIncorrectLowDetailMode: {
+			std::string l_message;
+			if (m_level->m_lowDetailModeToggled) {
+				l_message = "This save file was created with low detail mode <cr>disabled</c>, but it is currently <cg>enabled</c>. If you want to load it you should <cr>disable</c> low detail mode in the level settings.";
+			} else {
+				l_message = "This save file was created with low detail mode <cg>enabled</c>, but it is currently <cr>disabled</c>. If you want to load it you should <cg>enable</c> low detail mode in the level settings.";
+			}
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Error loading game",
+				l_message,
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+					hideAndLockCursor(true);
 				}
 			);
 			break;
 		}
 		case LoadingState::HandleIncorrectHash: {
-			util::platform::hideAndLockCursor(false);
+			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			if (m_level->m_levelType == GJLevelType::Editor) {
 				createQuickPopup("Error loading game",
@@ -225,7 +374,7 @@ void PSPlayLayer::loadGame() {
 						} else {
 							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 						}
-						util::platform::hideAndLockCursor(true);
+						hideAndLockCursor(true);
 					}
 				);
 			} else {
@@ -236,10 +385,11 @@ void PSPlayLayer::loadGame() {
 					[&](FLAlertLayer*, bool i_btn2) {
 						if (i_btn2) {
 							m_fields->m_loadingState = LoadingState::ReadCheckpointCount;
+							m_fields->m_updatedFromPreviousLevelVersion = true;
 						} else {
 							m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 						}
-						util::platform::hideAndLockCursor(true);
+						hideAndLockCursor(true);
 					}
 				);
 			}
