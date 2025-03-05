@@ -16,11 +16,11 @@ void PSFMODAudioEngine::fadeOutMusic(float i_time, int i_channel) {
 	FMODAudioEngine::fadeOutMusic(i_time, i_channel);
 }
 
-void PSFMODAudioEngine::loadMusic(gd::string i_path, float i_speed, float i_p2, float i_volume, bool i_shouldLoop, int i_p5, int i_p6) {
+void PSFMODAudioEngine::loadMusic(gd::string i_path, float i_speed, float i_p2, float i_volume, bool i_shouldLoop, int i_p5, int i_p6, bool i_p7) {
 	if (m_fields->m_disableLoadMusic) {
 		return;
 	}
-	FMODAudioEngine::loadMusic(i_path, i_speed, i_p2, i_volume, i_shouldLoop, i_p5, i_p6);
+	FMODAudioEngine::loadMusic(i_path, i_speed, i_p2, i_volume, i_shouldLoop, i_p5, i_p6, i_p7);
 }
 
 // custom methods

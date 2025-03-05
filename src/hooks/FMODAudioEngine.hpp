@@ -21,7 +21,7 @@ public:
 	void fadeOutMusic(float i_time, int i_channel);
 
 	$override
-	void loadMusic(gd::string i_path, float i_speed, float i_p2, float i_volume, bool i_shouldLoop, int i_p5, int i_p6);
+	void loadMusic(gd::string i_path, float i_speed, float i_p2, float i_volume, bool i_shouldLoop, int i_p5, int i_p6, bool i_p7);
 
 	// custom methods
 
