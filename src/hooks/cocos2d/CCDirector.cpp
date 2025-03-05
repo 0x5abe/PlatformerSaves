@@ -110,7 +110,6 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 
 			LevelAreaInnerLayer* l_levelAreaInnerLayer = static_cast<LevelAreaInnerLayer*>(CCScene::get()->getChildByID("LevelAreaInnerLayer"));
 			if (l_levelAreaInnerLayer) {
-				//TODO: test!!!
 				l_levelAreaInnerLayer->m_enteringLevel = false;
 				l_levelAreaInnerLayer->m_exiting = false;
 				if (l_levelAreaInnerLayer->getChildrenCount() == 3) {
