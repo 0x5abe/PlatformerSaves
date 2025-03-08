@@ -4,8 +4,8 @@
 using namespace geode::prelude;
 using namespace persistenceAPI;
 
-unsigned long long s_FMODAudioEngineDelegate1 = 0;
-unsigned long long s_FMODAudioEngineDelegate2 = 0;
+size_t s_FMODAudioEngineDelegate1 = 0;
+size_t s_FMODAudioEngineDelegate2 = 0;
 
 // overrides
 

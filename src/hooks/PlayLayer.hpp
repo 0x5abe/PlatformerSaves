@@ -91,6 +91,7 @@ public:
 		SavingState m_savingState = SavingState::Ready;
 		cocos2d::CCScene* m_transitionFadeScene = nullptr;
 		geode::Ref<cocos2d::CCSprite> m_savingProgressCircleSprite = nullptr;
+		geode::Ref<cocos2d::CCSprite> m_savingSuccessSprite = nullptr;
 		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
 		std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
 		gd::unordered_set<int> m_loadedPersistentTimerItemSet;
@@ -185,6 +186,12 @@ public:
 	void setupSavingProgressCircleSprite();
 
 	void showSavingProgressCircleSprite(bool i_show);
+
+	void savingProgressCircleSpriteFadeOutEnd();
+
+	void setupSavingSuccessSprite();
+
+	void showSavingSuccessSprite();
 
 	void endStream();
 

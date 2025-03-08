@@ -4,10 +4,10 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <sabe.persistenceapi/include/PersistenceAPI.hpp>
 
-extern unsigned long long s_levelInfoLayerDelegate1;
-extern unsigned long long s_levelInfoLayerDelegate2;
-extern unsigned long long s_editLevelLayerDelegate1;
-extern unsigned long long s_editLevelLayerDelegate2;
+extern size_t s_levelInfoLayerDelegate1;
+extern size_t s_levelInfoLayerDelegate2;
+extern size_t s_editLevelLayerDelegate1;
+extern size_t s_editLevelLayerDelegate2;
 
 class $modify(PSCCKeyboardDispatcher, cocos2d::CCKeyboardDispatcher) {
 public:

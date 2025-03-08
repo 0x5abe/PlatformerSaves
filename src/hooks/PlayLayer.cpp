@@ -54,6 +54,7 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 	}
 	setupKeybinds();
 	setupSavingProgressCircleSprite();
+	setupSavingSuccessSprite();
 
 	return true;
 }
@@ -281,6 +282,7 @@ void PSPlayLayer::setupSavingProgressCircleSprite() {
 	m_fields->m_savingProgressCircleSprite->setZOrder(100);
 	m_fields->m_savingProgressCircleSprite->setScale(0.5f);
 	m_fields->m_savingProgressCircleSprite->setID("saving-progress-circle-sprite"_spr);
+	m_fields->m_savingProgressCircleSprite->setOpacity(0);
 
 	m_fields->m_savingProgressCircleSprite->runAction(CCRepeatForever::create(CCRotateBy::create(1.0f, 360.f)));
 	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
@@ -293,12 +295,51 @@ void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {
 		if (!l_currentScene->getChildren()->containsObject(m_fields->m_savingProgressCircleSprite)) {
 			l_currentScene->addChild(m_fields->m_savingProgressCircleSprite);
 		}
+		m_fields->m_savingProgressCircleSprite->runAction(CCFadeIn::create(0.5f));
 		m_fields->m_savingProgressCircleSprite->resumeSchedulerAndActions();
-		m_fields->m_savingProgressCircleSprite->setVisible(true);
 		return;	
 	}
+	m_fields->m_savingProgressCircleSprite->runAction(
+		CCSequence::create(
+			CCFadeOut::create(0.5f),
+			CCCallFunc::create(
+				this,
+				callfunc_selector(PSPlayLayer::savingProgressCircleSpriteFadeOutEnd)
+			),
+			nullptr
+		)
+	);
+}
+
+void PSPlayLayer::savingProgressCircleSpriteFadeOutEnd() {
 	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
-	m_fields->m_savingProgressCircleSprite->setVisible(false);
+}
+
+void PSPlayLayer::setupSavingSuccessSprite() {
+	CCSize l_winSize = CCDirector::sharedDirector()->getWinSize();
+	float l_separation = l_winSize.height/10;
+
+	m_fields->m_savingSuccessSprite = CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png");
+	m_fields->m_savingSuccessSprite->setPosition({l_winSize.width-l_separation,l_separation});
+	m_fields->m_savingSuccessSprite->setZOrder(100);
+	m_fields->m_savingSuccessSprite->setScale(1.0f);
+	m_fields->m_savingSuccessSprite->setID("saving-success-sprite"_spr);
+	m_fields->m_savingSuccessSprite->setOpacity(0);
+}
+
+void PSPlayLayer::showSavingSuccessSprite() {
+	CCScene* l_currentScene = CCScene::get();
+	if (!l_currentScene || !m_fields->m_savingSuccessSprite) return;
+	if (!l_currentScene->getChildren()->containsObject(m_fields->m_savingSuccessSprite)) {
+		l_currentScene->addChild(m_fields->m_savingSuccessSprite);
+	}
+	m_fields->m_savingSuccessSprite->runAction(
+		CCSequence::create(
+			CCFadeIn::create(0.5f),
+			CCFadeOut::create(0.5f),
+			nullptr
+		)
+	);
 }
 
 void PSPlayLayer::endStream() {

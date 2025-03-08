@@ -141,6 +141,7 @@ void PSPlayLayer::saveGame() {
 			m_fields->m_stream.write((char*)&o_finishedSaving,sizeof(bool));
 			endStream();
 			showSavingProgressCircleSprite(false);
+			showSavingSuccessSprite();
 			if (m_fields->m_exitAfterSave) {
 				//log::info("Goes into exitAfterSave");
 				m_fields->m_exitAfterSave = false;
