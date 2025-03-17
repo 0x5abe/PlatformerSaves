@@ -72,6 +72,8 @@ public:
 		bool m_cancelLevelLoad = false;
 		bool m_updateExtraData = false;
 		bool m_startedLoadingObjects = false;
+		bool m_savingProgressCircleSpriteFadeIn = false;
+		bool m_savingProgressCircleSpriteFadeOut = false;
 		uint8_t m_originalPSFVersion = 0;
 		bool m_updatedFromPreviousLevelVersion = false;
 		int m_saveSlot = -1;
@@ -186,6 +188,8 @@ public:
 	void setupSavingProgressCircleSprite();
 
 	void showSavingProgressCircleSprite(bool i_show);
+
+	void savingProgressCircleSpriteFadeInEnd();
 
 	void savingProgressCircleSpriteFadeOutEnd();
 

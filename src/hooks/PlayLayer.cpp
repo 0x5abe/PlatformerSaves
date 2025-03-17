@@ -295,10 +295,23 @@ void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {
 		if (!l_currentScene->getChildren()->containsObject(m_fields->m_savingProgressCircleSprite)) {
 			l_currentScene->addChild(m_fields->m_savingProgressCircleSprite);
 		}
-		m_fields->m_savingProgressCircleSprite->runAction(CCFadeIn::create(0.5f));
+		if (m_fields->m_savingProgressCircleSpriteFadeIn) return;
+		m_fields->m_savingProgressCircleSpriteFadeIn = true;
+		m_fields->m_savingProgressCircleSprite->runAction(
+			CCSequence::create(
+				CCFadeIn::create(0.5f),
+				CCCallFunc::create(
+					this,
+					callfunc_selector(PSPlayLayer::savingProgressCircleSpriteFadeInEnd)
+				),
+				nullptr
+			)
+		);
 		m_fields->m_savingProgressCircleSprite->resumeSchedulerAndActions();
 		return;	
 	}
+	if (m_fields->m_savingProgressCircleSpriteFadeOut) return;
+	m_fields->m_savingProgressCircleSpriteFadeOut = true;
 	m_fields->m_savingProgressCircleSprite->runAction(
 		CCSequence::create(
 			CCFadeOut::create(0.5f),
@@ -311,7 +324,12 @@ void PSPlayLayer::showSavingProgressCircleSprite(bool i_show) {
 	);
 }
 
+void PSPlayLayer::savingProgressCircleSpriteFadeInEnd() {
+	m_fields->m_savingProgressCircleSpriteFadeIn = false;
+}
+
 void PSPlayLayer::savingProgressCircleSpriteFadeOutEnd() {
+	m_fields->m_savingProgressCircleSpriteFadeOut = false;
 	m_fields->m_savingProgressCircleSprite->pauseSchedulerAndActions();
 }
 
