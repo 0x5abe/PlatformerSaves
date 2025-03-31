@@ -47,25 +47,25 @@ inline void operator>>(Stream& i_stream, PSCheckpointObject& o_value) {
 		CC_SAFE_RETAIN(o_value.m_player2Checkpoint);
 		reinterpret_cast<PAPlayerCheckpoint*>(o_value.m_player2Checkpoint)->load(i_stream);
 	}
-	i_stream >> o_value.m_unkInt1;
+	i_stream >> o_value.m_unke78;
 	SEPARATOR_I
-	i_stream >> o_value.m_unkInt2;
+	i_stream >> o_value.m_unke7c;
 	SEPARATOR_I
-	i_stream >> o_value.m_unkInt3;
+	i_stream >> o_value.m_unke80;
 	SEPARATOR_I
 	if (i_stream.getPAVersion() > 1) {
-		i_stream >> o_value.m_unkBool1;
+		i_stream >> o_value.m_ground2Invisible;
 		SEPARATOR_I
-		i_stream >> o_value.m_unkBool2;
+		i_stream >> o_value.m_streakBlend;
 	} else {
-		i_stream.read(reinterpret_cast<char*>(&o_value.m_unkBool1), 2);
+		i_stream.read(reinterpret_cast<char*>(&o_value.m_ground2Invisible), 2);
 	}
 	SEPARATOR_I
-	i_stream >> o_value.m_unkInt4;
+	i_stream >> o_value.m_uniqueID;
 	SEPARATOR_I
-	i_stream >> o_value.m_unkInt5;
+	i_stream >> o_value.m_respawnID;
 	VEC_SEPARATOR_I
-	i_stream >> o_value.m_vectorDynamicSaveObjects;
+	i_stream >> o_value.m_vectorSavedObjectStateRef;
 	VEC_SEPARATOR_I
 	i_stream >> o_value.m_vectorActiveSaveObjectState;
 	VEC_SEPARATOR_I
@@ -83,14 +83,14 @@ inline void operator>>(Stream& i_stream, PSCheckpointObject& o_value) {
 		static_cast<PACCArray*>(o_value.m_gradientTriggerObjectArray)->load<GradientTriggerObject>(i_stream);
 		ARR_SEPARATOR_I
 	}
-	i_stream >> o_value.m_unkBool3;
+	i_stream >> o_value.m_unk11e8;
 	UMAP_SEPARATOR_I
 	i_stream >> o_value.m_sequenceTriggerStateUnorderedMap;
 	UMAP_SEPARATOR_I
 	if (i_stream.getPAVersion() > 1) {
-		i_stream >> o_value.m_unkInt6;
+		i_stream >> o_value.m_commandIndex;
 	} else {
-		i_stream.read(reinterpret_cast<char*>(&o_value.m_unkInt6), 8);
+		i_stream.read(reinterpret_cast<char*>(&o_value.m_commandIndex), 8);
 	}
 	SEPARATOR_I
 
@@ -123,21 +123,21 @@ inline void operator<<(Stream& o_stream, PSCheckpointObject& i_value) {
 	if (l_hasPlayer2) {
 		reinterpret_cast<PAPlayerCheckpoint*>(i_value.m_player2Checkpoint)->save(o_stream);
 	}
-	o_stream << i_value.m_unkInt1;
+	o_stream << i_value.m_unke78;
 	SEPARATOR_O
-	o_stream << i_value.m_unkInt2;
+	o_stream << i_value.m_unke7c;
 	SEPARATOR_O
-	o_stream << i_value.m_unkInt3;
+	o_stream << i_value.m_unke80;
 	SEPARATOR_O
-	o_stream << i_value.m_unkBool1;
+	o_stream << i_value.m_ground2Invisible;
 	SEPARATOR_O
-	o_stream << i_value.m_unkBool2;
+	o_stream << i_value.m_streakBlend;
 	SEPARATOR_O
-	o_stream << i_value.m_unkInt4;
+	o_stream << i_value.m_uniqueID;
 	SEPARATOR_O
-	o_stream << i_value.m_unkInt5;
+	o_stream << i_value.m_respawnID;
 	VEC_SEPARATOR_O
-	o_stream << i_value.m_vectorDynamicSaveObjects;
+	o_stream << i_value.m_vectorSavedObjectStateRef;
 	VEC_SEPARATOR_O
 	o_stream << i_value.m_vectorActiveSaveObjectState;
 	VEC_SEPARATOR_O
@@ -156,11 +156,11 @@ inline void operator<<(Stream& o_stream, PSCheckpointObject& i_value) {
 		static_cast<PACCArray*>(i_value.m_gradientTriggerObjectArray)->save<GradientTriggerObject>(o_stream);
 		ARR_SEPARATOR_O
 	}
-	o_stream << i_value.m_unkBool3;
+	o_stream << i_value.m_unk11e8;
 	UMAP_SEPARATOR_O
 	o_stream << i_value.m_sequenceTriggerStateUnorderedMap;
 	UMAP_SEPARATOR_O
-	o_stream << i_value.m_unkInt6;
+	o_stream << i_value.m_commandIndex;
 	SEPARATOR_O
 
 	// custom members
@@ -176,8 +176,8 @@ void PSCheckpointObject::clean() {
 
 	reinterpret_cast<PAEffectManagerState*>(&m_effectManagerState)->clean();
 
-	m_vectorDynamicSaveObjects.clear();
-	gd::vector<SavedObjectStateRef>().swap(m_vectorDynamicSaveObjects);
+	m_vectorSavedObjectStateRef.clear();
+	gd::vector<SavedObjectStateRef>().swap(m_vectorSavedObjectStateRef);
 
 	m_vectorActiveSaveObjectState.clear();
 	gd::vector<SavedActiveObjectState>().swap(m_vectorActiveSaveObjectState);
@@ -199,18 +199,18 @@ void PSCheckpointObject::describe() {
 	if (m_player2Checkpoint) {
 		reinterpret_cast<PAPlayerCheckpoint*>(m_player2Checkpoint)->describe();
 	}
-	log::info("[PSCheckpointObject - describe] m_unkInt1: {}", m_unkInt1);
-	log::info("[PSCheckpointObject - describe] m_unkInt2: {}", m_unkInt2);
-	log::info("[PSCheckpointObject - describe] m_unkInt3: {}", m_unkInt3);
-	log::info("[PSCheckpointObject - describe] m_unkBool1: {}", m_unkBool1);
-	log::info("[PSCheckpointObject - describe] m_unkBool2: {}", m_unkBool2);
-	log::info("[PSCheckpointObject - describe] m_unkInt4: {}", m_unkInt4);
-	log::info("[PSCheckpointObject - describe] m_unkInt5: {}", m_unkInt5);
-	int l_size = m_vectorDynamicSaveObjects.size();
-	log::info("[PSCheckpointObject - describe] m_vectorDynamicSaveObjects.size(): {}", l_size);
+	log::info("[PSCheckpointObject - describe] m_unke78: {}", m_unke78);
+	log::info("[PSCheckpointObject - describe] m_unke7c: {}", m_unke7c);
+	log::info("[PSCheckpointObject - describe] m_unke80: {}", m_unke80);
+	log::info("[PSCheckpointObject - describe] m_ground2Invisible: {}", m_ground2Invisible);
+	log::info("[PSCheckpointObject - describe] m_streakBlend: {}", m_streakBlend);
+	log::info("[PSCheckpointObject - describe] m_uniqueID: {}", m_uniqueID);
+	log::info("[PSCheckpointObject - describe] m_respawnID: {}", m_respawnID);
+	int l_size = m_vectorSavedObjectStateRef.size();
+	log::info("[PSCheckpointObject - describe] m_vectorSavedObjectStateRef.size(): {}", l_size);
 	for (int i = 0; i < l_size; i++) {
-		log::info("[PSCheckpointObject - describe] m_vectorDynamicSaveObjects[{}]:", i);
-		reinterpret_cast<PASavedObjectStateRef*>(&m_vectorDynamicSaveObjects[i])->describe();
+		log::info("[PSCheckpointObject - describe] m_vectorSavedObjectStateRef[{}]:", i);
+		reinterpret_cast<PASavedObjectStateRef*>(&m_vectorSavedObjectStateRef[i])->describe();
 	}
 	l_size = m_vectorActiveSaveObjectState.size();
 	log::info("[PSCheckpointObject - describe] m_vectorActiveSaveObjectState.size(): {}", l_size);
@@ -228,7 +228,7 @@ void PSCheckpointObject::describe() {
 	if (m_gradientTriggerObjectArray) {
 		reinterpret_cast<PACCArray*>(m_gradientTriggerObjectArray)->describe<GradientTriggerObject>();
 	}
-	log::info("[PSCheckpointObject - describe] m_unkBool3: {}", m_unkBool3);
+	log::info("[PSCheckpointObject - describe] m_unk11e8: {}", m_unk11e8);
 	l_size = m_sequenceTriggerStateUnorderedMap.size();
 	log::info("[PSCheckpointObject - describe] m_sequenceTriggerStateUnorderedMap.size(): {}", l_size);
 	int i = 0;
@@ -238,6 +238,6 @@ void PSCheckpointObject::describe() {
 		reinterpret_cast<PASequenceTriggerState*>(&l_pair.second)->describe();
 		i++;
 	}
-	log::info("[PSCheckpointObject - describe] m_unkInt6: {}", m_unkInt6);
+	log::info("[PSCheckpointObject - describe] m_commandIndex: {}", m_commandIndex);
 }
 #endif
