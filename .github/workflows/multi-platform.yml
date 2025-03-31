@@ -58,7 +58,7 @@ jobs:
         uses: 0x5abe/build-geode-mod@main
         with:
           bindings: 0x5abe/geode-bindings
-          bindings-ref: cocos
+          bindings-ref: main
           combine: true
           cli: "latest"
           sdk: "nightly"
