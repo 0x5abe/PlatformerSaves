@@ -4,12 +4,13 @@
 using namespace geode::prelude;
 
 namespace util::platform {
-	// Already at limit since we use a 2 bit bitfield so ig we never supporting ios, etc.
+	// Limit is 7 cause we use a 3 bit bitfield
 	enum class PSPlatform {
 		Win = 0,
 		Android64 = 1,
 		Android32 = 2,
-		Mac = 3
+		Mac = 3,
+		Ios = 4,
 	};
 
 	inline void hideAndLockCursor(bool i_hide) {

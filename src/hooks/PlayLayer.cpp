@@ -23,8 +23,8 @@ using namespace util::platform;
 
 // Max PSF version is 31 cause after that bitfield is broken
 PSPlayLayer* s_currentPlayLayer = nullptr;
-char s_psfMagicAndVer[] = "PSF v0.1.0";
-int s_psfVersion = 10;
+char s_psfMagicAndVer[] = "PSF v0.1.1";
+int s_psfVersion = 11;
 
 // overrides
 
@@ -39,6 +39,8 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 		m_fields->m_platform = PSPlatform::Android32;
 	#elif defined(GEODE_IS_MACOS)
 		m_fields->m_platform = PSPlatform::Mac;
+	#elif defined(GEODE_IS_IOS)
+		m_fields->m_platform = PSPlatform::Ios;
 	#endif
 	m_fields->m_signalForAsyncLoad = !i_dontCreateObjects;
 	if (m_fields->m_signalForAsyncLoad) {

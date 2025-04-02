@@ -48,22 +48,9 @@ void PSPlayLayer::readPSFData() {
 	}
 	m_fields->m_updatedFromPreviousLevelVersion = l_psfData.m_updatedFromPreviousLevelVersion;
 	m_fields->m_readPlatform = static_cast<PSPlatform>(l_psfData.m_platform);
-	//log::info("[readPSFData] l_psfData.m_originalVersion: {}", static_cast<unsigned int>(l_psfData.m_originalVersion));
-	//log::info("[readPSFData] l_psfData.m_updatedFromPreviousLevelVersion: {}", static_cast<bool>(l_psfData.m_originalVersion));
-	//log::info("[readPSFData] l_psfData.m_readPlatform: {}", static_cast<unsigned int>(l_psfData.m_platform));
-	//log::info("[readPSFData] m_fields->m_originalPSFVersion: {}", m_fields->m_originalPSFVersion);
-	//log::info("[readPSFData] m_fields->m_updatedFromPreviousLevelVersion: {}", m_fields->m_updatedFromPreviousLevelVersion);
-	//log::info("[readPSFData] m_fields->m_readPlatform: {}", static_cast<unsigned int>(m_fields->m_readPlatform));
-}
-
-bool PSPlayLayer::readLowDetailMode() {
-	bool l_lowDetailMode = false;
-	m_fields->m_stream.read(reinterpret_cast<char*>(&l_lowDetailMode), sizeof(bool));
-
+	m_fields->m_lowDetailMode = l_psfData.m_lowDetailMode;
 	// unused bytes
-	m_fields->m_stream.ignore(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)+sizeof(bool)));
-
-	return l_lowDetailMode;
+	m_fields->m_stream.ignore(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)));
 }
 
 bool PSPlayLayer::readPSFLevelStringHash() {
@@ -154,6 +141,9 @@ void PSPlayLayer::loadGame() {
 			if ((m_fields->m_readPlatform != m_fields->m_platform) && m_fields->m_readPSFVersion < 10) {
 				m_fields->m_loadingState = LoadingState::ShowPlatformError;
 				break;
+			} else if (m_level->m_lowDetailMode && m_fields->m_lowDetailMode != m_level->m_lowDetailModeToggled) {
+				m_fields->m_loadingState = LoadingState::ShowIncorrectLowDetailModeError;
+				break;
 			} else if (m_fields->m_readPlatform != m_fields->m_platform) {
 				m_fields->m_loadingState = LoadingState::ShowPlatformWarning;
 				break;
@@ -164,15 +154,6 @@ void PSPlayLayer::loadGame() {
 			}
 			if (m_fields->m_originalPSFVersion != 0 && m_fields->m_originalPSFVersion != m_fields->m_readPSFVersion && Mod::get()->getSettingValue<bool>("psf-version-warning")) {
 				m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
-				break;
-			}
-			m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
-			// falls through
-		}
-		case LoadingState::ReadLowDetailMode: {
-			bool l_lowDetailMode = readLowDetailMode();
-			if (m_level->m_lowDetailMode && l_lowDetailMode != m_level->m_lowDetailModeToggled) {
-				m_fields->m_loadingState = LoadingState::HandleIncorrectLowDetailMode;
 				break;
 			}
 			m_fields->m_loadingState = LoadingState::ReadHash;
@@ -281,6 +262,26 @@ void PSPlayLayer::loadGame() {
 			);
 			break;
 		}
+		case LoadingState::ShowIncorrectLowDetailModeError: {
+			std::string l_message;
+			if (m_level->m_lowDetailModeToggled) {
+				l_message = "This save file was created with low detail mode <cr>disabled</c>, but it is currently <cg>enabled</c>. If you want to load it you should <cr>disable</c> low detail mode in the level settings.";
+			} else {
+				l_message = "This save file was created with low detail mode <cg>enabled</c>, but it is currently <cr>disabled</c>. If you want to load it you should <cg>enable</c> low detail mode in the level settings.";
+			}
+			hideAndLockCursor(false);
+			m_fields->m_loadingState = LoadingState::WaitingForPopup;
+			createQuickPopup("Error loading game",
+				l_message,
+				"Ok",
+				nullptr,
+				[&](FLAlertLayer*, bool i_btn2) {
+					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+					hideAndLockCursor(true);
+				}
+			);
+			break;
+		}
 		case LoadingState::ShowPlatformWarning: {
 			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
@@ -298,7 +299,7 @@ void PSPlayLayer::loadGame() {
 							m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
 							return;
 						}
-						m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+						m_fields->m_loadingState = LoadingState::ReadHash;
 					} else {
 						m_fields->m_loadingState = LoadingState::CancelLevelLoad;
 					}
@@ -319,7 +320,7 @@ void PSPlayLayer::loadGame() {
 						m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
 						return;
 					}
-					m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
+					m_fields->m_loadingState = LoadingState::ReadHash;
 					hideAndLockCursor(true);
 				}
 			);
@@ -333,27 +334,7 @@ void PSPlayLayer::loadGame() {
 				"Ok",
 				nullptr,
 				[&](FLAlertLayer*, bool i_btn2) {
-					m_fields->m_loadingState = LoadingState::ReadLowDetailMode;
-					hideAndLockCursor(true);
-				}
-			);
-			break;
-		}
-		case LoadingState::HandleIncorrectLowDetailMode: {
-			std::string l_message;
-			if (m_level->m_lowDetailModeToggled) {
-				l_message = "This save file was created with low detail mode <cr>disabled</c>, but it is currently <cg>enabled</c>. If you want to load it you should <cr>disable</c> low detail mode in the level settings.";
-			} else {
-				l_message = "This save file was created with low detail mode <cg>enabled</c>, but it is currently <cr>disabled</c>. If you want to load it you should <cg>enable</c> low detail mode in the level settings.";
-			}
-			hideAndLockCursor(false);
-			m_fields->m_loadingState = LoadingState::WaitingForPopup;
-			createQuickPopup("Error loading game",
-				l_message,
-				"Ok",
-				nullptr,
-				[&](FLAlertLayer*, bool i_btn2) {
-					m_fields->m_loadingState = LoadingState::CancelLevelLoad;
+					m_fields->m_loadingState = LoadingState::ReadHash;
 					hideAndLockCursor(true);
 				}
 			);

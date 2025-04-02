@@ -35,17 +35,16 @@ void PSPlayLayer::writePSFHeader() {
 	PSFData l_psfData;
 	l_psfData.data = 0;
 	// save platform
-	l_psfData.m_platform = static_cast<uint8_t>(m_fields->m_platform);
+	l_psfData.m_platform = static_cast<uint16_t>(m_fields->m_platform);
 	// save original psf version
 	l_psfData.m_originalVersion = m_fields->m_originalPSFVersion;
 	// save updated from previous level version
 	l_psfData.m_updatedFromPreviousLevelVersion = m_fields->m_updatedFromPreviousLevelVersion;
-	m_fields->m_stream.write(reinterpret_cast<char*>(&l_psfData.data),sizeof(l_psfData.data));
 	// save low detail mode
-	bool l_lowDetailMode = m_level->m_lowDetailMode && m_level->m_lowDetailModeToggled;
-	m_fields->m_stream.write(reinterpret_cast<char*>(&l_lowDetailMode),sizeof(l_lowDetailMode));
+	l_psfData.m_lowDetailMode = m_level->m_lowDetailMode && m_level->m_lowDetailModeToggled;
+	m_fields->m_stream.write(reinterpret_cast<char*>(&l_psfData.data),sizeof(l_psfData.data));
 	// unused bytes
-	m_fields->m_stream.writeZero(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)+sizeof(bool)));
+	m_fields->m_stream.writeZero(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)));
 	unsigned int l_levelStringHash = util::algorithm::hash_string(m_level->m_levelString.c_str());
 	m_fields->m_stream << l_levelStringHash;
 }

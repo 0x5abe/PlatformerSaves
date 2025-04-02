@@ -28,8 +28,7 @@ enum class LoadingState {
 	ShowPlatformWarning,
 	ShowLevelVersionWarning,
 	ShowPSFVersionWarning,
-	ReadLowDetailMode,
-	HandleIncorrectLowDetailMode,
+	ShowIncorrectLowDetailModeError,
 	ReadHash,
 	HandleIncorrectHash,
 	ReadCheckpointCount,
@@ -50,11 +49,13 @@ enum class SavingState {
 
 union PSFData {
 	struct {
-		uint8_t m_originalVersion : 5;
-		uint8_t m_platform : 2;
-		uint8_t m_updatedFromPreviousLevelVersion : 1;
+		uint16_t m_originalVersion : 5;
+		uint16_t m_platform : 3;
+		uint16_t m_updatedFromPreviousLevelVersion : 1;
+		uint16_t m_lowDetailMode : 1;
+		uint16_t m_unused : 6;
 	};
-	uint8_t data;
+	uint16_t data;
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
@@ -76,6 +77,7 @@ public:
 		bool m_savingProgressCircleSpriteFadeOut = false;
 		uint8_t m_originalPSFVersion = 0;
 		bool m_updatedFromPreviousLevelVersion = false;
+		bool m_lowDetailMode = false;
 		int m_saveSlot = -1;
 		int m_readPSFVersion = -1;
 		int m_loadedAttempts = 0;
@@ -149,8 +151,6 @@ public:
 	bool readPSFFinishedSaving();
 
 	void readPSFData();
-
-	bool readLowDetailMode();
 
 	bool readPSFLevelStringHash();
 
