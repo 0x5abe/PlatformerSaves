@@ -395,7 +395,6 @@ bool PSPlayLayer::updatePSFFormat() {
 		case 7: {
 			m_fields->m_stream.setPAVersion(1);
 			m_fields->m_stream.seek(0);
-			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
 			m_fields->m_stream.seek(0, true);
 			m_fields->m_stream.clear();
 			m_fields->m_stream.writeZero(3*sizeof(int));
@@ -405,7 +404,6 @@ bool PSPlayLayer::updatePSFFormat() {
 		case 8: {
 			m_fields->m_stream.setPAVersion(1);
 			m_fields->m_stream.seek(0);
-			m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
 			m_fields->m_stream.seek(0, true);
 			m_fields->m_stream.clear();
 			m_fields->m_stream.writeZero(sizeof(int));

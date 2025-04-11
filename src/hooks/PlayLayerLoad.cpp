@@ -46,9 +46,15 @@ void PSPlayLayer::readPSFData() {
 	if (l_psfData.m_originalVersion != 0) {
 		m_fields->m_originalPSFVersion = l_psfData.m_originalVersion;
 	}
-	m_fields->m_updatedFromPreviousLevelVersion = l_psfData.m_updatedFromPreviousLevelVersion;
-	m_fields->m_readPlatform = static_cast<PSPlatform>(l_psfData.m_platform);
-	m_fields->m_lowDetailMode = l_psfData.m_lowDetailMode;
+	if (m_fields->m_readPSFVersion > 9) {
+		m_fields->m_updatedFromPreviousLevelVersion = l_psfData.m_updatedFromPreviousLevelVersion;
+		m_fields->m_readPlatform = static_cast<PSPlatform>(l_psfData.m_platform);
+		m_fields->m_lowDetailMode = l_psfData.m_lowDetailMode;
+	} else {
+		m_fields->m_updatedFromPreviousLevelVersion = false;
+		m_fields->m_readPlatform = PSPlatform::Win;
+		m_fields->m_lowDetailMode = false;
+	}
 	// unused bytes
 	m_fields->m_stream.ignore(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)));
 }
@@ -312,10 +318,13 @@ void PSPlayLayer::loadGame() {
 			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Warning",
-				"The level in the save file was updated from a previous version of the level, <cr>this might be unstable or crash the game</c>. This warning can be disabled in the PlatformerSaves <cy>mod settings</c> page.",
+				"The level in the save file was updated from a previous version of the level, <cr>this might be unstable or crash the game</c>.",
 				"Ok",
-				nullptr,
+				"Don't show",
 				[&](FLAlertLayer*, bool i_btn2) {
+					if (i_btn2) {
+						Mod::get()->setSettingValue<bool>("level-version-warning", false);
+					}
 					if (m_fields->m_originalPSFVersion != 0 && m_fields->m_originalPSFVersion != m_fields->m_readPSFVersion && Mod::get()->getSettingValue<bool>("psf-version-warning")) {
 						m_fields->m_loadingState = LoadingState::ShowPSFVersionWarning;
 						return;
@@ -330,10 +339,13 @@ void PSPlayLayer::loadGame() {
 			hideAndLockCursor(false);
 			m_fields->m_loadingState = LoadingState::WaitingForPopup;
 			createQuickPopup("Warning",
-				"This save file was updated from a previous version of PlatformerSaves, <cr>this might be unstable or crash the game</c>. This warning can be disabled in the PlatformerSaves <cy>mod settings</c> page.",
+				"This save file was updated from a previous version of PlatformerSaves, <cr>this might be unstable or crash the game</c>.",
 				"Ok",
-				nullptr,
+				"Don't show",
 				[&](FLAlertLayer*, bool i_btn2) {
+					if (i_btn2) {
+						Mod::get()->setSettingValue<bool>("psf-version-warning", false);
+					}
 					m_fields->m_loadingState = LoadingState::ReadHash;
 					hideAndLockCursor(true);
 				}
@@ -415,6 +427,18 @@ void PSPlayLayer::loadCheckpointFromStream() {
 	l_newPhysicalCPO->m_isDisabled2 = true; // who knows
 	l_newPhysicalCPO->m_isInvisible = true; // who knows
 	l_newPhysicalCPO->setOpacity(0);
+
+	// Rainbow checkpoints compat
+	Mod* l_rainbowCheckpoints = geode::Loader::get()->getLoadedMod("alphalaneous.rainbow_checkpoints");
+	if (l_rainbowCheckpoints) {
+		CCSprite* l_outer = CCSprite::create(); //createWithSpriteFrameName("square_01_001.png");
+		l_outer->setID("alphalaneous.rainbow_checkpoints/outer");
+		l_newPhysicalCPO->addChild(l_outer);
+
+		CCSprite* l_inner = CCSprite::create(); //createWithSpriteFrameName("square_01_001.png");
+		l_inner->setID("alphalaneous.rainbow_checkpoints/inner");
+		l_newPhysicalCPO->addChild(l_inner);
+	}
 
 	// This never seemed to matter
 	//int* l_unkField1 = reinterpret_cast<int*>(reinterpret_cast<size_t>(l_newPhysicalCPO)+0x3d4);

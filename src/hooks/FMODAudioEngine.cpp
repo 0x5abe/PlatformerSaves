@@ -23,6 +23,14 @@ void PSFMODAudioEngine::loadMusic(gd::string i_path, float i_speed, float i_p2, 
 	FMODAudioEngine::loadMusic(i_path, i_speed, i_p2, i_volume, i_shouldLoop, i_p5, i_p6, i_p7);
 }
 
+// DEBUG STUFF
+// void PSFMODAudioEngine::queueStartMusic(gd::string audioFilename, float i_p2, float i_p3, float i_p4, bool i_p5, int ms, int i_p6, int i_p7, int i_p8, int i_p9, bool i_p10, int i_p11, bool i_p12, bool i_p13) {
+// 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
+// 	l_playLayer->m_tryPlaceCheckpoint = true;
+// 	log::info("Run QueueStartMusic");
+// 	FMODAudioEngine::queueStartMusic(audioFilename, i_p2, i_p3, i_p4, i_p5, ms, i_p6, i_p7, i_p8, i_p9, i_p10, i_p11, i_p12, i_p13);
+// }
+
 // custom methods
 
 void PSFMODAudioEngine::backupMusic() {

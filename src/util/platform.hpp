@@ -9,8 +9,10 @@ namespace util::platform {
 		Win = 0,
 		Android64 = 1,
 		Android32 = 2,
-		Mac = 3,
-		Ios = 4,
+		MacArm = 3,
+		MacIntel = 4,
+		Ios = 5,
+		PlatformInvalid = 7,
 	};
 
 	inline void hideAndLockCursor(bool i_hide) {

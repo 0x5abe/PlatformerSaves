@@ -46,6 +46,8 @@ bool PSCCDirector::replaceScene(CCScene* i_scene) {
 			hideAndLockCursor(false);
 			CC_SAFE_RELEASE(s_currentPlayLayer->m_fields->m_transitionFadeScene);
 			s_currentPlayLayer->m_fields->m_transitionFadeScene = nullptr;
+			GameManager::get()->m_gameLayer = nullptr;
+			GameManager::get()->m_playLayer = nullptr;
 			s_currentPlayLayer = nullptr;
 
 			// restore loadMusic
