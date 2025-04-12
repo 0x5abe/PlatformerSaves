@@ -1,3 +1,8 @@
+## v1.0.1-alpha.5
+
+* Fixed multiple bugs
+* Added a new save indicator
+
 ## v1.0.1-alpha.4
 
 * Added storing of attempts, persistent item and timers
