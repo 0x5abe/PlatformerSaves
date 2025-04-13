@@ -62,9 +62,14 @@ jobs:
         id: list-workflows
         shell: bash
         run: |
-          WorkflowList=$(curl -L -H 'Accept: application/vnd.github+json; charset=utf-8' 'https://api.github.com/repos/0x5abe/PersistenceAPI/actions/runs?per_page=1&status=success')
-          echo $WorkflowList
-          echo "workflows=$WorkflowList" >> $GITHUB_OUTPUT
+          # WorkflowList=$(curl -L -H 'Accept: application/vnd.github+json; charset=utf-8' 'https://api.github.com/repos/0x5abe/PersistenceAPI/actions/runs?per_page=1&status=success')
+          # echo $WorkflowList
+          # echo "workflows=$WorkflowList" >> $GITHUB_OUTPUT
+          {
+            echo "workflows<<EOF"
+            curl -L -H 'Accept: application/vnd.github+json; charset=utf-8' 'https://api.github.com/repos/0x5abe/PersistenceAPI/actions/runs?per_page=1&status=success'
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
   
       - name: Fetch PersistenceAPI
         uses: actions/download-artifact@v4
