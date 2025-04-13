@@ -393,7 +393,7 @@ bool PSPlayLayer::canSave() {
 
 bool PSPlayLayer::savesEnabled() {
 	//log::info("savesEnabled: {}", Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor);
-	return Mod::get()->getSettingValue<bool>("editor-saves") || m_level->m_levelType != GJLevelType::Editor;
+	return Mod::get()->getSettingValue<bool>("editor-saves") || ((m_level) && m_level->m_levelType != GJLevelType::Editor);
 }
 
 void PSPlayLayer::removeSaveFile(int i_slot) {
