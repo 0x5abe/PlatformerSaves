@@ -62,7 +62,9 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 	if (m_fields->m_signalForAsyncLoad) {
 		m_loadingProgress = 0.0f;
 	}
+	#if !defined(GEODE_IS_IOS)
 	setupKeybinds();
+	#endif
 	setupSavingProgressCircleSprite();
 	setupSavingSuccessSprite();
 
@@ -265,6 +267,7 @@ bool PSPlayLayer::validSaveExists() {
 	return util::filesystem::validSaveExists(m_level);
 }
 
+#if !defined(GEODE_IS_IOS)
 void PSPlayLayer::setupKeybinds() {
 	addEventListener<keybinds::InvokeBindFilter>(
 		[this](keybinds::InvokeBindEvent* event) {
@@ -281,6 +284,7 @@ void PSPlayLayer::setupKeybinds() {
 		"save-game"_spr
 	);
 }
+#endif
 
 void PSPlayLayer::setupSavingProgressCircleSprite() {
 	CCSize l_winSize = CCDirector::sharedDirector()->getWinSize();

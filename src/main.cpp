@@ -1,3 +1,4 @@
+#if !defined(GEODE_IS_IOS)
 #include <Geode/Geode.hpp>
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <sabe.persistenceapi/include/PersistenceAPI.hpp>
@@ -22,3 +23,4 @@ void setupKeybinds() {
 		Category::PLAY,
 	});
 }
+#endif

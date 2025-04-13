@@ -2,7 +2,9 @@
 	"geode": "4.3.1",
 	"gd": {
 		"win": "2.2074",
-		"android": "2.2074"
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
 	},
 	"version": "v1.0.1-alpha.5",
 	"id": "sabe.platformersaves",
@@ -23,6 +25,11 @@
 		{
 			"id": "geode.custom-keybinds",
 			"version": ">=v1.6.0",
+			"platforms": [
+				"win",
+				"android",
+				"mac"
+			],
 			"importance": "required"
 		},
 		{

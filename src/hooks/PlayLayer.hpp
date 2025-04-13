@@ -183,7 +183,9 @@ public:
 		return i_object->m_uniqueID-l_uniqueIDBase;
 	}
 
+	#if !defined(GEODE_IS_IOS)
 	void setupKeybinds();
+	#endif
 
 	void setupSavingProgressCircleSprite();
 
