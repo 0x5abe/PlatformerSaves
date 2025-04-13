@@ -113,7 +113,7 @@ void PSPlayLayer::loadGame() {
 
 			LevelInfoLayer* l_levelInfoLayer = static_cast<LevelInfoLayer*>(CCScene::get()->getChildByID("LevelInfoLayer"));
 			if (l_levelInfoLayer) {
-				l_levelInfoLayer->m_progressTimer->setColor(ccColor3B(220, 32, 64));
+				l_levelInfoLayer->m_progressTimer->setColor(ccc3(220, 32, 64));
 			}
 
 			m_fields->m_bytesToRead = std::filesystem::file_size(l_filePath);
