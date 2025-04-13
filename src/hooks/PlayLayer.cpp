@@ -19,6 +19,12 @@ using namespace util::platform;
 	#define UNIQUE_ID_OFFSET 0x11fe018
 #elif  defined(GEODE_IS_ANDROID32)
 	#define UNIQUE_ID_OFFSET 0xa9f00c
+#elif defined(GEODE_IS_ARM_MAC)
+	#define UNIQUE_ID_OFFSET 0x8aa39c
+#elif defined(GEODE_IS_INTEL_MAC)
+	#define UNIQUE_ID_OFFSET 0x985500
+#elif defined(GEODE_IS_IOS)
+	#define UNIQUE_ID_OFFSET 0x83f2e8
 #endif
 
 // Max PSF version is 31 cause after that bitfield is broken
@@ -37,8 +43,10 @@ bool PSPlayLayer::init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreate
 		m_fields->m_platform = PSPlatform::Android64;
 	#elif defined(GEODE_IS_ANDROID32)
 		m_fields->m_platform = PSPlatform::Android32;
-	#elif defined(GEODE_IS_MACOS)
-		m_fields->m_platform = PSPlatform::Mac;
+	#elif defined(GEODE_IS_ARM_MAC)
+		m_fields->m_platform = PSPlatform::MacArm;
+	#elif defined(GEODE_IS_INTEL_MAC)
+		m_fields->m_platform = PSPlatform::MacIntel;
 	#elif defined(GEODE_IS_IOS)
 		m_fields->m_platform = PSPlatform::Ios;
 	#endif

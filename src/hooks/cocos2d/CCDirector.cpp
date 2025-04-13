@@ -14,6 +14,12 @@ using namespace util::platform;
 	#define DIDCLICK_OFFSET 0x12114a1
 #elif  defined(GEODE_IS_ANDROID32)
 	#define DIDCLICK_OFFSET 0xaac0fd
+#elif defined(GEODE_IS_ARM_MAC)
+	#define DIDCLICK_OFFSET 0x8b0f4c
+#elif defined(GEODE_IS_INTEL_MAC)
+	#define DIDCLICK_OFFSET 0x98bf1c
+#elif defined(GEODE_IS_IOS)
+	#define DIDCLICK_OFFSET 0x87a240
 #endif
 
 // overrides
