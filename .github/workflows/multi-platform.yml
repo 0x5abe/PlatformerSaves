@@ -35,7 +35,28 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      # - name: Detect platform
+      #   id: platform
+      #   shell: bash
+      #   run: |
+      #     if [ "$RUNNER_OS" = "Linux" ]; then
+      #       ID=linux
+      #     elif [ "$RUNNER_OS" = "Windows" ]; then
+      #       ID=win
+      #     elif [ "$RUNNER_OS" = "macOS" ]; then
+      #       ID=mac
+      #     fi
+      #     if [ "$ID" = "linux" ]; then
+      #       MKDIR_CMD=mkdir
+      #     elif [ "$ID" = "win" ]; then
+      #       MKDIR_CMD=New-item
+      #     elif [ "$ID" = "mac" ]; then
+      #       MKDIR_CMD=mkdir
+      #     fi
+      #     echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: List PersistenceAPI workflows
         id: list-workflows
@@ -53,11 +74,17 @@ jobs:
           repository: 0x5abe/PersistenceAPI
           run-id: ${{ fromJSON(steps.list-workflows.outputs.workflows).workflow_runs[0].id }}
       
-      - name: Put it in the deps folder
+      # - name: Extract in geode-deps
+      #   run: |
+      #     New-item 'build\geode-deps\sabe.persistenceapi' -ItemType Directory -force
+      #     7z x ${{ }}'.\Build Output\sabe.persistenceapi.geode' '-o.\build\geode-deps\sabe.persistenceapi'
+      #     New-Item "build\geode-deps\sabe.persistenceapi\geode-dep-options.json" -ItemType File -Value '{ "required": true }'
+      - name: Extract in geode-deps
+        shell: bash
         run: |
-          New-item 'build\geode-deps\sabe.persistenceapi' -ItemType Directory -force
-          7z x '.\Build Output\sabe.persistenceapi.geode' '-o.\build\geode-deps\sabe.persistenceapi'
-          New-Item "build\geode-deps\sabe.persistenceapi\geode-dep-options.json" -ItemType File -Value '{ "required": true }'
+          mkdir -p build/geode-deps/sabe.persistenceapi
+          7z x './Build Output/sabe.persistenceapi.geode' '-o./build/geode-deps/sabe.persistenceapi'
+          echo '{ "required": true }' > build/geode-deps/sabe.persistenceapi/geode-dep-options.json
 
       - name: Build the mod
         uses: 0x5abe/build-geode-mod@main
