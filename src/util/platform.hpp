@@ -15,14 +15,23 @@ namespace util::platform {
 		PlatformInvalid = 7,
 	};
 
-	// TODO: Support on Mac
-	inline void hideAndLockCursor(bool i_hide) {
+	inline void toggleLockCursor(bool i_state) {
 		#if defined(GEODE_IS_WINDOWS)
-			CCEGLView::get()->showCursor(!i_hide);
-			bool l_lockCursor = GameManager::get()->getGameVariable("0128");
-			if (l_lockCursor) {
-				CCEGLView::get()->toggleLockCursor(i_hide);
-			}
+			CCEGLView::get()->toggleLockCursor(i_state);
+		#elif defined(GEODE_IS_MAC)
+			// TODO: implement someday
 		#endif
+	}
+
+	inline void hideAndLockCursor(bool i_hide) {
+		if (i_hide) {
+			PlatformToolbox::hideCursor();
+		} else {
+			PlatformToolbox::showCursor();
+		}
+		bool l_lockCursor = GameManager::get()->getGameVariable("0128");
+		if (l_lockCursor) {
+			toggleLockCursor(i_hide);
+		}
 	}
 }

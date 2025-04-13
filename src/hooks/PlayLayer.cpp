@@ -17,9 +17,9 @@ using namespace util::platform;
 
 #if defined(GEODE_IS_WINDOWS)
 	#define UNIQUE_ID_OFFSET 0x69c158
-#elif  defined(GEODE_IS_ANDROID64)
+#elif defined(GEODE_IS_ANDROID64)
 	#define UNIQUE_ID_OFFSET 0x11fe018
-#elif  defined(GEODE_IS_ANDROID32)
+#elif defined(GEODE_IS_ANDROID32)
 	#define UNIQUE_ID_OFFSET 0xa9f00c
 #elif defined(GEODE_IS_ARM_MAC)
 	#define UNIQUE_ID_OFFSET 0x8aa39c

@@ -10,9 +10,9 @@ using namespace util::platform;
 
 #if defined(GEODE_IS_WINDOWS)
 	#define DIDCLICK_OFFSET 0x6a3048
-#elif  defined(GEODE_IS_ANDROID64)
+#elif defined(GEODE_IS_ANDROID64)
 	#define DIDCLICK_OFFSET 0x12114a1
-#elif  defined(GEODE_IS_ANDROID32)
+#elif defined(GEODE_IS_ANDROID32)
 	#define DIDCLICK_OFFSET 0xaac0fd
 #elif defined(GEODE_IS_ARM_MAC)
 	#define DIDCLICK_OFFSET 0x8b0f4c
