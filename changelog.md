@@ -1,4 +1,4 @@
-## v1.0.1-alpha.5
+## v1.1.0
 
 * Fixed multiple bugs
 * Added a new save indicator

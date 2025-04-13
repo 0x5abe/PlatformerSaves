@@ -6,7 +6,7 @@
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"version": "v1.0.1-alpha.5",
+	"version": "v1.1.0",
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
@@ -39,7 +39,7 @@
 		},
 		{
 			"id": "sabe.persistenceapi",
-			"version": "v1.0.0-alpha.4",
+			"version": "v1.0.0",
 			"importance": "required"
 		}
 	],
