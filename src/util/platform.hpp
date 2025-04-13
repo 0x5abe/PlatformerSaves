@@ -15,6 +15,7 @@ namespace util::platform {
 		PlatformInvalid = 7,
 	};
 
+	// TODO: Support on Mac
 	inline void hideAndLockCursor(bool i_hide) {
 		#if defined(GEODE_IS_WINDOWS)
 			CCEGLView::get()->showCursor(!i_hide);

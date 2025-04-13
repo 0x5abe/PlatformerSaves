@@ -183,6 +183,7 @@ public:
 		return i_object->m_uniqueID-l_uniqueIDBase;
 	}
 
+	// TODO: Support on Ios
 	#if !defined(GEODE_IS_IOS)
 	void setupKeybinds();
 	#endif

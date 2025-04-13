@@ -4,7 +4,9 @@
 #include "domain/CheckpointGameObjectReference.hpp"
 #include "hooks/PauseLayer.hpp"
 #include "hooks/FMODAudioEngine.hpp"
+#if !defined(GEODE_IS_IOS)
 #include <geode.custom-keybinds/include/Keybinds.hpp>
+#endif
 #include <util/algorithm.hpp>
 #include <util/filesystem.hpp>
 #include <util/platform.hpp>
