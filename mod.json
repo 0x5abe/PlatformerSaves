@@ -62,6 +62,12 @@
 			"description": "Removes the save file for a level once it is completed.",
 			"type": "bool"
 		},
+		"disable-popup-on-new-game": {
+			"default": false,
+			"name": "Disable popup on new game",
+			"description": "Automatically starts a new game without showing the popup if a save does not exist for that level.",
+			"type": "bool"
+		},
 		"level-version-warning": {
 			"default": true,
 			"name": "Updated level version warning",

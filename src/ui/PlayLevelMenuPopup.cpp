@@ -8,8 +8,9 @@
 using namespace geode::prelude;
 using namespace util::platform;
 
-PlayLevelMenuPopup* PlayLevelMenuPopup::create() {
+PlayLevelMenuPopup* PlayLevelMenuPopup::create(bool i_validSaveExists) {
 	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup();
+	i_this->m_validSaveExists = i_validSaveExists;
 
 	if (i_this && i_this->init()) {
 		i_this->autorelease();
@@ -26,8 +27,6 @@ bool PlayLevelMenuPopup::init() {
 	}
 	hideAndLockCursor(false);
 	PSPlayLayer* l_playLayer = static_cast<PSPlayLayer*>(PlayLayer::get());
-	
-	m_validSaveExists = l_playLayer && l_playLayer->validSaveExists();
 
 	setup();
 

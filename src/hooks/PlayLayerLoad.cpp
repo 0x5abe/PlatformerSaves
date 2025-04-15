@@ -76,11 +76,18 @@ void PSPlayLayer::loadGame() {
 	switch (m_fields->m_loadingState) {
 		case LoadingState::Setup: {
 			m_fields->m_loadingProgress = 0.0f;
+			bool l_validSaveExists = validSaveExists();
 
-			PlayLevelMenuPopup* l_playLevelMenuPopup = PlayLevelMenuPopup::create();
-			l_playLevelMenuPopup->setID("play-level-menu-popup"_spr);
-			l_playLevelMenuPopup->show();
-			m_fields->m_loadingState = LoadingState::WaitingForPlayLevelMenuPopup;
+			if (!l_validSaveExists && Mod::get()->getSettingValue<bool>("disable-popup-on-new-game")) {
+				m_fields->m_saveSlot = 0;
+				m_fields->m_loadingState = LoadingState::Ready;
+				break;
+			} else {
+				PlayLevelMenuPopup* l_playLevelMenuPopup = PlayLevelMenuPopup::create(l_validSaveExists);
+				l_playLevelMenuPopup->setID("play-level-menu-popup"_spr);
+				l_playLevelMenuPopup->show();
+				m_fields->m_loadingState = LoadingState::WaitingForPlayLevelMenuPopup;
+			}
 			// falls through
 		}
 		case LoadingState::WaitingForPlayLevelMenuPopup: {
