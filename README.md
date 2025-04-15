@@ -10,16 +10,15 @@ PlatformerSaves is a Geometry Dash mod for [Geode](https://geode-sdk.org/) that 
 
 Pick up right where you left off and enjoy taking breaks without having to leave geometry dash open!
 
-- Windows support
+- Support on all platforms
 - Checkpoint saving and loading for platformer levels
 - Auto save
 
-## Planned features
+## Possible future features
 
 - Multiple save slots
 - Cloud saves
 - Better UI
-- Android/Mac support
 
 ## Known bugs
 
@@ -36,3 +35,5 @@ You can report a bug by [creating an issue](https://github.com/0x5abe/Platformer
 - The Geode team for the amazing tool they've created and inspiring me to make GD mods
 - Nikki for help with bindings
 - Maromalo for testing and suggestions
+- Gtxripmxt for ios testing
+- Memtheturtle for mac testing
