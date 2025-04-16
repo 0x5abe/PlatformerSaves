@@ -112,11 +112,11 @@ enum GhostType : u32 {
 };
 
 enum TouchTriggerType : u32 {
-	Unk = 0,
+    Unk = 0,
 };
 
 enum TouchTriggerControl : u32 {
-	Unk = 0,
+    Unk = 0,
 };
 
 enum PulseEffectType : u32 {
@@ -381,7 +381,7 @@ struct SongTriggerState {
 };
 
 struct SFXStateContainer {
-	double m_unkDouble1;
+    double m_unkDouble1;
     double m_unkDouble2;
     float m_unkFloat1;
     float m_unkFloat2;
@@ -519,11 +519,11 @@ struct GJGameState {
     double m_totalTime;
     double m_levelTime;
     double m_unkDouble3;
-    float m_unkUint2;
-    float m_unkUint3;
+    s32 m_unkIntRelatedCurrentProgress1;
+    s32 m_unkIntRelatedCurrentProgress2;
     s32 m_currentProgress;
-    float m_unkUint4;
-    float m_unkUint5;
+    s32 m_unkIntRelatedCurrentProgress3;
+    s32 m_unkIntRelatedCurrentProgress4;
     float m_unkUint6;
     float m_unkUint7;
     GameObjectPtr m_unkGameObjPtr1;
@@ -794,7 +794,7 @@ struct SoundStateContainer {
 };
 
 struct FMODSoundState {
-	string m_filePath;
+    string m_filePath;
     float m_speed;
     float m_unkFloat1;
     float m_volume;
@@ -835,8 +835,8 @@ struct FMODAudioState {
 };
 
 struct PlayerCheckpoint {
-	CCNode super;
-	CCPoint m_position;
+    CCNode super;
+    CCPoint m_position;
     CCPoint m_lastPosition;
     float m_yVelocity;
     bool m_isUpsideDown;
@@ -1008,7 +1008,7 @@ struct SpawnTriggerAction {
 };
 
 struct tk_spline {
-	vector<double> m_x;
+    vector<double> m_x;
     vector<double> m_y;
     vector<double> m_b;
     vector<double> m_c;
@@ -1205,7 +1205,7 @@ struct CheckpointObject {
     EffectManagerState m_effectManagerState;
     bool m_hasGradientTriggerObjectArray;
     if (m_hasGradientTriggerObjectArray) {
-		CCArray<GradientTriggerObjectPtr> m_gradientTriggerObjectArray;
+        CCArray<GradientTriggerObjectPtr> m_gradientTriggerObjectArray;
     }
     bool m_unk11e8;
     unordered_map<s32,SequenceTriggerState> m_sequenceTriggerStateUnorderedMap;
@@ -1215,18 +1215,18 @@ struct CheckpointObject {
 };
 
 bitfield PSFData {
-	unsigned m_originalVersion : 5;
-	unsigned m_platform : 3;
-	bool m_updatedFromPreviousLevelVersion : 1;
-	bool m_lowDetailMode : 1;
-	padding : 6;
+    unsigned m_originalVersion : 5;
+    unsigned m_platform : 3;
+    bool m_updatedFromPreviousLevelVersion : 1;
+    bool m_lowDetailMode : 1;
+    padding : 6;
 };
 
 struct PSF {
     u8 psfHeader[11];
-	std::assert(psfHeader[5] == '0' && psfHeader[7] == '1' && psfHeader[9] == '1', "Incorrect PSF version");
+    std::assert(psfHeader[5] == '0' && psfHeader[7] == '1' && psfHeader[9] == '1', "Incorrect PSF version");
     bool finishedSaving;
-	PSFData psfData;
+    PSFData psfData;
     padding[2];
     u32 levelStringChecksum;
     u32 checkpointObjectCount;
