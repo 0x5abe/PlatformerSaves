@@ -3,6 +3,8 @@
 
 class PlayLevelMenuPopup : public FLAlertLayer {
 public:
+	PlayLevelMenuPopup(bool i_validSaveExists);
+
 	static PlayLevelMenuPopup* create(bool i_validSaveExists);
 
 	bool init() override;

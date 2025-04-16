@@ -8,9 +8,12 @@
 using namespace geode::prelude;
 using namespace util::platform;
 
+PlayLevelMenuPopup::PlayLevelMenuPopup(bool i_validSaveExists) {
+	m_validSaveExists = i_validSaveExists;
+}
+
 PlayLevelMenuPopup* PlayLevelMenuPopup::create(bool i_validSaveExists) {
-	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup();
-	i_this->m_validSaveExists = i_validSaveExists;
+	PlayLevelMenuPopup* i_this = new PlayLevelMenuPopup(i_validSaveExists);
 
 	if (i_this && i_this->init()) {
 		i_this->autorelease();
