@@ -24,7 +24,7 @@ Pick up right where you left off and enjoy taking breaks without having to leave
 
 ## Report a bug
 
-You can report a bug by [creating an issue](https://github.com/0x5abe/PlatformerSaves/issues/new)
+You can report a bug by [creating an issue](https://github.com/0x5abe/PlatformerSaves/issues), before creating one please make sure it isn't a duplicate (no one else reported it)
 
 ## Credits
 
