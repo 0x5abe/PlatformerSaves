@@ -193,6 +193,7 @@ CheckpointObject* PSPlayLayer::markCheckpoint() {
 void PSPlayLayer::resetLevel() {
 	m_fields->m_inResetLevel = true;
 	PlayLayer::resetLevel();
+	m_fields->m_firstResetLevelCompleted = true;
 	if (savesEnabled() && m_isPlatformer) {
 		toggleHideAttempts(true);
 	}

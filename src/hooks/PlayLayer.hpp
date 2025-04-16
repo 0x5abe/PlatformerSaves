@@ -78,6 +78,7 @@ public:
 		uint8_t m_originalPSFVersion = 0;
 		bool m_updatedFromPreviousLevelVersion = false;
 		bool m_lowDetailMode = false;
+		bool m_firstResetLevelCompleted = false;
 		int m_saveSlot = -1;
 		int m_readPSFVersion = -1;
 		int m_loadedAttempts = 0;
