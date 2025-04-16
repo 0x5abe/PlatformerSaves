@@ -5,8 +5,8 @@
 
 class $modify(PSLevelAreaInnerLayer, LevelAreaInnerLayer) {
 public:
-	// overrides
-	
-	$override
-	void onDoor(cocos2d::CCObject* i_sender);
+    // overrides
+
+    $override
+    void onDoor(cocos2d::CCObject* i_sender);
 };

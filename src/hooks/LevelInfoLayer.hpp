@@ -9,8 +9,8 @@ extern size_t s_levelInfoLayerDelegate2;
 
 class $modify(PSLevelInfoLayer, LevelInfoLayer) {
 public:
-	// overrides
+    // overrides
 
-	$override
-	void onPlay(cocos2d::CCObject* i_sender);
+    $override
+    void onPlay(cocos2d::CCObject* i_sender);
 };

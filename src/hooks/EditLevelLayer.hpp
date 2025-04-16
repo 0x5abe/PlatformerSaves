@@ -8,8 +8,8 @@ extern size_t s_editLevelLayerDelegate2;
 
 class $modify(PSEditLevelLayer, EditLevelLayer) {
 public:
-	// overrides
-	
-	$override
-	void onPlay(cocos2d::CCObject* i_sender);
+    // overrides
+
+    $override
+    void onPlay(cocos2d::CCObject* i_sender);
 };

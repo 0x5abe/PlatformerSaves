@@ -11,8 +11,8 @@ extern size_t s_editLevelLayerDelegate2;
 
 class $modify(PSCCKeyboardDispatcher, cocos2d::CCKeyboardDispatcher) {
 public:
-	// overrides
+    // overrides
 
-	$override
-	void removeDelegate(cocos2d::CCKeyboardDelegate* i_delegate);
+    $override
+    void removeDelegate(cocos2d::CCKeyboardDelegate* i_delegate);
 };

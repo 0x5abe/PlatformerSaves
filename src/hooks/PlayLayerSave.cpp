@@ -10,155 +10,155 @@ using namespace persistenceAPI;
 using namespace util::platform;
 
 bool PSPlayLayer::startSaveGame() {
-	if (m_fields->m_savingState != SavingState::Ready || m_isPracticeMode) return false;
-	m_fields->m_savingState = SavingState::Setup;
-	CCScene* l_currentScene = CCScene::get();
-	if (l_currentScene) {
-		l_currentScene->runAction(
-			CCSequence::create(
-				CCDelayTime::create(0.0f),
-				CCCallFunc::create(
-					this,
-					callfunc_selector(PSPlayLayer::saveGame)
-				),
-				nullptr
-			)
-		);
-	}
-	return true;
+    if (m_fields->m_savingState != SavingState::Ready || m_isPracticeMode) return false;
+    m_fields->m_savingState = SavingState::Setup;
+    CCScene* l_currentScene = CCScene::get();
+    if (l_currentScene) {
+        l_currentScene->runAction(
+            CCSequence::create(
+                CCDelayTime::create(0.0f),
+                CCCallFunc::create(
+                    this,
+                    callfunc_selector(PSPlayLayer::saveGame)
+                ),
+                nullptr
+            )
+        );
+    }
+    return true;
 }
 
 void PSPlayLayer::writePSFHeader() {
-	m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
-	// finishedSaving
-	m_fields->m_stream.writeZero(sizeof(bool));
-	PSFData l_psfData;
-	l_psfData.data = 0;
-	// save platform
-	l_psfData.m_platform = static_cast<uint16_t>(m_fields->m_platform);
-	// save original psf version
-	l_psfData.m_originalVersion = m_fields->m_originalPSFVersion;
-	// save updated from previous level version
-	l_psfData.m_updatedFromPreviousLevelVersion = m_fields->m_updatedFromPreviousLevelVersion;
-	// save low detail mode
-	l_psfData.m_lowDetailMode = m_level->m_lowDetailMode && m_level->m_lowDetailModeToggled;
-	m_fields->m_stream.write(reinterpret_cast<char*>(&l_psfData.data),sizeof(l_psfData.data));
-	// unused bytes
-	m_fields->m_stream.writeZero(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)));
-	unsigned int l_levelStringHash = util::algorithm::hash_string(m_level->m_levelString.c_str());
-	m_fields->m_stream << l_levelStringHash;
+    m_fields->m_stream.write(s_psfMagicAndVer,sizeof(s_psfMagicAndVer));
+    // finishedSaving
+    m_fields->m_stream.writeZero(sizeof(bool));
+    PSFData l_psfData;
+    l_psfData.data = 0;
+    // save platform
+    l_psfData.m_platform = static_cast<uint16_t>(m_fields->m_platform);
+    // save original psf version
+    l_psfData.m_originalVersion = m_fields->m_originalPSFVersion;
+    // save updated from previous level version
+    l_psfData.m_updatedFromPreviousLevelVersion = m_fields->m_updatedFromPreviousLevelVersion;
+    // save low detail mode
+    l_psfData.m_lowDetailMode = m_level->m_lowDetailMode && m_level->m_lowDetailModeToggled;
+    m_fields->m_stream.write(reinterpret_cast<char*>(&l_psfData.data),sizeof(l_psfData.data));
+    // unused bytes
+    m_fields->m_stream.writeZero(16-(sizeof(s_psfMagicAndVer)+sizeof(bool)+sizeof(PSFData)));
+    unsigned int l_levelStringHash = util::algorithm::hash_string(m_level->m_levelString.c_str());
+    m_fields->m_stream << l_levelStringHash;
 }
 
 void PSPlayLayer::saveGame() {
-	//log::info("SaveGame Gets run");
-	switch (m_fields->m_savingState) {
-		case SavingState::Setup: {
-			//log::info("Goes into beginning");
-			
-			if (m_fields->m_normalModeCheckpoints->count() == 0) {
-				m_fields->m_savingState = SavingState::Ready;
-				break;
-			}
-			m_fields->m_remainingCheckpointSaveCount = 1;
-		
-			std::string l_filePath = getSaveFilePath(-1);
-			std::string l_fileDirectory = util::filesystem::getParentDirectoryFromPath(l_filePath);
-			if (!std::filesystem::exists(l_fileDirectory) && !std::filesystem::create_directories(l_fileDirectory)) {
-				m_fields->m_savingState = SavingState::Ready;
-				break;
-			}
+    //log::info("SaveGame Gets run");
+    switch (m_fields->m_savingState) {
+        case SavingState::Setup: {
+            //log::info("Goes into beginning");
 
-			int l_PAVersion = 2;
-			if (m_fields->m_readPSFVersion > 0 && m_fields->m_readPSFVersion < 10) {
-				l_PAVersion = 1;
-			}
-			if (!m_fields->m_stream.setFile(l_filePath, l_PAVersion, true)) {
-				m_fields->m_savingState = SavingState::Ready;
-				break;
-			}
+            if (m_fields->m_normalModeCheckpoints->count() == 0) {
+                m_fields->m_savingState = SavingState::Ready;
+                break;
+            }
+            m_fields->m_remainingCheckpointSaveCount = 1;
 
-			showSavingProgressCircleSprite(true);
-			
-			writePSFHeader();
-			
-			m_fields->m_stream << m_fields->m_remainingCheckpointSaveCount;
+            std::string l_filePath = getSaveFilePath(-1);
+            std::string l_fileDirectory = util::filesystem::getParentDirectoryFromPath(l_filePath);
+            if (!std::filesystem::exists(l_fileDirectory) && !std::filesystem::create_directories(l_fileDirectory)) {
+                m_fields->m_savingState = SavingState::Ready;
+                break;
+            }
 
-			m_fields->m_savingState = SavingState::SaveCheckpoint;
-			// falls through
-		}
-		case SavingState::SaveCheckpoint: {
-			if (m_fields->m_remainingCheckpointSaveCount > 0) {
-				saveCheckpointToStream(m_fields->m_normalModeCheckpoints->count()-m_fields->m_remainingCheckpointSaveCount);
-				m_fields->m_remainingCheckpointSaveCount--;
-				//log::info("Remaining save count: {}", m_fields->m_remainingCheckpointSaveCount);
-				CCScene* l_currentScene = CCScene::get();
-				if (l_currentScene) {
-					l_currentScene->runAction(
-						CCSequence::create(
-							CCDelayTime::create(0.0f),
-							CCCallFunc::create(
-								this,
-								callfunc_selector(PSPlayLayer::saveGame)
-							),
-							nullptr
-						)
-					);
-				}
-				break;
-			}
-			if (m_fields->m_remainingCheckpointSaveCount == 0) {
-				m_fields->m_savingState = SavingState::SaveActivatedCheckpoints;
-			}
-			// TODO: use tasks maybe
-			// falls through
-		}
-		case SavingState::SaveActivatedCheckpoints: {
-			unsigned int l_size = m_fields->m_activatedCheckpoints.size();
-			m_fields->m_stream.write(reinterpret_cast<char*>(&l_size), 4);
-			for (int i = 0; i < m_fields->m_activatedCheckpoints.size(); i++) {
-				m_fields->m_activatedCheckpoints[i].save(m_fields->m_stream);
-			}
-			m_fields->m_savingState = SavingState::SaveExtraData;
-			// falls through
-		}
-		case SavingState::SaveExtraData: {
-			m_fields->m_stream << m_effectManager->m_persistentItemCountMap;
+            int l_PAVersion = 2;
+            if (m_fields->m_readPSFVersion > 0 && m_fields->m_readPSFVersion < 10) {
+                l_PAVersion = 1;
+            }
+            if (!m_fields->m_stream.setFile(l_filePath, l_PAVersion, true)) {
+                m_fields->m_savingState = SavingState::Ready;
+                break;
+            }
 
-			m_fields->m_stream << m_effectManager->m_persistentTimerItemSet;
+            showSavingProgressCircleSprite(true);
 
-			m_fields->m_stream << m_attempts;
+            writePSFHeader();
 
-			m_fields->m_savingState = SavingState::Ready;
-			// falls through
-		}
-		case SavingState::Ready: {
-			if (m_fields->m_normalModeCheckpoints->count() > 0) {
-				m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
-			}
-			m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
-			bool o_finishedSaving = true;
-			m_fields->m_stream.write((char*)&o_finishedSaving,sizeof(bool));
-			endStream();
-			showSavingProgressCircleSprite(false);
-			showSavingSuccessSprite();
-			if (m_fields->m_exitAfterSave) {
-				//log::info("Goes into exitAfterSave");
-				m_fields->m_exitAfterSave = false;
-				PauseLayer* l_pauseLayer = static_cast<PauseLayer*>(CCScene::get()->getChildByID("PauseLayer"));
-				if (l_pauseLayer) {
-					l_pauseLayer->onQuit(this);
-				}
-			}
-			break;
-		}
-	}
+            m_fields->m_stream << m_fields->m_remainingCheckpointSaveCount;
+
+            m_fields->m_savingState = SavingState::SaveCheckpoint;
+            // falls through
+        }
+        case SavingState::SaveCheckpoint: {
+            if (m_fields->m_remainingCheckpointSaveCount > 0) {
+                saveCheckpointToStream(m_fields->m_normalModeCheckpoints->count()-m_fields->m_remainingCheckpointSaveCount);
+                m_fields->m_remainingCheckpointSaveCount--;
+                //log::info("Remaining save count: {}", m_fields->m_remainingCheckpointSaveCount);
+                CCScene* l_currentScene = CCScene::get();
+                if (l_currentScene) {
+                    l_currentScene->runAction(
+                        CCSequence::create(
+                            CCDelayTime::create(0.0f),
+                            CCCallFunc::create(
+                                this,
+                                callfunc_selector(PSPlayLayer::saveGame)
+                            ),
+                            nullptr
+                        )
+                    );
+                }
+                break;
+            }
+            if (m_fields->m_remainingCheckpointSaveCount == 0) {
+                m_fields->m_savingState = SavingState::SaveActivatedCheckpoints;
+            }
+            // TODO: use tasks maybe
+            // falls through
+        }
+        case SavingState::SaveActivatedCheckpoints: {
+            unsigned int l_size = m_fields->m_activatedCheckpoints.size();
+            m_fields->m_stream.write(reinterpret_cast<char*>(&l_size), 4);
+            for (int i = 0; i < m_fields->m_activatedCheckpoints.size(); i++) {
+                m_fields->m_activatedCheckpoints[i].save(m_fields->m_stream);
+            }
+            m_fields->m_savingState = SavingState::SaveExtraData;
+            // falls through
+        }
+        case SavingState::SaveExtraData: {
+            m_fields->m_stream << m_effectManager->m_persistentItemCountMap;
+
+            m_fields->m_stream << m_effectManager->m_persistentTimerItemSet;
+
+            m_fields->m_stream << m_attempts;
+
+            m_fields->m_savingState = SavingState::Ready;
+            // falls through
+        }
+        case SavingState::Ready: {
+            if (m_fields->m_normalModeCheckpoints->count() > 0) {
+                m_fields->m_lastSavedCheckpointTimestamp = static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->lastObject())->m_fields->m_timestamp;
+            }
+            m_fields->m_stream.seek(sizeof(s_psfMagicAndVer));
+            bool o_finishedSaving = true;
+            m_fields->m_stream.write((char*)&o_finishedSaving,sizeof(bool));
+            endStream();
+            showSavingProgressCircleSprite(false);
+            showSavingSuccessSprite();
+            if (m_fields->m_exitAfterSave) {
+                //log::info("Goes into exitAfterSave");
+                m_fields->m_exitAfterSave = false;
+                PauseLayer* l_pauseLayer = static_cast<PauseLayer*>(CCScene::get()->getChildByID("PauseLayer"));
+                if (l_pauseLayer) {
+                    l_pauseLayer->onQuit(this);
+                }
+            }
+            break;
+        }
+    }
 }
 
 void PSPlayLayer::saveCheckpointToStream(unsigned int i_index) {
-	//log::info("Saving Startpoints to stream");
+    //log::info("Saving Startpoints to stream");
 #if defined(PS_DEBUG) && defined(PS_DESCRIBE)
-	static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->describe();
+    static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->describe();
 #endif
-	static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->save(m_fields->m_stream);
-	//log::info("Saved Startpoints to stream");
+    static_cast<PSCheckpointObject*>(m_fields->m_normalModeCheckpoints->objectAtIndex(i_index))->save(m_fields->m_stream);
+    //log::info("Saved Startpoints to stream");
 }

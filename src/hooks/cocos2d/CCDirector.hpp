@@ -5,8 +5,8 @@
 
 class $modify(PSCCDirector, cocos2d::CCDirector) {
 public:
-	// overrides
-	
-	$override
-	bool replaceScene(cocos2d::CCScene* i_scene);
+    // overrides
+
+    $override
+    bool replaceScene(cocos2d::CCScene* i_scene);
 };

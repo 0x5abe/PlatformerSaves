@@ -9,18 +9,18 @@ using namespace persistenceAPI;
 void setupKeybinds();
 
 $on_mod(Loaded) {
-	setupKeybinds();
+    setupKeybinds();
 }
 
 void setupKeybinds() {
-	using namespace keybinds;
+    using namespace keybinds;
 
-	BindManager::get()->registerBindable({
-		"save-game"_spr,
-		"Save game",
-		"Hotkey for quick saving",
-		{ Keybind::create(KEY_K, Modifier::None) },
-		Category::PLAY,
-	});
+    BindManager::get()->registerBindable({
+        "save-game"_spr,
+        "Save game",
+        "Hotkey for quick saving",
+        { Keybind::create(KEY_K, Modifier::None) },
+        Category::PLAY,
+    });
 }
 #endif

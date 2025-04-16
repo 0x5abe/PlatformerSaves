@@ -14,202 +14,202 @@ extern char s_psfMagicAndVer[11];
 extern int s_psfVersion;
 
 enum class LoadingState {
-	Ready,
-	Setup,
-	WaitingForPlayLevelMenuPopup,
-	SetupFileRead,
-	HandleFileError,
-	ReadVersion,
-	HandleIncorrectVersion,
-	ReadFinishedSaving,
-	HandleDidNotFinishSaving,
-	ReadPSFData,
-	ShowPlatformError,
-	ShowPlatformWarning,
-	ShowLevelVersionWarning,
-	ShowPSFVersionWarning,
-	ShowIncorrectLowDetailModeError,
-	ReadHash,
-	HandleIncorrectHash,
-	ReadCheckpointCount,
-	ReadCheckpoint,
-	ReadActivatedCheckpoints,
-	ReadExtraData,
-	WaitingForPopup,
-	CancelLevelLoad
+    Ready,
+    Setup,
+    WaitingForPlayLevelMenuPopup,
+    SetupFileRead,
+    HandleFileError,
+    ReadVersion,
+    HandleIncorrectVersion,
+    ReadFinishedSaving,
+    HandleDidNotFinishSaving,
+    ReadPSFData,
+    ShowPlatformError,
+    ShowPlatformWarning,
+    ShowLevelVersionWarning,
+    ShowPSFVersionWarning,
+    ShowIncorrectLowDetailModeError,
+    ReadHash,
+    HandleIncorrectHash,
+    ReadCheckpointCount,
+    ReadCheckpoint,
+    ReadActivatedCheckpoints,
+    ReadExtraData,
+    WaitingForPopup,
+    CancelLevelLoad
 };
 
 enum class SavingState {
-	Ready,
-	Setup,
-	SaveCheckpoint,
-	SaveActivatedCheckpoints,
-	SaveExtraData
+    Ready,
+    Setup,
+    SaveCheckpoint,
+    SaveActivatedCheckpoints,
+    SaveExtraData
 };
 
 union PSFData {
-	struct {
-		uint16_t m_originalVersion : 5;
-		uint16_t m_platform : 3;
-		uint16_t m_updatedFromPreviousLevelVersion : 1;
-		uint16_t m_lowDetailMode : 1;
-		uint16_t m_unused : 6;
-	};
-	uint16_t data;
+    struct {
+        uint16_t m_originalVersion : 5;
+        uint16_t m_platform : 3;
+        uint16_t m_updatedFromPreviousLevelVersion : 1;
+        uint16_t m_lowDetailMode : 1;
+        uint16_t m_unused : 6;
+    };
+    uint16_t data;
 };
 
 class $modify(PSPlayLayer, PlayLayer) {
 public:
-	struct Fields {
-		bool m_onQuitCalled = false;
-		bool m_signalForAsyncLoad = false;
-		bool m_triedPlacingCheckpoint = false;
-		bool m_inPostUpdate = false;
-		bool m_inSetupHasCompleted = false;
-		bool m_inResetLevel = false;
-		bool m_inTogglePracticeMode = false;
-		bool m_exitAfterSave = false;
-		bool m_editorNoticeClosed = false;
-		bool m_cancelLevelLoad = false;
-		bool m_updateExtraData = false;
-		bool m_startedLoadingObjects = false;
-		bool m_savingProgressCircleSpriteFadeIn = false;
-		bool m_savingProgressCircleSpriteFadeOut = false;
-		uint8_t m_originalPSFVersion = 0;
-		bool m_updatedFromPreviousLevelVersion = false;
-		bool m_lowDetailMode = false;
-		bool m_firstResetLevelCompleted = false;
-		int m_saveSlot = -1;
-		int m_readPSFVersion = -1;
-		int m_loadedAttempts = 0;
-		unsigned int m_remainingCheckpointLoadCount = 0;
-		unsigned int m_remainingCheckpointSaveCount = 0;
-		unsigned int m_bytesToRead = 0;
-		unsigned int m_bytesRead = 0;
-		float m_loadingProgress = 0.0f;
-		util::platform::PSPlatform m_platform;
-		util::platform::PSPlatform m_readPlatform;
-		long long m_lastSavedCheckpointTimestamp = 0;
-		persistenceAPI::Stream m_stream;
-		persistenceAPI::Stream m_backupStream;
-		LoadingState m_loadingState = LoadingState::Setup;
-		SavingState m_savingState = SavingState::Ready;
-		cocos2d::CCScene* m_transitionFadeScene = nullptr;
-		geode::Ref<cocos2d::CCSprite> m_savingProgressCircleSprite = nullptr;
-		geode::Ref<cocos2d::CCSprite> m_savingSuccessSprite = nullptr;
-		geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
-		std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
-		gd::unordered_set<int> m_loadedPersistentTimerItemSet;
-	};
+    struct Fields {
+        bool m_onQuitCalled = false;
+        bool m_signalForAsyncLoad = false;
+        bool m_triedPlacingCheckpoint = false;
+        bool m_inPostUpdate = false;
+        bool m_inSetupHasCompleted = false;
+        bool m_inResetLevel = false;
+        bool m_inTogglePracticeMode = false;
+        bool m_exitAfterSave = false;
+        bool m_editorNoticeClosed = false;
+        bool m_cancelLevelLoad = false;
+        bool m_updateExtraData = false;
+        bool m_startedLoadingObjects = false;
+        bool m_savingProgressCircleSpriteFadeIn = false;
+        bool m_savingProgressCircleSpriteFadeOut = false;
+        uint8_t m_originalPSFVersion = 0;
+        bool m_updatedFromPreviousLevelVersion = false;
+        bool m_lowDetailMode = false;
+        bool m_firstResetLevelCompleted = false;
+        int m_saveSlot = -1;
+        int m_readPSFVersion = -1;
+        int m_loadedAttempts = 0;
+        unsigned int m_remainingCheckpointLoadCount = 0;
+        unsigned int m_remainingCheckpointSaveCount = 0;
+        unsigned int m_bytesToRead = 0;
+        unsigned int m_bytesRead = 0;
+        float m_loadingProgress = 0.0f;
+        util::platform::PSPlatform m_platform;
+        util::platform::PSPlatform m_readPlatform;
+        long long m_lastSavedCheckpointTimestamp = 0;
+        persistenceAPI::Stream m_stream;
+        persistenceAPI::Stream m_backupStream;
+        LoadingState m_loadingState = LoadingState::Setup;
+        SavingState m_savingState = SavingState::Ready;
+        cocos2d::CCScene* m_transitionFadeScene = nullptr;
+        geode::Ref<cocos2d::CCSprite> m_savingProgressCircleSprite = nullptr;
+        geode::Ref<cocos2d::CCSprite> m_savingSuccessSprite = nullptr;
+        geode::Ref<cocos2d::CCArray> m_normalModeCheckpoints = nullptr;
+        std::vector<CheckpointGameObjectReference> m_activatedCheckpoints;
+        gd::unordered_set<int> m_loadedPersistentTimerItemSet;
+    };
 
-	// overrides
+    // overrides
 
-	$override
-	bool init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreateObjects);
+    $override
+    bool init(GJGameLevel* i_level, bool i_useReplay, bool i_dontCreateObjects);
 
-	$override
-	void processCreateObjectsFromSetup();
+    $override
+    void processCreateObjectsFromSetup();
 
-	$override 
-	void createObjectsFromSetupFinished();
+    $override
+    void createObjectsFromSetupFinished();
 
-	$override
-	void setupHasCompleted();
+    $override
+    void setupHasCompleted();
 
-	$override
-	void postUpdate(float i_unkFloat);
+    $override
+    void postUpdate(float i_unkFloat);
 
-	$override
-	CheckpointObject* markCheckpoint();
-	
-	$override
-	void resetLevel();
+    $override
+    CheckpointObject* markCheckpoint();
 
-	$override
-	void prepareMusic(bool i_unkBool);
+    $override
+    void resetLevel();
 
-	$override
-	void startMusic();
+    $override
+    void prepareMusic(bool i_unkBool);
 
-	$override
-	void togglePracticeMode(bool i_value);
+    $override
+    void startMusic();
 
-	$override
-	void resetLevelFromStart();
+    $override
+    void togglePracticeMode(bool i_value);
 
-	$override
-	void onQuit();
+    $override
+    void resetLevelFromStart();
 
-	$override
-	void updateVisibility(float i_unkFloat);
-	
-	// custom methods
+    $override
+    void onQuit();
 
-	void registerCheckpointsAndActivatedCheckpoints();
+    $override
+    void updateVisibility(float i_unkFloat);
 
-	bool readPSFVersionAndUpdateIfNecessary();
+    // custom methods
 
-	bool readPSFFinishedSaving();
+    void registerCheckpointsAndActivatedCheckpoints();
 
-	void readPSFData();
+    bool readPSFVersionAndUpdateIfNecessary();
 
-	bool readPSFLevelStringHash();
+    bool readPSFFinishedSaving();
 
-	void showPlayLevelMenu();
+    void readPSFData();
 
-	bool validSaveExists();
-	
-	std::string getSaveFilePath(int i_slot = -1, bool i_checkExists = false);
+    bool readPSFLevelStringHash();
 
-	void loadGame();
+    void showPlayLevelMenu();
 
-	void loadCheckpointFromStream();
+    bool validSaveExists();
 
-	void loadActivatedCheckpointsFromStream();
+    std::string getSaveFilePath(int i_slot = -1, bool i_checkExists = false);
 
-	void updateAsyncProcessCreateObjectsFromSetup();
+    void loadGame();
 
-	void endAsyncProcessCreateObjectsFromSetup();
+    void loadCheckpointFromStream();
 
-	void writePSFHeader();
+    void loadActivatedCheckpointsFromStream();
 
-	bool startSaveGame();
+    void updateAsyncProcessCreateObjectsFromSetup();
 
-	void saveGame();
+    void endAsyncProcessCreateObjectsFromSetup();
 
-	void saveCheckpointToStream(unsigned int i_index);
-	
-	inline int getGameObjectIndex(GameObject* i_object) {
-		int l_uniqueIDBase = reinterpret_cast<persistenceAPI::PAPlayLayer*>(this)->m_fields->m_uniqueIDBase;
-		return i_object->m_uniqueID-l_uniqueIDBase;
-	}
+    void writePSFHeader();
 
-	// TODO: Support on Ios
-	#if !defined(GEODE_IS_IOS)
-	void setupKeybinds();
-	#endif
+    bool startSaveGame();
 
-	void setupSavingProgressCircleSprite();
+    void saveGame();
 
-	void showSavingProgressCircleSprite(bool i_show);
+    void saveCheckpointToStream(unsigned int i_index);
 
-	void savingProgressCircleSpriteFadeInEnd();
+    inline int getGameObjectIndex(GameObject* i_object) {
+        int l_uniqueIDBase = reinterpret_cast<persistenceAPI::PAPlayLayer*>(this)->m_fields->m_uniqueIDBase;
+        return i_object->m_uniqueID-l_uniqueIDBase;
+    }
 
-	void savingProgressCircleSpriteFadeOutEnd();
+    // TODO: Support on Ios
+    #if !defined(GEODE_IS_IOS)
+    void setupKeybinds();
+    #endif
 
-	void setupSavingSuccessSprite();
+    void setupSavingProgressCircleSprite();
 
-	void showSavingSuccessSprite();
+    void showSavingProgressCircleSprite(bool i_show);
 
-	void endStream();
+    void savingProgressCircleSpriteFadeInEnd();
 
-	bool canSave();
+    void savingProgressCircleSpriteFadeOutEnd();
 
-	bool savesEnabled();
+    void setupSavingSuccessSprite();
 
-	void removeSaveFile(int i_slot = -1);
+    void showSavingSuccessSprite();
 
-	bool updatePSFFormat();
+    void endStream();
 
-	bool makeBackup();
+    bool canSave();
+
+    bool savesEnabled();
+
+    void removeSaveFile(int i_slot = -1);
+
+    bool updatePSFFormat();
+
+    bool makeBackup();
 };
