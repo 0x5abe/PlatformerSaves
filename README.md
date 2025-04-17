@@ -22,6 +22,7 @@ Pick up right where you left off and enjoy taking breaks without having to leave
 
 ## Known bugs
 
+- Incompatibility with xdBot. The option "Always Practice Fixes" should be disabled for playing with the mod. And in general there might be issues if trying to record or play back macros with the mod installed. No guarantees.
 - Music and sound effects can sometimes get bugged out
 - If player colors are used for objects they don't get updated if the player changes their colors
 - Practice Fix is not implemented (some player data is not saved, like vanilla)
