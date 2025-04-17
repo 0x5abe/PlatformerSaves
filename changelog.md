@@ -1,3 +1,9 @@
+## v1.1.1
+
+* Fixed a bug that caused incorrect song to play when loading a save
+* Fixed a bug that caused a crash on mac when exiting a platformer level (thanks to hiimjasmine00)
+* Added an option to automatically start a new game if there isn't a save file for a particular level
+
 ## v1.1.0
 
 * Fixed multiple bugs
