@@ -200,31 +200,38 @@ struct CCArray<T> {
 };
 
 struct GameObjectPtr {
-   u32 m_index;
+    u32 m_index;
+    //std::print("GameObjectPtr value: {}", m_index);
 };
 
 struct EnhancedGameObjectPtr {
     u32 m_index;
+    //std::print("EnhancedGameObjectPtr value: {}", m_index);
 };
 
 struct EnterEffectObjectPtr {
     u32 m_index;
+    //std::print("EnterEffectObjectPtr value: {}", m_index);
 };
 
 struct SFXTriggerGameObjectPtr {
     u32 m_index;
+    //std::print("SFXTriggerGameObjectPtr value: {}", m_index);
 };
 
 struct DashRingObjectPtr {
     u32 m_index;
+    //std::print("DashRingObjectPtr value: {}", m_index);
 };
 
 struct GradientTriggerObjectPtr {
     u32 m_index;
+    //std::print("GradientTriggerObjectPtr value: {}", m_index);
 };
 
 struct CheckpointGameObjectPtr {
-   u32 m_index;
+    u32 m_index;
+    //std::print("CheckpointGameObjectPtr value: {}", m_index);
 };
 
 struct SoundPtr {
@@ -526,8 +533,8 @@ struct GJGameState {
     s32 m_unkIntRelatedCurrentProgress4;
     float m_unkUint6;
     float m_unkUint7;
-    GameObjectPtr m_unkGameObjPtr1;
-    GameObjectPtr m_unkGameObjPtr2;
+    GameObjectPtr m_lastActivatedPortal1;
+    GameObjectPtr m_lastActivatedPortal2;
     CCPoint m_cameraPosition;
     bool m_unkBool10;
     float m_levelFlipping;
