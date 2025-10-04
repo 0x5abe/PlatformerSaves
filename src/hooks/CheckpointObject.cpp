@@ -232,7 +232,7 @@ void PSCheckpointObject::describe() {
     l_size = m_sequenceTriggerStateUnorderedMap.size();
     log::info("[PSCheckpointObject - describe] m_sequenceTriggerStateUnorderedMap.size(): {}", l_size);
     int i = 0;
-    for (std::pair<int, SequenceTriggerState> l_pair : m_sequenceTriggerStateUnorderedMap) {
+    for (gd::pair<int, SequenceTriggerState> l_pair : m_sequenceTriggerStateUnorderedMap) {
         log::info("[PSCheckpointObject - describe] m_sequenceTriggerStateUnorderedMap element {} key: {}", i, l_pair.first);
         log::info("[PSCheckpointObject - describe] m_sequenceTriggerStateUnorderedMap element {} value:", i);
         reinterpret_cast<PASequenceTriggerState*>(&l_pair.second)->describe();

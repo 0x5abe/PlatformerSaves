@@ -1,12 +1,12 @@
 {
-	"geode": "4.3.1",
+	"geode": "4.9.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"version": "v1.1.1",
+	"version": "v1.1.2",
 	"id": "sabe.platformersaves",
 	"name": "PlatformerSaves",
 	"developer": "Sabe",
@@ -21,28 +21,26 @@
 		"enhancement",
 		"gameplay"
 	],
-	"dependencies": [
-		{
-			"id": "geode.custom-keybinds",
+	"dependencies": {
+		"geode.custom-keybinds": {
 			"version": ">=v1.6.0",
 			"platforms": [
 				"win",
 				"android",
-				"mac"
+				"mac-intel",
+                "mac-arm"
 			],
 			"importance": "required"
 		},
-		{
-			"id": "geode.node-ids",
+		"geode.node-ids": {
 			"version": ">=v1.12.0-beta.4",
 			"importance": "required"
 		},
-		{
-			"id": "sabe.persistenceapi",
-			"version": "v1.0.0",
+		"sabe.persistenceapi": {
+			"version": "v1.1.0",
 			"importance": "required"
 		}
-	],
+    },
 	"settings": {
 		"auto-save": {
 			"default": true,

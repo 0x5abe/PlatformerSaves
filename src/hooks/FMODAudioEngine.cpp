@@ -36,30 +36,30 @@ void PSFMODAudioEngine::loadMusic(gd::string i_path, float i_speed, float i_p2, 
 void PSFMODAudioEngine::backupMusic() {
     m_fields->m_backgroundMusicChannelBackup = m_backgroundMusicChannel;
     m_backgroundMusicChannel = nullptr;
-    for (int i = 0; i < m_audioState.m_unkMapIntFloat1.size(); i++) {
-        m_fields->m_unkMapIntFloat1Backup[i] = m_audioState.m_unkMapIntFloat1[i];
+    for (int i = 0; i < m_audioState.m_volumeForMusicChannels.size(); i++) {
+        m_fields->m_volumeForMusicChannelsBackup[i] = m_audioState.m_volumeForMusicChannels[i];
     }
-    for (int i = 0; i < m_audioState.m_unkMapIntFloat2.size(); i++) {
-        m_fields->m_unkMapIntFloat2Backup[i] = m_audioState.m_unkMapIntFloat2[i];
+    for (int i = 0; i < m_audioState.m_volumeModForMusicChannels.size(); i++) {
+        m_fields->m_volumeModForMusicChannelsBackup[i] = m_audioState.m_volumeModForMusicChannels[i];
     }
-    for (int i = 0; i < m_audioState.m_unkMapIntFloat3.size(); i++) {
-        m_fields->m_unkMapIntFloat3Backup[i] = m_audioState.m_unkMapIntFloat3[i];
+    for (int i = 0; i < m_audioState.m_pitchForMusicChannels.size(); i++) {
+        m_fields->m_pitchForMusicChannelsBackup[i] = m_audioState.m_pitchForMusicChannels[i];
     }
 }
 
 void PSFMODAudioEngine::restoreMusic() {
     m_backgroundMusicChannel = m_fields->m_backgroundMusicChannelBackup;
     m_fields->m_backgroundMusicChannelBackup = nullptr;
-    for (int i = 0; i < m_fields->m_unkMapIntFloat1Backup.size(); i++) {
-        m_audioState.m_unkMapIntFloat1[i] = m_fields->m_unkMapIntFloat1Backup[i];
+    for (int i = 0; i < m_fields->m_volumeForMusicChannelsBackup.size(); i++) {
+        m_audioState.m_volumeForMusicChannels[i] = m_fields->m_volumeForMusicChannelsBackup[i];
     }
-    for (int i = 0; i < m_fields->m_unkMapIntFloat2Backup.size(); i++) {
-        m_audioState.m_unkMapIntFloat2[i] = m_fields->m_unkMapIntFloat2Backup[i];
+    for (int i = 0; i < m_fields->m_volumeModForMusicChannelsBackup.size(); i++) {
+        m_audioState.m_volumeModForMusicChannels[i] = m_fields->m_volumeModForMusicChannelsBackup[i];
     }
-    for (int i = 0; i < m_fields->m_unkMapIntFloat3Backup.size(); i++) {
-        m_audioState.m_unkMapIntFloat3[i] = m_fields->m_unkMapIntFloat3Backup[i];
+    for (int i = 0; i < m_fields->m_pitchForMusicChannelsBackup.size(); i++) {
+        m_audioState.m_pitchForMusicChannels[i] = m_fields->m_pitchForMusicChannelsBackup[i];
     }
-    m_fields->m_unkMapIntFloat1Backup.clear();
-    m_fields->m_unkMapIntFloat2Backup.clear();
-    m_fields->m_unkMapIntFloat3Backup.clear();
+    m_fields->m_volumeForMusicChannelsBackup.clear();
+    m_fields->m_volumeModForMusicChannelsBackup.clear();
+    m_fields->m_pitchForMusicChannelsBackup.clear();
 }

@@ -21,7 +21,7 @@ namespace util::filesystem {
         l_cleanLevelName.erase(std::remove(l_cleanLevelName.begin(), l_cleanLevelName.end(), '\\'), l_cleanLevelName.end());
 
         switch(i_level->m_levelType) {
-            case GJLevelType::Local:
+            case GJLevelType::Main:
                 l_filePath.append(fmt::format("/saves/local/{}/slot{}{}", i_level->m_levelID.value(), i_slot, PSF_EXT));
                 break;
             case GJLevelType::Editor:
