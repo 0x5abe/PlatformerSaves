@@ -63,9 +63,9 @@ jobs:
           echo '{ "required": true }' > build/geode-deps/sabe.persistenceapi/geode-dep-options.json
 
       - name: Build the mod
-        uses: 0x5abe/build-geode-mod@main
+        uses: geode-sdk/build-geode-mod@main
         with:
-          bindings: 0x5abe/geode-bindings
+          bindings: geode-sdk/bindings
           bindings-ref: main
           combine: true
           cli: "latest"
